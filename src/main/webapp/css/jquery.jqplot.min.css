@@ -1,0 +1,74 @@
+.jqplot-xaxis,.jqplot-xaxis-label {margin-top:10px}
+.jqplot-x2axis,.jqplot-x2axis-label {margin-bottom:10px}
+.jqplot-target {
+	position:relative;
+	font-family:'notokr-regular';
+	color:#666;
+	font-size:12px
+}
+.jqplot-axis {font-size:12px;color:#333;}
+.jqplot-yaxis {margin-right:10px}
+.jqplot-y2axis,.jqplot-y3axis,.jqplot-y4axis,.jqplot-y5axis,.jqplot-y6axis,.jqplot-y7axis,.jqplot-y8axis,.jqplot-y9axis,.jqplot-yMidAxis {margin-left:10px; margin-right:10px}
+.jqplot-axis-tick,.jqplot-x2axis-tick,.jqplot-xaxis-tick,.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick,.jqplot-yMidAxis-tick,.jqplot-yaxis-tick {position:absolute; white-space:pre}
+.jqplot-xaxis-tick {top:0; left:15px; vertical-align:top}
+.jqplot-x2axis-tick {left:15px; bottom:0; vertical-align:bottom}
+.jqplot-yaxis-tick {top:15px; right:0; text-align:right}
+.jqplot-yaxis-tick.jqplot-breakTick {z-index:2; right:-20px; margin-right:0; padding:1px 5px; font-size:1.5em}
+.jqplot-x2axis-label,.jqplot-xaxis-label,.jqplot-yMidAxis-label,.jqplot-yaxis-label {font-size:11pt; position:absolute}
+.jqplot-y2axis-tick,.jqplot-y3axis-tick,.jqplot-y4axis-tick,.jqplot-y5axis-tick,.jqplot-y6axis-tick,.jqplot-y7axis-tick,.jqplot-y8axis-tick,.jqplot-y9axis-tick {top:15px; left:0; text-align:left}
+.jqplot-yMidAxis-tick {text-align:center; white-space:nowrap}
+.jqplot-yaxis-label {margin-right:10px}
+.jqplot-y2axis-label,.jqplot-y3axis-label,.jqplot-y4axis-label,.jqplot-y5axis-label,.jqplot-y6axis-label,.jqplot-y7axis-label,.jqplot-y8axis-label,.jqplot-y9axis-label {margin-left:10px; font-size:11pt; position:absolute}
+.jqplot-meterGauge-tick {font-size:12px; color:#999}
+.jqplot-meterGauge-label {font-size:12px; color:#999}
+table.jqplot-table-legend {margin:12px}
+table.jqplot-cursor-legend, table.jqplot-table-legend {
+	position:absolute;
+	/* right:-15px !important; */
+	/* top:-25px !important; */
+	top:20% !important;
+	border:1px solid #eee;
+	background-color:#f9f9f9;
+	margin:0 !important;
+	padding:10px 5px !important;
+	font-size:12px
+}
+td.jqplot-table-legend {vertical-align:middle;font-size:11px;color:#333; padding-left:5px;}
+td.jqplot-seriesToggle:active,td.jqplot-seriesToggle:hover {cursor:pointer}
+.jqplot-table-legend .jqplot-series-hidden {text-decoration:line-through}
+div.jqplot-table-legend-swatch-outline {}
+div.jqplot-table-legend-swatch {width:0; height:0; border-width:5px; border-style:solid}
+.jqplot-title {top:0; left:0; padding-bottom:10px; font-size:15px;color:#000;font-family:'notokr-medium';}
+table.jqplot-cursor-tooltip {border:1px solid #ccc; font-size:.75em}
+.jqplot-canvasOverlay-tooltip,.jqplot-cursor-tooltip,.jqplot-highlighter-tooltip {
+	border:1px solid #fff; background:#e6edf3;
+	font-size:11px; white-space:nowrap;
+	padding:5px 10px
+}
+.jqplot-point-label {font-size:12px; z-index:2}
+td.jqplot-cursor-legend-swatch {vertical-align:middle; text-align:center}
+div.jqplot-cursor-legend-swatch {width:1.2em; height:.7em}
+.jqplot-error {text-align:center}
+.jqplot-error-message {position:relative; top:46%; display:inline-block}
+div.jqplot-bubble-label {
+	padding-right:2px; padding-left:2px;
+	font-size:.8em;
+	color:rgb(20%,20%,20%)
+}
+div.jqplot-bubble-label.jqplot-bubble-label-highlight {background:#fff;}
+div.jqplot-noData-container {
+	text-align:center;
+	background-color:#fff;
+}
+
+
+.jqplot-point-0 {color:#dd3b2e !important;}
+.jqplot-point-1 {color:#f87503 !important;}
+.jqplot-point-2 {color:#914bc8 !important;}
+.jqplot-point-3 {color:#1cb9c0 !important;}
+.jqplot-point-4 {color:#497739 !important;}
+.jqplot-point-5 {color:#4c59cb !important;}
+
+.jqplot-pie-series.jqplot-data-label {color:#fff !important;}
+
+

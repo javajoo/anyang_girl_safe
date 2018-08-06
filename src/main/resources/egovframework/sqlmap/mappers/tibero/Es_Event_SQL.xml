@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="esEventDAO" >
+     <insert id="insertEvent"  parameterType="egovMap">
+		<![CDATA[
+			MERGE INTO event
+			USING DUAL
+			ON (event_no = #{eventNo} AND state = #{state})
+      		WHEN NOT MATCHED THEN
+			INSERT
+				( SEQ_NO
+  				, EVENT_NO
+  				, EVENT_TYPE
+  				, EVENT_DE
+  				, EVENT_RATING
+  				, EVENT_PLACE
+  				, EVENT_CONT
+  				, STATE
+  				, ENCRYPT_LATITUDE
+  				, ENCRYPT_LONGITUDE
+  				, ACCEPT_TYPE
+  				, ACCEPT_ID
+  				, CONFM_FLAG
+  				, INST_ID
+  				, INST_DE
+  				, UPD_ID
+  				, UPD_DE)
+  			VALUES
+  				( EVENT_SEQ.NEXTVAL
+  				, #{eventNo}
+  				, 'EVENT_TYPE_7'
+  				, TO_DATE((#{rcvYmdhm}), 'yyyy-mm-dd hh24:mi:ss')
+  				, '1'
+  				, #{address}
+  				, #{eventCont}
+  				, 'EVENT_STATE_1'
+  				, CRYPTO_AES128.AES_ENCRYPT(#{latitude}, #{key})
+  				, CRYPTO_AES128.AES_ENCRYPT(#{longitude}, #{key})
+  				, 'ACCEPT_TYPE_1'
+  				, 'SYSTEM'
+  				, 'N'
+  				, 'SYSTEM'
+  				, TO_DATE(#{rcvYmdHms}, 'yyyy-mm-dd hh24:mi:ss')
+  				, 'SYSTEM'
+  				, SYSDATE)
+    	]]>
+    </insert>
+    
+    <select id="selectEventEsTypeCount" parameterType="String" resultType="int">
+    	<![CDATA[
+    		SELECT COUNT(EVENT_NO) FROM EVENT 
+    		WHERE 1=1 
+    		AND EVENT_TYPE = 'EVENT_TYPE_7' 
+    		AND EVENT_NO LIKE ('%' || #{value} || '%')
+    	]]>
+    </select>
+    
+    <select id="selectFoaForestMap" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , TP_STATUS AS EVENT_CONT
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , LOC AS ADDRESS
+			 , (RCV_YMDHM || '00') AS RCV_YMDHM
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_FOA_FOREST_MAP
+	</select>
+	
+	<select id="selectHrfRfhr" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , ('관측소 코드 : ' || OBSVT_ID || 
+			 	', 우량시단위등급 : ' || RFHR_STATUS || ', 시강우 : ' || HRRF) AS EVENT_CONT
+			 , OBSVT_NM AS ADDRESS
+			 , (OBSVT_YMDHM || '00') AS RCV_YMDHM
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_HRF_RFHR
+	</select>
+	
+	<select id="selectKhcAcc" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , ('종료여부 : ' || END_YN || ', 상하행구분 : ' || 
+			 	UPDN || ', 내용 : ' || STAT || ', 도로아이디 : ' || G_ID) AS EVENT_CONT
+			 , LOC AS ADDRESS
+			 , (YMDHM || '00') AS RCV_YMDHM
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_KHC_ACC
+	</select>
+	
+	<select id="selectKmaAws10M" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , RCV_YMD_HMS AS RCV_YMDHM
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , ('관측일시분 : ' || OBSVT_YMDHM || ', 위치 : ' || LOC || ', 기상상태코드 : ' || AWS_LVL_TP || ', 기상 상태 : ' || 
+			 	AWS_LVL || ', 풍향 : ' || WIND || ', 풍속  : ' || WS || ', 기온 : ' || 
+			 	TA || ', 일누적강수량 : ' || QTY_DAY) AS EVENT_CONT
+			 , OBSVT_ADDR AS ADDRESS
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_KMA_AWS_10M
+	</select>
+	
+	<select id="selectKmaDfsShrt" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , (FC_YMDHM || '00') AS RCV_YMDHM
+			 , LOC AS ADDRESS
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , ('강수확률1 : ' || RAIN_1 || ', 강수확률2 : ' || RAIN_2 || 
+			 	', 강수확률3 : ' || RAIN_3 || ', 강수확률4 : ' || RAIN_4 || ', 강수확률5 : ' || RAIN_5 ||
+			 	', 날씨1 : ' || WAD_1 || ', 날씨2 : ' || WAD_2 || ', 날씨3 : ' || WAD_3 || ', 날씨4 : ' || WAD_4 ||
+			 	', 날씨5 : ' || WAD_5 || ', 습도1 : ' || TEM_1 || ', 온도1 : ' || TEM_1 || ', 온도2 : ' || TEM_2 ||
+			 	', 온도3 : ' || TEM_3 || ', 온도4 : ' || TEM_4 || ', 온도5 : ' || TEM_5 || ', 습도1 : ' || HUM_1 ||
+			 	', 습도2 : ' || HUM_2 || ', 습도3 : ' || HUM_3 || ', 습도4 : ' || HUM_4 || ', 습도5 : ' || HUM_5
+			 	) AS EVENT_CONT
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_KMA_DFS_SHRT
+	</select>
+	
+	<select id="selectKmaEarthInfm" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , (OCR_YMDHMS || '00') AS RCV_YMDHM
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , LOC AS ADDRESS
+			 , ('지진규모(리히터) : ' || EARTH_INFM_SCLE || ', 지진등급 : ' || EARTH_INFM_NO_ORD ||
+			 	', 지진참고번호 : ' || EARTH_INFM_NO_REF || ', 지진지점번호 : ' || EARTH_INFM_CD_STN) AS EVENT_CONT
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_KMA_EARTH_INFM
+	</select>
+	
+	<select id="selectKmaInform" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , (KMA_YMDHMS || '00') AS RCV_YMDHM
+			 , ('KMA발표연번 : ' || KMA_SEQ_NO || ', 발표제목 : ' || KMA_TITLE || ', 발표내용 : ' || KMA_STAT_CTNT ||
+			 	', 지역 : ' || KMA_SECT_AREA || ', 예비특보 : ' || KMA_PW_VL || ', 지점번호 : ' || KMA_CD_STN) AS EVENT_CONT
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_KMA_INFORM
+	</select>
+	
+	<select id="selectNemEmre" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , RCV_YMD_HMS AS RCV_YMDHM
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , ('장비연번 : ' || ASEQ_NO || ', 장비코드 : ' || EQUP_CD || ', 장비명 : ' || EQUP_NAME ||
+			 	', 수량 : ' || AMT || ', 지역코드 : ' || AREA_CD || ', 지역명 : ' || AREA_NAME ||
+			 	', 지역코드(행정동) : ' || AREA_CD_H || ', 장비코드 : ' || COMPANY || ', 장비코드 : ' || OWNER_NAME
+			 	) AS EVENT_CONT
+			 , POINT_X AS LONGITUDE
+			 , POINT_Y AS LATITUDE
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_NEM_EMRE
+	</select>
+	
+	<select id="selectNemFirs" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , RCV_YMD_HMS AS RCV_YMDHM
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , ('소방서ID : ' || FIRS_ID || ', 소방서명 : ' || FIRS_NM || ', 지역코드 : ' || AREA_CD ||
+			 	', cdGis : ' || CD_GIS || ', 전화번호 : ' || TEL || ', FAX번호 : ' || FAX) AS EVENT_CONT
+			 , AREA_ADDR AS ADDRESS
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_NEM_FIRS
+	</select>
+	
+	<select id="selectRtsaOccurid" resultType="egovMap">
+		SELECT LK_INFO_ID
+			 , RCV_YMD_HMS
+			 , SEQ_NO
+			 , (LK_INFO_ID || RCV_YMD_HMS || SEQ_NO) AS EVENT_NO
+			 , ('표준링크ID : ' || STD_LINK_ID || ', 상황내용 : ' || TYPE_OTHER || ', 등록일시 : ' || RGS_DATE) AS EVENT_CONT
+			 , ROAD_NAME AS ADDRESS
+			 , (MEASURE_TIME || '00') AS RCV_YMDHM
+			 , 'EVENT_STATE_1' AS state
+		FROM ESUSER.ELI_RTSA_OCCURID
+	</select>
+  
+</mapper>

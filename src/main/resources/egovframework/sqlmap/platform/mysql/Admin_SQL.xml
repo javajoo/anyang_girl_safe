@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Admin">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminSerarchVO" type="com.danusys.platform.user.service.AdminDefaultVO"/>
+	
+	<resultMap id="admin" class="com.danusys.platform.user.service.AdminVO">
+		<result property="seqNo" column="seq_no" columnIndex="1"/>
+		<result property="id" column="id" columnIndex="2"/>
+		<result property="pwd" column="pwd" columnIndex="3"/>
+		<result property="name" column="name" columnIndex="4"/>
+		<result property="birthday" column="birthday" columnIndex="5"/>
+		<result property="phoneNo" column="phone_no" columnIndex="6"/>
+		<result property="email" column="email" columnIndex="7"/>
+		<result property="authority" column="authority" columnIndex="8"/>
+		<result property="address" column="address" columnIndex="9"/>
+		<result property="joinDate" column="join_date" columnIndex="10"/>
+		<result property="leaveDate" column="leave_date" columnIndex="11"/>
+		<result property="createDate" column="create_date" columnIndex="12"/>
+		<result property="loginFailCount" column="login_fail_count" columnIndex="13"/>
+		<result property="lastPwdUpdateDate" column="last_pwd_update_date" columnIndex="14"/>
+		<result property="deleted" column="deleted" columnIndex="15"/>
+		<result property="deleteId" column="delete_id" columnIndex="16"/>
+		<result property="deleteDate" column="delete_date" columnIndex="17"/>
+		<result property="cityNo" column="city_no" columnIndex="18"/>
+		<result property="deptmnt" column="deptmnt" columnIndex="19"/>
+		<result property="rank" column="rank" columnIndex="20"/>
+		<result property="userFlag" column="user_flag" columnIndex="21"/>
+		<result property="grpId" column="grp_id" columnIndex="22"/>
+	</resultMap>
+	
+	<insert id="adminDAO.insertAdmin_S">
+		<![CDATA[
+			INSERT INTO admin 
+				( seq_no
+				  , id
+				  , pwd
+				  , name
+				  , birthday
+				  , phone_no
+				  , email
+				  , authority
+				  , address
+				  , join_date
+				  , leave_date
+				  , create_date
+				  , login_fail_count
+				  , last_pwd_update_date
+				  , deleted
+				  , delete_id
+				  , delete_date
+				  , city_no
+				  , deptmnt
+				  , rank
+				  , user_flag
+				  , grp_id )
+			VALUES ( #seqNo#
+				  , #id#
+				  , #pwd#
+				  , #name#
+				  , #birthday#
+				  , #phoneNo#
+				  , #email#
+				  , #authority#
+				  , #address#
+				  , #joinDate#
+				  , #leaveDate#
+				  , #createDate#
+				  , #loginFailCount#
+				  , #lastPwdUpdateDate#
+				  , #deleted#
+				  , #deleteId#
+				  , #deleteDate#
+				  , #cityNo#
+				  , #deptmnt#
+				  , #rank#
+				  , #userFlag#
+				  , #grpId# )
+		]]>
+	</insert>
+	
+	<update id="adminDAO.updateAdmin_S">
+		<![CDATA[
+			UPDATE admin
+			SET seq_no=#seqNo#
+				, id=#id#
+				, pwd=#pwd#
+				, name=#name#
+				, birthday=#birthday#
+				, phone_no=#phoneNo#
+				, email=#email#
+				, authority=#authority#
+				, address=#address#
+				, join_date=#joinDate#
+				, leave_date=#leaveDate#
+				, create_date=#createDate#
+				, login_fail_count=#loginFailCount#
+				, last_pwd_update_date=#lastPwdUpdateDate#
+				, deleted=#deleted#
+				, delete_id=#deleteId#
+				, delete_date=#deleteDate#
+				, city_no=#cityNo#
+				, deptmnt=#deptmnt#
+				, rank=#rank#
+				, user_flag=#userFlag#
+				, grp_id=#grpId#
+			]]>
+	</update>
+	
+	<delete id="adminDAO.deleteAdmin_S">
+		<![CDATA[
+			DELETE FROM admin 
+			]]>
+	</delete>
+	
+	<select id="adminDAO.selectAdmin_S" resultMap="admin">
+		<![CDATA[
+			SELECT
+				seq_no
+				, id
+				, pwd
+				, name
+				, birthday
+				, phone_no
+				, email
+				, authority
+				, address
+				, join_date
+				, leave_date
+				, create_date
+				, login_fail_count
+				, last_pwd_update_date
+				, deleted
+				, delete_id
+				, delete_date
+				, city_no
+				, deptmnt
+				, rank
+				, user_flag
+				, grp_id
+			FROM admin
+			]]>
+	</select>
+	
+	<select id="adminDAO.selectAdminList_D" parameterClass="adminSerarchVO" resultClass="egovMap">
+			SELECT
+								seq_no
+								, id
+								, pwd
+								, name
+								, birthday
+								, phone_no
+								, email
+								, authority
+								, address
+								, join_date
+								, leave_date
+								, create_date
+								, login_fail_count
+								, last_pwd_update_date
+								, deleted
+								, delete_id
+								, delete_date
+								, city_no
+								, deptmnt
+								, rank
+								, user_flag
+								, grp_id
+					FROM admin
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				id LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+				ORDER BY 
+				limit #firstIndex#, #recordCountPerPage#	
+	</select>	
+	<select id="adminDAO.selectAdminListTotCnt_S" parameterClass="adminSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM admin
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				id LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+
+</sqlMap>

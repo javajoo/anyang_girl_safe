@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Code">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="CodeSearchVO" type="com.danusys.platform.code.service.CodeVO"/>
+	
+	<select id="codeDAO.selectCode" parameterClass="CodeSearchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT code_cd
+				 , code_nm
+			FROM platform_code
+			WHERE 1=1
+			AND code_group = #codeGroup#
+		]]>
+		<isNotEmpty property="codeCd"> 
+			  AND code_cd = #codeCd#
+		</isNotEmpty>
+		<isEqual property="all" compareValue="Y"> 
+			UNION
+			SELECT '', '전체'
+		</isEqual>
+		<isEqual property="all" compareValue="N"> 
+			AND code_cd NOT IN ('EVENT_TYPE_1', 'EVENT_TYPE_2')
+			UNION
+			SELECT '', '유형을 선택하세요'
+		</isEqual>
+		<![CDATA[
+			ORDER BY code_cd
+		]]>
+	</select>
+	
+	<insert id="codeDAO.insertCode">
+		<![CDATA[
+			INSERT INTO notice 
+				( seq_no
+				  , notice_sj
+				  , notice_cn
+				  , notice_de
+				  , notice_id
+				  , notice_nm
+				  , inst_de
+				  , inst_id )
+			VALUES ( #seqNo#
+				  , #noticeSj#
+				  , #noticeCn#
+				  , #noticeDe#
+				  , #noticeId#
+				  , #noticeNm#
+				  , now()
+				  , #instId# )
+		]]>
+	</insert>
+	
+	<update id="codeDAO.updateCode">
+		<![CDATA[
+			UPDATE notice
+			SET notice_sj=#noticeSj#
+				, notice_cn=#noticeCn#
+				, notice_de=#noticeDe#
+				, notice_id=#noticeId#
+				, notice_nm=#noticeNm#
+				, upd_de=now()
+				, upd_id=#updId#
+			WHERE seq_no = #seqNo#
+			]]>
+	</update>
+	
+	<delete id="codeDAO.deleteCode">
+		<![CDATA[
+			DELETE FROM notice WHERE seq_no in ]]>
+		<iterate property="seqNoList" open="(" close=")" conjunction=",">
+			#seqNoList[]#
+		</iterate>
+	</delete>
+</sqlMap>

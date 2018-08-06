@@ -1,0 +1,359 @@
+.layout-panel-south #footer {
+    background-color: #22272d;
+    overflow: hidden;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 10px
+}
+
+.event_message_x {
+	width: 39px;
+    height: 39px;
+    position: absolute;
+    top: 3px;
+    background: url(../images/icons/notice_none.png) no-repeat left center;
+	cursor: pointer;
+	left: 19px;
+}
+.event_message_o {
+	width: 50px;
+    height: 43px;
+    position: absolute;
+    top: 0px;
+    background: url(../images/icons/notice_s.png) no-repeat left center;
+    cursor: pointer;
+}
+#event_message > p {
+	color: #fff;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    font-family: "nanum-barun-gothic-regular";
+    margin-top: 2px;
+}
+
+.weather_icon img {
+	width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 6px;
+    left: 480px;
+    /* background: url(../images/icons/messege.png) no-repeat left center; */
+}
+
+.weather {
+	margin-left: 515px;
+	color: #000;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 1.3em;
+	padding-top: 5px;
+}
+
+.timebar {
+    width: auto;
+    height: auto;
+    position: inherit;
+    right: 100px;
+    top: 5px;
+    font-family: 'nanum-barun-gothic-regular';
+}
+.timerenewal {
+	width: 39px;
+    height: 39px;
+    position: inherit;
+    right: 30px;
+    top: 2px;
+    /* background-color: red; */
+    background: url(../images/renewal/renewal_btn.png) no-repeat left center;
+    cursor: pointer;
+}
+._margin_top10 {
+	margin-top:10px;	
+}
+._font_bold {
+	font-weight: bold;	
+}
+#renewal_pop {
+	font-size: 14px;
+	font-family: 'nanum-barun-gothic-regular';
+}
+#renewal_pop_message1 {
+	border: 1px solid #a2a6a9;
+	padding: 6px;
+	display: block;
+	width: 330px;
+	border-radius: 5px;
+	background-color: rgba(252, 252, 252, 1);
+	text-align: center;
+}
+#renewal_pop_message2 {
+	padding: 10px 5px 10px 5px;
+	display: block;
+	width:330px
+}
+#renewal_pop_message2 span {color:#eeeeee;}
+.renewal_pop_line {
+	border: 1px solid lightgray;margin:10px 0 10px 0;
+}
+.pop_renewal_btn {
+    display: inline-block;
+    position: absolute;
+    left: 130px;
+    width: 138px;
+    height: 36px;
+    background: url(../images/renewal/popup_btn02.png) no-repeat left center;
+    cursor: pointer;
+}
+.title_version_image {
+    display: inline-block;
+    width: 12px;
+    height: 13px;
+    position: absolute;
+    right: 185px;
+    margin-top: -17px;
+    background: url(../images/icons/main_bot_info_icon.png) no-repeat left center;
+}
+
+.title_version {
+    position: absolute;
+    right: 34px;
+    top: 10px;
+    font-family: tahoma;
+    color: #fff;
+}
+
+.iot_graph_area {
+	position: absolute;
+	height: 350px;
+	bottom: 44px;
+}
+.iot_graph {
+	position: absolute;
+	width: 100%;
+	height: 330px;
+	bottom: 0px;
+	background: #f0f0f0;
+	border-top: 1px solid #c4c4c4;
+	font-family: 'nanum-barun-gothic-regular';
+}
+.iot_graph_tit {
+	background: url(../images/icons/graph_tit.png) no-repeat left center;
+	width: 80%;
+	height: 23px;
+	position: relative;
+	left: 15px;
+	top: 10px;
+}
+.iot_graph_tit > em{
+    margin-left: 20px;
+    font-family: 'nanum-barun-gothic-regular';
+    line-height: 23px;
+}
+.iot_graph_tit p {
+	position: absolute;
+	top: -1px;
+	left: 80px;
+	line-height: 26px;
+	/* margin-top: 10px; */
+}
+
+.iotM_graph_text {
+	margin-left: 17px;
+	width: 80%;
+}
+.iotM_graph_text select{
+	margin: 3px;
+}
+.iotM_graph_text p:nth-of-type(1){
+	position: absolute;
+	top: 34px;
+	left: 40px;
+	font-weight: bolder;
+}
+.iotM_graph_text p:nth-of-type(2){
+	position: absolute;
+	top: 34px;
+	left: 180px;
+	font-size: 11px;
+}
+
+.iotH_graph_text {
+	margin: 15px 0 0 34px;
+	width: 80%;
+}
+.iotM_graph_text .textbox {
+	top: 10px;
+	border-radius: 5px;
+	background: #e6e6e6;
+	height: 28px !important;
+	left: 16px;
+}
+.iotM_graph_text .textbox-text {
+	border-radius: 5px;
+	background: #e6e6e6;
+}
+.iotM_graph_text .combo-arrow {
+	background: url('../images/template/combo_sel.png') no-repeat center center;
+}
+.iotH_graph_text p:first-child{
+	float: left;
+	margin-right: 5px;
+	font-weight: bolder;
+}
+.iotH_graph_text p:last-child{
+	font-size: 11px;
+	margin-top: 2px;
+}
+
+.iotM_graph_unit,
+.iotH_graph_unit {
+	position: absolute;
+	top: 0px;
+	left: 80%;
+	width: 20%;
+	height: 100px;
+}
+.iotM_graph_unit .unit_area {
+	border: 1px solid #cecece;
+	background: #fff;
+	width: 265px;
+	height: 85px;
+	margin: 7px 0 0 0;
+}
+.iotM_graph_unit .unit_area hr{
+	display: block;
+	border: 0.1px solid #cecece;
+	margin: 0 95px 0 5px;
+}
+.iotM_graph_unit .unit_area image,
+.iotH_graph_unit .unit_area image {
+	width: 25px;
+	height: 3px;
+	margin: 4px 3px;
+}
+.iotM_graph_unit .unit_area_up,
+.iotM_graph_unit .unit_area_down {
+	height: 20%;
+	padding: 5%;
+	line-height: 14px;
+	width: 135px;
+}
+.iotM_graph_unit .unit_area_up p,
+.iotM_graph_unit .unit_area_down p,
+.iotH_graph_unit .unit_area_up p,
+.iotH_graph_unit .unit_area_down p {
+	position: relative;
+	left: 100px;
+	top: -14px;
+	width: 25px;
+	height: 17px;
+	font-size: 12px;
+	text-align: right;
+	font-family: "nanum-barun-gothic-regular";
+}
+.iotM_graph_unit .unit_area_up p,
+.iotH_graph_unit .unit_area_up p {
+	color: #ba2a1f;
+}
+.iotM_graph_unit .unit_area_down p,
+.iotH_graph_unit .unit_area_down p {
+	color: #2a3493;
+}
+.iotM_graph_unit .unit_area em,
+.iotH_graph_unit .unit_area em {
+	position: relative;
+	top: -31px;
+	left: 127px;
+	font-size: 11px;
+	font-family: "nanum-barun-gothic-regular";
+}
+
+.unit_now {
+	width: 85px;
+	height: 72px;
+	background: url('../images/icons/iot_graph_now.png') no-repeat center center;
+	position: relative;
+	top: -79px;
+	right: -174px;
+}
+
+.unit_now em {
+	margin-left: 15px;
+	top: 15px;
+	position: relative;
+	font-size: 15px;
+	font-family: "nanum-barun-gothic-regular";
+}
+
+.unit_now #unit_now_value {
+	position: relative;
+	left: 20px;
+	top: 19px;
+	font-size: 14px;
+	width: 20px;
+	overflow: hidden;
+	font-family: "nanum-barun-gothic-regular";
+	text-align: right;
+}
+.unit_now #unit_now_tag {
+	position: relative;
+	left: 43px;
+	top: 1px;
+	font-size: 12px;
+}
+
+.iotH_graph_unit .unit_area {
+	border: 1px solid #cecece;
+	background: #fff;
+	width: 170px;
+	height: 85px;
+	margin: 7px 0 0 70px;
+}
+.iotH_graph_unit .unit_area hr{
+	display: block;
+	border: 0.1px solid #cecece;
+	margin: 0 5px;
+}
+.iotH_graph_unit .unit_area_up,
+.iotH_graph_unit .unit_area_down {
+	height: 26%;
+	padding: 9% 5% 3% 5%;
+	line-height: 14px;
+}
+
+
+.iot_graph_top {
+	background: linear-gradient(to bottom,#f3f3f3,#eceaeb);
+	height: 100px;
+}
+.iot_graph_bottom {
+	width: 100%;
+	height: 230px;
+	background: #fdfdfd;
+}
+
+.iot_graph_open {
+	background: url(../images/layout/iot_graph_open_nor.png) no-repeat center center;
+    position: absolute;
+    bottom: 330px;
+    right: 50%;
+    height: 16px;
+    width: 50px;
+}
+.liot_graph_open:hover {
+	background: url(../images/layout/iot_graph_open_over.png) no-repeat center center;
+}
+.iot_graph_open:active {
+	background: url(../images/layout/iot_graph_open_sel.png) no-repeat center center;
+}
+
+/* 신규메시지 알림 */
+.slide_msg_box {
+	position:absolute;top:3px; left:-30%; z-index:-1; display:none;
+}
+.slide_msg_box .slide_msg_cont {
+	width:210px; height:34px; background:#fff;
+}
+.slide_msg_bg {
+	width:42px; height:42px; top:1px; left:-1px; position: absolute; background-color: #f4f4f6;
+}

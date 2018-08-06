@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Log">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="LogSearchVO" type="com.danusys.platform.west.service.LogVO"/>
+	
+	<select id="logDAO.selectLogList" parameterClass="LogSearchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM rnum, M.* FROM (
+						SELECT MIN(log_no) AS log_no
+						 	 , admin_id
+						 	 , MIN(admin_nm) AS admin_nm
+						 	 , MAX(login) AS login
+						 	 , MAX(logout) AS logout
+						 	 , session_id
+						 	 , MIN(ip) AS ip
+						 	 , (SELECT COUNT(*) FROM cctv_view_log l WHERE l.session_id = A.session_id) AS dtl_cnt
+							FROM (
+								SELECT log_no
+								 	 , log_type
+								 	 , admin_id
+								 	 , admin_nm
+								 	 , session_id
+								 	 , CASE WHEN log_type = 'LOGIN' THEN TO_CHAR(create_date, 'yyyy-mm-dd hh24:mi:ss') ELSE '0' END AS login
+								 	 , CASE WHEN log_type IN ('LOGOUT','SESSIONOUT') THEN TO_CHAR(create_date, 'yyyy-mm-dd hh24:mi:ss') ELSE '0' END AS logout
+								 	 , ip
+								FROM log
+								WHERE 1=1
+						 		) AS A
+							WHERE 1=1
+							GROUP BY session_id, admin_id
+							ORDER BY login DESC
+						) AS M
+						WHERE 1=1
+						AND admin_id IS NOT NULL
+			<isNotEmpty property = "startDate">
+						AND (SUBSTR(login, 1, 10) >= #startDate#)
+			</isNotEmpty>
+			<isNotEmpty property = "endDate">
+						AND (#endDate# >= SUBSTR(login, 1, 10))
+			</isNotEmpty>
+			<isNotEmpty property = "totSearch">
+						AND (nvl(admin_id,'') || nvl(admin_nm,'')) LIKE ('%' || #totSearch# || '%')
+			</isNotEmpty>
+			<isNotEmpty property = "sessionId">
+						AND session_id = #sessionId#
+			</isNotEmpty>
+						) INNER
+      				WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      				AND rnum <= #lastIndex#
+      		]]>
+      		</isNotEqual>
+      			)
+      			WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      			AND rnum > #firstIndex#
+      		]]>
+      		</isNotEqual>
+	</select>	
+	<select id="logDAO.selectLogListTotCnt" parameterClass="LogSearchVO" resultClass="int">
+			SELECT COUNT(*)
+			FROM (
+					SELECT MIN(log_no) AS log_no
+						 , admin_id
+						 , MIN(admin_nm) AS admin_nm
+						 , MAX(login) AS login
+						 , MAX(logout) AS logout
+						 , session_id
+					FROM (
+							SELECT log_no
+								 , log_type
+								 , admin_id
+								 , admin_nm
+								 , session_id
+								 , CASE WHEN log_type='LOGIN' THEN TO_CHAR(create_date, 'yyyy-mm-dd hh24:mi:ss') ELSE '0' END AS login
+								 , CASE WHEN log_type='LOGOUT' THEN TO_CHAR(create_date, 'yyyy-mm-dd hh24:mi:ss') ELSE '0' END AS logout
+							FROM log
+							WHERE 1=1
+						 ) AS A
+					WHERE 1=1
+					GROUP BY session_id, admin_id
+					ORDER BY login DESC
+			) AS M
+			WHERE 1=1
+			AND admin_id IS NOT NULL
+			<isNotEmpty property = "startDate">
+			AND (SUBSTR(login, 1, 10) >= #startDate#)
+			</isNotEmpty>
+			<isNotEmpty property = "endDate">
+			AND (#endDate# >= SUBSTR(login, 1, 10))
+			</isNotEmpty>
+			<isNotEmpty property = "totSearch">
+			AND (nvl(admin_id,'') || nvl(admin_nm,'')) LIKE ('%' || #totSearch# || '%')
+			</isNotEmpty>
+	</select>
+	
+	<!-- 로그 기록 -->
+	<insert id="logDAO.insertLog">
+		<![CDATA[
+			INSERT INTO log
+			(	  log_no
+				, log_type
+				, admin_id
+				, admin_nm
+				, content
+				, ip
+				, session_id
+				, create_date
+				, deleted
+			)
+			VALUES
+			(	   log_seq.NEXTVAL
+				 , #logType#
+				 , nvl(#adminId#,'SYSTEM')
+				 , nvl(#adminNm#,'시스템')
+				 , #content#
+				 , nvl(#ip#, '0.0.0.0')
+				 , #sessionId#
+				 , CURRENT_TIMESTAMP
+				 , 'N')
+		]]>
+	</insert>
+</sqlMap>

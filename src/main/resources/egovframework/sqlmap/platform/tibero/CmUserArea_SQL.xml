@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CmUserArea">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="cmUserAreaSerarchVO" type="com.danusys.platform.user.service.AdminDefaultVO"/>
+	
+	<resultMap id="cmUserArea" class="com.danusys.platform.user.service.CmUserAreaVO">
+		<result property="areaCd" column="AREA_CD" columnIndex="1"/>
+		<result property="userId" column="USER_ID" columnIndex="2"/>
+		<result property="useTyCd" column="USE_TY_CD" columnIndex="3"/>
+		<result property="updUserId" column="UPD_USER_ID" columnIndex="4"/>
+		<result property="updDate" column="UPD_DATE" columnIndex="5"/>
+		<result property="rgsUserId" column="RGS_USER_ID" columnIndex="6"/>
+		<result property="rgsDate" column="RGS_DATE" columnIndex="7"/>
+	</resultMap>
+	
+	<insert id="cmUserAreaDAO.insertCmUserArea_S">
+		<![CDATA[
+			INSERT INTO cm_user_area 
+				( AREA_CD
+				  , USER_ID
+				  , USE_TY_CD
+				  , UPD_USER_ID
+				  , UPD_DATE
+				  , RGS_USER_ID
+				  , RGS_DATE )
+			VALUES ( #areaCd#
+				  , #userId#
+				  , #useTyCd#
+				  , #updUserId#
+				  , #updDate#
+				  , #rgsUserId#
+				  , #rgsDate# )
+		]]>
+	</insert>
+	
+	<update id="cmUserAreaDAO.updateCmUserArea_S">
+		<![CDATA[
+			UPDATE cm_user_area
+			SET AREA_CD=#areaCd#
+				, USER_ID=#userId#
+				, USE_TY_CD=#useTyCd#
+				, UPD_USER_ID=#updUserId#
+				, UPD_DATE=#updDate#
+				, RGS_USER_ID=#rgsUserId#
+				, RGS_DATE=#rgsDate#
+			]]>
+	</update>
+	
+	<delete id="cmUserAreaDAO.deleteCmUserArea_S">
+		<![CDATA[
+			DELETE FROM cm_user_area 
+			]]>
+	</delete>
+	
+	<select id="cmUserAreaDAO.selectCmUserArea_S" resultMap="cmUserArea">
+		<![CDATA[
+			SELECT
+				AREA_CD
+				, USER_ID
+				, USE_TY_CD
+				, UPD_USER_ID
+				, UPD_DATE
+				, RGS_USER_ID
+				, RGS_DATE
+			FROM cm_user_area
+			]]>
+	</select>
+	
+	<select id="cmUserAreaDAO.selectCmUserAreaList_D" parameterClass="cmUserAreaSerarchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM rnum, AREA_CD
+						 , USER_ID
+						 , USE_TY_CD
+						 , UPD_USER_ID
+						 , UPD_DATE
+						 , RGS_USER_ID
+						 , RGS_DATE
+					FROM cm_user_area
+					WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+					AND AREA_CD = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+					AND USER_ID LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+					ORDER BY USER_ID) INNER
+				WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      			AND rnum <= #lastIndex#
+      		]]>
+      		</isNotEqual>
+      		)
+      		WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      		AND rnum > #firstIndex#
+      		]]>
+      		</isNotEqual>
+	</select>
+	
+	<select id="cmUserAreaDAO.selectCmUserAreaList_D2" parameterClass="cmUserAreaSerarchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM rnum
+						 , AREA_CD
+						 , (select AREA_NM from cm_area_cd_mng ac where ac.AREA_CD=ua.AREA_CD) as AREA_NM
+						 , USER_ID
+						 , USE_TY_CD
+						 , UPD_USER_ID
+						 , UPD_DATE
+						 , RGS_USER_ID
+						 , RGS_DATE
+					FROM cm_user_area ua
+					WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+					AREA_CD = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+					USER_ID LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+					ORDER BY USER_ID) INNER
+				WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      			AND rnum <= #lastIndex#
+      		]]>
+      		</isNotEqual>
+      		)
+      		WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      		AND rnum > #firstIndex#
+      		]]>
+	</select>	
+	<select id="cmUserAreaDAO.selectCmUserAreaListTotCnt_S" parameterClass="cmUserAreaSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM cm_user_area
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				AREA_CD = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				USER_ID LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+	</select>
+
+</sqlMap>

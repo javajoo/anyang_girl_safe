@@ -1,0 +1,2157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>시설물관리시스템</title>
+<link rel="shortcut icon" href="../images/layout/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link rel="stylesheet" type="text/css" href="../css/image_manage.css">
+<style type="text/css">
+html, body, #map {margin:0;width:100%;height:100%;overflow:hidden;} 
+</style>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easyui.min.js"></script> 
+<script type="text/javascript" src="../js/datagrid-bufferview.js"></script>
+<script type="text/javascript" src="../js/OpenLayers.js"></script>
+<script type="text/javascript" src="../js/DFMSMap.js"></script>
+<script type="text/javascript" src="../js/proj4js-compressed.js"></script>
+<script type="text/javascript" src="../js/image_manage.js"></script>
+<script type="text/javascript">
+	var map;        
+	var gisBase2012Url = "http://xdworld.vworld.kr:8080/2d/Base/201512/"; // 기본지도(TMS) 경로
+	var gisAir2012Url = "http://xdworld.vworld.kr:8080/2d/Satellite/201301/"; // 기본지도(TMS) 경로
+	var gisDFMSUrl = "http://office-gm.danusys.com:10002/geoserver/anyang/wms";
+	var gisDFMSWFSUrl = "http://office-gm.danusys.com:8080/geoserver/anyang/wfs?";
+	var maxExtent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34); //
+	var resultLayer;
+	var conditionLayer;
+	var markerLayer;
+	var endCheck = false;
+	var prnSeq = 0;
+	
+	var cctvDetailDef;
+	
+	var drawrect;
+	var drawpolygon;
+	
+	var projectionGroup = new Object();
+
+	
+	var mousePointerStyle = 'default';
+	 
+	var MOUSE_POINTER_STYLES = {
+	    'OpenLayers.Control.DragPan': 'move',
+	    'OpenLayers.Control.ZoomBox': 'crosshair',
+	    'none': 'default'
+	}
+	
+	jQuery.download = function(url, data, method) {
+	    //url and data options required
+	    if (url && data) {
+	        //data can be string of parameters or array/object
+	        data = typeof data == 'string' ? data : jQuery.param(data);
+	        //split params into form inputs
+	        var inputs = '';
+	        jQuery.each(data.split('&'), function() {
+	            var pair = this.split('=');
+	            inputs += '<input type="hidden" name="' + pair[0] +
+	                '" value="' + pair[1] + '">';
+	        });
+	        //send request
+	        jQuery('<form action="' + url +
+	                '" method="' + (method || 'post') + '">' + inputs + '</form>')
+	            .appendTo('body').submit().remove();
+	    };
+	};
+	
+	function init(){
+		Proj4js.defs["EPSG:4019"] = "+proj=longlat +ellps=GRS80 +no_defs";
+		Proj4js.defs["EPSG:5179"] = "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs";
+		Proj4js.defs["EPSG:5181"] = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=GRS80 +units=m +no_defs";
+		Proj4js.defs["EPSG:5186"] = "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs";
+		Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+
+		projectionGroup["google"] = new OpenLayers.Projection('EPSG:900913');
+		projectionGroup["utmk"] = new OpenLayers.Projection('EPSG:5186');
+		projectionGroup["daum"] = new OpenLayers.Projection('EPSG:5181');
+		projectionGroup["naver"] = new OpenLayers.Projection('EPSG:5179');
+		projectionGroup["grs80"] = new OpenLayers.Projection('EPSG:4019');
+
+		$.extend($.fn.validatebox.defaults.rules, {
+			ip : {// Verify that the IP address
+		        validator : function(value) {
+		            return /\d+\.\d+\.\d+\.\d+/.test(value);
+		        },
+		        message : '유효한 IP 주소가 아닙니다.'
+		    }
+		});
+
+        // 이것을 제일 처음 실행 되도록 바꾸어야 하는데...
+        $.extend($.fn.datebox.defaults,{
+        	formatter:function(date){
+        		var y = date.getFullYear();
+        		var m = date.getMonth()+1;
+        		var d = date.getDate();
+        		return y+'/'+(m<10?('0'+m):m)+'/'+(d<10?('0'+d):d);
+        	},
+        	parser:function(s){
+        		if (!s) return new Date();
+        		var ss = s.split('/');
+        		var y = parseInt(ss[0],10);
+        		var m = parseInt(ss[1],10);
+        		var d = parseInt(ss[2],10);
+        		if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+        			return new Date(y,m-1,d);
+        		} else {
+        			return new Date();
+        		}
+        	}
+       	});
+        
+        $.fn.datagrid.defaults.editors.empty = {
+        		init: function(container, options){
+        			return $('<div style="padding:0 4px"></div>').appendTo(container);
+        		},
+        		getValue: function(target){
+        			return $(target).html();
+        		},
+        		setValue: function(target, value){
+        			$(target).html(value);
+        		}
+        	};
+		
+		map = new Map("map", { //"map"은 지도를 표출할 div 아이디명          		
+		    displayProjection : new OpenLayers.Projection("EPSG:5186"), // 표출 좌표계          		
+		    projection : new OpenLayers.Projection("EPSG:900913"), // 기본 좌표계
+		    maxResolution : 156543.0339, // 최대 해상도 (구글이나 Vworld 사용시 고정값)         		
+		    maxExtent : this.maxExtent, // 최대 영역
+		    restrictedExtent : new OpenLayers.Bounds(14121975.756039,4488753.0544336,14135982.841469,4502206.9487664),
+		    numZoomLevels : 20, // 줌의 갯수 (구글이나 Vworld 사용시 고정값)          		
+		    unit : "m" // 단위           	
+		});           	            
+
+		addAirTMS(); // TMS 기본지도 추가	
+		addBaseTMS(); // TMS 기본지도 추가	
+		
+		//addWMS(); // WMS 기본지도 추가
+		
+		resultLayer = new OpenLayers.Layer.Vector("Result",{style:getLayerStyle("select")});
+		map.addLayer(resultLayer);
+		conditionLayer = new OpenLayers.Layer.Vector("Condition Layer");
+		map.addLayer(conditionLayer);
+
+		markerLayer = new OpenLayers.Layer.Vector("Marker Layer");
+		map.addLayer(markerLayer);
+		
+		//map.setCenter((new OpenLayers.LonLat(126.92269,37.40141)).transform(map.displayProjection, map.projection ),15);
+		map.setCenter(new OpenLayers.LonLat(14132075, 4494066), 12); 
+	        
+        //map.addControl(new OpenLayers.Control.PanZoomBar());
+        map.addControl(new OpenLayers.Control.MousePosition());
+        //map.addControl(new OpenLayers.Control.Navigation());
+        //map.addControl(new OpenLayers.Control.MouseDefaults()); //2.12 No Support
+        map.addControl(new OpenLayers.Control.Attribution({separator:" "}));
+
+		var polyOptions = {sides: 4, irregular: true};
+    	drawrect = new OpenLayers.Control.DrawFeature(conditionLayer,
+                                    OpenLayers.Handler.RegularPolygon,
+                                    {handlerOptions: polyOptions});
+		drawpolygon = new OpenLayers.Control.DrawFeature(conditionLayer,
+                OpenLayers.Handler.Polygon);
+		
+		map.addControl(drawrect);
+		map.addControl(drawpolygon);
+        
+        var scalebar = new OpenLayers.Control.ScaleLine();
+        map.addControl(scalebar);
+        
+        initMouseControl();
+        
+        map.isValidZoomLevel = function(zoomLevel) { // 12레벨 이상 확대 되지 않도록 한다.
+            return zoomLevel >= 12;
+    	}
+        
+        var sketchSymbolizers = {
+				"Point": {pointRadius: 4,graphicName: "square",fillColor: "white",fillOpacity: 1,strokeWidth: 1,strokeOpacity: 1,strokeColor: "#f3c"},
+				"Line": {strokeWidth: 3,strokeOpacity: 1,strokeColor: "#f33",strokeDashstyle: "solid"},
+				"Polygon": {strokeWidth: 2,strokeOpacity: 1,strokeColor: "#f33",fillColor: "#fa5",fillOpacity: 0.3}
+		};
+        
+        var style = new OpenLayers.Style();
+		style.addRules([new OpenLayers.Rule({symbolizer: sketchSymbolizers})]);
+		var styleMap = new OpenLayers.StyleMap({"default": style});
+		
+		var DFMSPathHandler = OpenLayers.Class(OpenLayers.Handler.Path, {
+		    addPoint: function(pixel) {
+		    	// 툴팁 초기화
+		    	if(endCheck){
+					for (var i=0;i<prnSeq;i++)
+						document.body.removeChild(document.getElementById('mprn'+i));
+
+					if (document.getElementById('mprn-1') != null)
+						document.body.removeChild(document.getElementById('mprn-1'));
+	
+					prnSeq = 0;
+					endCheck = false;
+		    	}
+		        this.layer.removeFeatures([this.point]);
+		        var lonlat = this.layer.getLonLatFromViewPortPx(pixel); 
+		        this.point = new OpenLayers.Feature.Vector(
+		            new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+		        );
+		        this.line.geometry.addComponent(
+		            this.point.geometry, this.line.geometry.components.length
+		        );
+		        this.layer.addFeatures([this.point]);
+		        this.callback("point", [this.point.geometry, this.getGeometry()]);
+		        this.callback("modify", [this.point.geometry, this.getSketch()]);
+		        this.drawFeature();
+		        delete this.redoStack;
+		    },
+		    
+		    finishGeometry: function() {
+		    	endCheck = true;
+		        var index = this.line.geometry.components.length - 1;
+		        this.line.geometry.removeComponent(this.line.geometry.components[index]);
+		        this.removePoint();
+		        this.finalize();
+		    }
+		});
+
+		$('#map').css('cursor', 'move');
+		
+		$.ajax({
+			type:"GET"
+			,url: "dfms/danusys/com/selectCctvDtlDefList.do"
+			,dataType: "json"
+			,success: responseDef
+		})
+	}
+	
+	// $.parseJSON(json[0].manpStle) 향후 이런 형태로 사용함
+	function responseDef(json){
+		cctvDetailDef = json;
+		
+		$('#eqpmnCdcc').combobox('loadData', cctvDetailDef);
+	}
+	
+	function dongSelect(rec){
+        var wfsProtocol = new OpenLayers.Protocol.WFS.v1_1_0({
+			url: "proxy.jsp?"+gisDFMSWFSUrl+"Service=WFS",
+			featureType:"tl_scco_emd", 
+			featurePrefix:"",
+			srsName:"EPSG:900913"
+		});
+        	
+    	var filter = new OpenLayers.Filter.Comparison({ 
+    	   	type : OpenLayers.Filter.Comparison.LIKE,
+    	    property : "emd_cd",
+    	    value: rec.value + "*"
+    	});
+    		
+    	wfsProtocol.read({
+    		filter: filter,
+    		callback: emdCodeQuery
+    	});
+	}
+	
+	function getAbsPos(obj) {
+		var curleft = curtop = 0;
+		if (obj.offsetParent) {
+			do {
+				curleft += obj.offsetLeft;
+				curtop += obj.offsetTop;
+			} while (obj = obj.offsetParent);
+		}
+		return [curleft,curtop];
+	}
+	
+	var mapPrint=function(){
+		var id = "";
+		var top = 3;
+		var left = 3;
+		var maxw = 300;
+		var endalpha = 95;
+		var alpha = 70;
+		var tt,t,c,b,h;
+		var ie = document.all ? true : false;
+		return{
+			show:function(seq, e,v,w,pos,ll){
+				id = "mprn"+seq;
+				if(document.getElementById(id) == null){
+					tt = document.createElement('div');
+					tt.setAttribute('id',id);
+					tt.setAttribute('lon',ll.lon);
+					tt.setAttribute('lat',ll.lat);
+					t = document.createElement('div');
+					t.setAttribute('id',id + 'top');
+					c = document.createElement('div');
+					c.setAttribute('id',id + 'cont');
+					b = document.createElement('div');
+					b.setAttribute('id',id + 'bot');
+					tt.appendChild(t);
+					tt.appendChild(c);
+					tt.appendChild(b);
+					document.body.appendChild(tt);
+					tt.style.opacity = 100;
+					tt.style.filter = 'alpha(opacity=100)';
+				}
+				tt.style.zIndex = 9999;
+
+				tt.style.display = 'block';
+				c.innerHTML = v;
+				tt.style.width = w ? w + 'px' : 'auto';
+				if(ie){
+					t.style.display = 'none';
+					b.style.display = 'none';
+					//tt.style.width = eval(v.length*8)+ 'px';
+					t.style.display = 'block';
+					b.style.display = 'block';
+				}
+				var u = null;
+				var l = null;
+				if (e != null) {
+					u = ie ? event.clientY : e.pageY;
+					l = ie ? event.clientX : e.pageX;
+				} else {
+					u = pos.y;
+					l = pos.x;
+				}
+				tt.style.fontFamily = "Lucida Console";
+				t.style.color = "#fff";
+				t.style.fontColor = "#fff";
+				t.style.backgroundColor = "#555";
+				
+				b.style.color = "#fff";
+				b.style.fontColor = "#fff";
+				b.style.backgroundColor = "#555";
+				c.style.color = "#fff";
+				c.style.fontColor = "#fff";
+				tt.style.fontSize = "12px";
+				tt.style.color = "#fff";
+				tt.style.fontColor = "#fff";
+				tt.style.backgroundColor = "#555";
+				tt.style.padding = "3px";
+				tt.style.position = "absolute";
+				//tt.style.top = (u-parseInt(tt.offsetHeight)) + 'px';
+				tt.style.top = u + 'px';
+				tt.style.left = l + 'px';
+
+				if(tt.offsetWidth > maxw){tt.style.width = maxw + 'px'}
+				h = parseInt(tt.offsetHeight) + top;
+			},
+			fade:function(d){
+				var a = alpha;
+				if((a != endalpha && d == 1) || (a != 0 && d == -1)){
+					var i = speed;
+					if(endalpha - a < speed && d == 1){
+						i = endalpha - a;
+					}else if(alpha < speed && d == -1){
+						i = a;
+					}
+					alpha = a + (i * d);
+					tt.style.opacity = alpha * .01;
+					tt.style.filter = 'alpha(opacity=' + alpha + ')';
+				}else{
+					if(d == -1){tt.style.display = 'none'}
+				}
+			},
+			hide:function(){
+				try{
+					tt.style.display = 'none';
+				}catch(expp){}
+			}
+		};
+	}();
+	
+	function layerClean(layer){
+		layer.removeAllFeatures();
+		layer.redraw({force:true});
+	}
+
+	function getLayerStyle(str){
+		var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style[str]);
+		return style;
+	}
+	
+   	function emdCodeQuery(e) {
+   		if(e.features != null && e.features.length > 0){
+   			layerClean(resultLayer);
+   			resultLayer.addFeatures(e.features);
+   			map.zoomToExtent(e.features[0].geometry.bounds);
+   		}else{
+   			alert("결과가 없습니다.")
+   		}
+   	}
+
+   	function searchJibun() {
+   		if($('#dong').combobox('getValue') == ""){
+   			alert("동을 선택해 주세요.");
+   			return;
+   		}
+
+   		if($("#bonbun").val() == ""){
+   			alert("번지를 입력해 주세요.");
+   			return;
+   		}
+   		
+        var wfsProtocol = new OpenLayers.Protocol.WFS.v1_1_0({
+			url: "proxy.jsp?"+gisDFMSWFSUrl+"Service=WFS",
+			featureType:"lp_pa_cbnd", 
+			featurePrefix:"",
+			srsName:"EPSG:900913"
+		});
+        	
+        var bun1, bun2, checkSan, jibun;
+        
+        jibun = $('#dong').combobox('getValue')+"00";
+        
+        bun1 = lpad($("#bonbun")[0].value, 4, 0);
+        
+        if($("#bubun")[0].value == null) {
+    		bun2 = "0000";
+    	} else {
+    		bun2 = lpad($("#bubun")[0].value, 4, 0);
+    	}
+        
+        if(san.checked == true) {
+            checkSan = "1";
+        } else {
+            checkSan = "0";
+        }
+        
+        var filters;
+        var filter = new OpenLayers.Format.Filter;
+        if(bun1 != null && bun2 != null && checkSan == "1") {
+            filters = new OpenLayers.Filter.Comparison({ 
+                type : OpenLayers.Filter.Comparison.EQUAL_TO,  
+                property : "pnu",
+                value : jibun + "2" + bun1 + bun2
+            });   
+        } else if(bun1 != null && bun2 != null && checkSan == "0") {
+            filters = new OpenLayers.Filter.Comparison({ 
+                type : OpenLayers.Filter.Comparison.EQUAL_TO,  
+                property : "pnu",
+                value : jibun + "1" + bun1 + bun2
+            });
+        }
+    		
+    	wfsProtocol.read({
+    		filter: filters,
+    		callback: emdCodeQuery
+    	});
+   	}
+   	
+   	function searchNewAddr(){
+   		if($("#newAddr").val() == null || $("#newAddr").val() == ""){
+   			alert("검색값이 입력되지 않았습니다.");
+   			return;
+   		}
+   		
+   		$('#newaddrdg').propertygrid('loadData', {"total":0,"rows":[]});
+   		
+		$('#newaddrdg').datagrid('options').url = "dfms/danusys/com/selectBldList.do"; 
+		$('#newaddrdg').datagrid('options').pageNumber = 1;
+		$('#newaddrdg').datagrid('load', {                                                //   name과 message 파라미터 
+			searchKeyword: $("#newAddr").val()
+        });
+   	}
+
+   	function onClickRow3(index){
+   		var selectedRow = $('#newaddrdg').datagrid('getSelected');
+   		if(selectedRow['pnu'] == null || selectedRow['pnu'] == ""){
+   			alert("지번주소가 정확하지 않습니다.");
+   			return;
+   		}
+   		
+        var filters = new OpenLayers.Filter.Comparison({ 
+            type : OpenLayers.Filter.Comparison.EQUAL_TO,  
+            property : "pnu",
+            value : selectedRow['pnu']
+        });
+    		
+        var wfsProtocol = new OpenLayers.Protocol.WFS.v1_1_0({
+			url: "proxy.jsp?"+gisDFMSWFSUrl+"Service=WFS",
+			featureType:"lp_pa_cbnd", 
+			featurePrefix:"",
+			srsName:"EPSG:900913"
+		});
+        
+    	wfsProtocol.read({
+    		filter: filters,
+    		callback: emdCodeQuery
+    	});
+   	}
+
+   	function onClickRow(index){
+   		var selectedRow = $('#cctvdg').datagrid('getSelected');
+
+   		if(selectedRow == null)
+   			return;
+
+   		var opts = $('#cctvdg').datagrid("getColumnFields");
+   		
+   		var rslt = new Array();
+   		for(i = 1; i < opts.length; i++){ // checkbox는 벗어나기 위해 1부터 시작
+   			var obj = new Object();
+   			obj.name = $('#cctvdg').datagrid("getColumnOption", opts[i]).title;
+   			obj.value = selectedRow[opts[i]];
+   			obj.group = "CCTV";
+   			if(opts[i] == "atchFileId")
+   				continue;
+   			else if(opts[i].lastIndexOf("No") > 0)
+   				obj.editor = "numberbox";
+   			else if(opts[i].lastIndexOf("Qy") > 0)
+   				obj.editor = "numberspinner";
+   			else if(opts[i].lastIndexOf("De") > 0)
+   				obj.editor = "datebox";
+   			else if(opts[i] == "xPos" || opts[i] == "yPos")
+   				obj.editor = "empty";
+   			else if(opts[i].lastIndexOf("Ip") > 0) // 아이피 발리데이팅
+   				obj.editor = {"type":"textbox","options":{"validType":"ip"}};
+   			else if(opts[i].indexOf("propos") == 0) // 재질 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV00",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdg').datagrid('getSelected')['propos']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else
+   				obj.editor = "text";
+   			rslt.push(obj);
+   		}
+   		
+   		$('#cctvpg').propertygrid('loadData', rslt);
+   		
+		if($('#gis_layout').layout('panel', 'east')[0].clientWidth == 0)
+			$('#gis_layout').layout('expand','east');
+
+		// WFS 사용하는 대신 원래 있는 값 이용
+		if(selectedRow.xPos == - 1){
+			alert("위치정보가 없습니다.");
+		}else{
+   			layerClean(resultLayer);
+
+   			var myFeature = new OpenLayers.Feature.Vector((new OpenLayers.Geometry.Point(selectedRow.xPos, selectedRow.yPos)).transform(projectionGroup["utmk"], projectionGroup["google"]));
+   			resultLayer.addFeatures([myFeature]);
+   			map.setCenter(new OpenLayers.LonLat(myFeature.geometry.x, myFeature.geometry.y), 18);
+		}
+		
+		$("#detailButtons").show();
+		$("#imgButton").show();
+		$("#editPButton").linkbutton("unselect");
+   	}
+
+   	function appendRow(){
+   		$('#cctvdg').datagrid("unselectAll");
+   		var opts = $('#cctvdg').datagrid("getColumnFields");
+   		var rslt = new Array();
+   		for(i = 1; i < opts.length; i++){ // checkbox는 벗어나기 위해 1부터 시작
+   			var obj = new Object();
+   			obj.name = $('#cctvdg').datagrid("getColumnOption", opts[i]).title;
+   			obj.value = "";
+   			if(opts[i] == "atchFileId")
+   				continue;
+   			else if(opts[i].lastIndexOf("No") > 0)
+   				obj.editor = "numberbox";
+   			else if(opts[i].lastIndexOf("Qy") > 0)
+   				obj.editor = "numberspinner";
+   			else if(opts[i].lastIndexOf("De") > 0)
+   				obj.editor = "datebox";
+   			else if(opts[i] == "xPos" || opts[i] == "yPos")
+   				obj.editor = "empty";
+   			else if(opts[i].lastIndexOf("Ip") > 0) // 아이피 발리데이팅
+   				obj.editor = {"type":"textbox","options":{"validType":"ip"}};
+   			else if(opts[i].indexOf("propos") == 0) // 재질 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV00"
+   					}
+   				};
+   			else
+   				obj.editor = "text";
+   			rslt.push(obj);
+   		}
+   		
+   		$('#cctvpg').propertygrid('loadData', rslt);
+   		
+		if($('#gis_layout').layout('panel', 'east')[0].clientWidth == 0)
+			$('#gis_layout').layout('expand','east');
+
+		$("#detailButtons").show();
+		$("#imgButton").hide();
+		$("#detailButton").hide();
+		$("#editPButton").linkbutton("unselect");
+   	}
+   	
+   	function editP(){
+		deactivateDrawControls();
+		map.events.register("click", map, pointSelection);
+   	}
+
+	function pointSelection(event) {
+		console.log(event);
+		var myPoint = map.getLonLatFromViewPortPx(event.xy);
+		
+		var pointGeometry = new OpenLayers.Geometry.Point(myPoint.lon, myPoint.lat);
+	    var pointFeature = new OpenLayers.Feature.Vector(pointGeometry, null, {
+	        pointRadius: 16,
+	        fillOpacity: 0.7,
+	        externalGraphic: 'images/marker.png',
+	    });
+	    
+	    markerLayer.addFeatures([pointFeature]);
+
+
+   		var myFeature = (new OpenLayers.Geometry.Point(myPoint.lon, myPoint.lat)).transform(projectionGroup["google"], projectionGroup["utmk"]);
+		
+		var myData = $('#cctvpg').propertygrid('getData');
+		
+		for(var i = 0; i < myData.rows.length; i++){
+			if(myData.rows[i].name == 'X좌표')
+				myData.rows[i].value = myFeature.x;
+			else if(myData.rows[i].name == 'Y좌표')
+				myData.rows[i].value = myFeature.y;
+		}
+		
+		$('#cctvpg').propertygrid('loadData', myData);
+		
+		map.events.unregister("click", map, pointSelection);
+		
+		$("#editPButton").linkbutton("unselect");
+	}
+
+   	function saveCCTV(){
+   		var cctvRows = $('#cctvpg').propertygrid('getRows');
+
+   		var selectedRow = $('#cctvdg').datagrid('getSelected');
+   		
+   		var seqNo = null; 
+   		if(selectedRow != null){
+   			seqNo = selectedRow['seqNo']; // 이것으로 Update인지 Insert 인지 구분
+   		}
+   		
+   		var data = new Object();
+   		
+   		for(var i = 0; i < cctvRows.length; i++){
+   			data[getFieldByTitle(cctvRows[i].name)] = cctvRows[i].value;
+   		}
+   		
+   		if(selectedRow == null){
+   			$.post( "dfms/danusys/com/insertCctv.do", data)
+   		  		.done(function( json ) {
+   		  			responseCCTV(json);
+   		  	});
+   		}else{
+   			$.post( "dfms/danusys/com/updateCctv.do", data)
+		  		.done(function( json ) {
+		  			responseCCTV(json);
+		  	});
+   		}
+
+   	}
+   	
+   	function getFieldByTitle(title){
+   		var opts = $('#cctvdg').datagrid("getColumnFields");
+   		
+   		for(var i = 0; i < opts.length; i++){
+   			if($('#cctvdg').datagrid("getColumnOption", opts[i]).title == title){
+   				return opts[i];
+   			}
+   		}
+   	}
+
+	function responseDtl(json){
+		if(json.stat == "sucess"){ // 처리가 성공 했을 때 그리드 리로드
+			$('#cctvdtldg').datagrid('reload');
+			closeDtlEast();
+		}else{
+			alert("에러: "+json.stat);
+		}
+	}
+	
+   	function lpad(ContentToSize,PadLength,PadChar)
+   	{
+   		var PaddedString=ContentToSize.toString();
+   	   	for(var i=ContentToSize.length+1;i<=PadLength;i++)
+   	   	{
+   	    	PaddedString=PadChar+PaddedString;
+   	   	}
+   	   	return PaddedString;
+   	}
+   	
+	function addAirTMS() {            
+		l = new OpenLayers.Layer.TMS(        		
+		"airLayer", // 레이어 명, 임의로 지정 가능        		
+		gisAir2012Url, // 레이어를 호출할 경로        		
+		{        			
+		    isBaseLayer: false,        			
+		    type: "jpeg", // 이미지 타입(일반적으로 PNG나 JPG  이용)       			
+		    transitionEffect: 'resize', // 지도 이동시 효과        			
+		    buffer:1,   
+		    getURL: function(bounds) {  // 영상 가져오는 공식 지정
+		      var res = this.map.getResolution(); // 지도의 해상도 얻어오기        				
+		      var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w)); // X의 위치        	
+		      var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h)); // Y의 위치        	
+		      var z = this.map.getZoom(); // 줌 레벨        				
+		      var limit = Math.pow(2, z); // 지정 위치 이상일 때 처리위한 변수
+		      if(z >= 19) {        					
+		        return "images/blank.jpeg"; // 19레벨 이상일때 보여줄 이미지        			
+		      }else if (y < 0 || y >= limit) { // 영역을 벗어 났을 대 이미지        				
+		        return "images/blank.jpeg";        				
+		      } else {        					
+		        x = ((x % limit) + limit) % limit;        					
+		        return this.url + z + "/" + x + "/" + y + "." + this.type;        				
+		        }        
+		      }   
+		    });            
+		map.addLayer(l); // 지도에 레이어 추가
+		l.visibility = false;
+		//map.setBaseLayer(l); // 추가한 레이어를 기본 레이어로 설정        
+	}
+
+	function addBaseTMS() {            
+		l = new OpenLayers.Layer.TMS(        		
+		"baseLayer", // 레이어 명, 임의로 지정 가능        		
+		gisBase2012Url, // 레이어를 호출할 경로        		
+		{        			
+		    isBaseLayer: false,        			
+		    type: "png", // 이미지 타입(일반적으로 PNG나 JPG  이용)       			
+		    transitionEffect: 'resize', // 지도 이동시 효과        			
+		    buffer:1,   
+		    getURL: function(bounds) {  // 영상 가져오는 공식 지정
+		      var res = this.map.getResolution(); // 지도의 해상도 얻어오기        				
+		      var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w)); // X의 위치        	
+		      var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h)); // Y의 위치        	
+		      var z = this.map.getZoom(); // 줌 레벨        				
+		      var limit = Math.pow(2, z); // 지정 위치 이상일 때 처리위한 변수
+		      if(z >= 19) {        					
+		        return "images/blank.jpeg"; // 19레벨 이상일때 보여줄 이미지        			
+		      }else if (y < 0 || y >= limit) { // 영역을 벗어 났을 대 이미지        				
+		        return "images/blank.jpeg";        				
+		      } else {        					
+		        x = ((x % limit) + limit) % limit;        					
+		        return this.url + z + "/" + x + "/" + y + "." + this.type;        				
+		        }        
+		      }   
+		    });            
+		map.addLayer(l); // 지도에 레이어 추가
+		map.setBaseLayer(l); // 추가한 레이어를 기본 레이어로 설정        
+	}
+	
+	function addWMS(tlayers){ // WMS 레이어 추가
+		var tmp = map.getLayersByName("BOUNDARY");
+		if(tmp.length > 0){
+			map.removeLayer(tmp[0]);			
+		}
+		
+		var layer = new OpenLayers.Layer.WMS(      				
+		    "BOUNDARY", // 임의의 레이어 명칭     				
+		    gisDFMSUrl, // WMS 경로      				
+		    {      					
+		      	layers : tlayers, // 호출할 레이어 명      				
+		      	styles : "", // 스타일 지정 가능      					
+		      	format : "image/png", // 리턴 받을 이미지 타입
+		      	exceptions : "text/xml", // 예외 처리 타입 
+		      	version : "1.3.0", // WMS 버전      					
+		      	crs : "EPSG:900913", // 불러올 좌표계
+		      	transparent : true // 배경을 투명하게 불러올 지 여부
+		    },
+		    {
+		    	singleTile : false, // 하나의 이미지로 가져올지 여부
+		    	transitionEffect: "resize", // 지도 이동/축소/확대시 표현 효과 
+		    	ratio : 1 // 비율
+		    }
+		);      		
+		map.addLayer(layer);   // 생성한 WMS 레이어 추가     
+	}
+
+	function initMouseControl(){
+		controlGroup = {
+			zoombox: new OpenLayers.Control.ZoomBox(),
+			zoomboxout: new OpenLayers.Control.ZoomBox({out:true}),
+			pantool: new OpenLayers.Control.Navigation({handleRightClicks:true}),
+			history: new OpenLayers.Control.NavigationHistory()
+		};
+				 
+		for (var ky in controlGroup) {
+			map.addControl(controlGroup[ky]);
+		}
+	}
+	
+	function deactivateControls() {
+		controlGroup.zoombox.deactivate();
+		controlGroup.zoomboxout.deactivate();
+		map.initMeasurement();
+		controlGroup.pantool.activate();
+
+		$('#map_zoomin').linkbutton('unselect');
+		$('#map_zoomout').linkbutton('unselect');
+		$('#map_move').linkbutton('unselect');
+		$('#map_info').linkbutton('unselect');
+		$('#map_measure_len').linkbutton('unselect');
+		$('#map_measure_area').linkbutton('unselect');
+		
+		map.events.unregister("click", map, handleSelection);
+	}
+
+	function mapZoomIn() {
+		deactivateControls();
+		controlGroup.zoombox.activate();
+
+		$('#map').css('cursor', 'crosshair');
+	}
+	
+	function mapZoomOut() {
+		deactivateControls();
+		controlGroup.zoomboxout.activate();
+	
+		$('#map').css('cursor', 'crosshair');
+	}
+
+	function mapMoveControl(){
+		deactivateControls();
+		
+		$('#map').css('cursor', 'move');
+	}
+
+	function mapFullExtent(){
+		//deactivateControls();
+		map.setCenter(new OpenLayers.LonLat(14132075, 4494066), 12); 
+		//controlGroup.pantool.activate();
+		
+		//$('#map_move').linkbutton('select');
+	}
+	
+	function mapHistPrev() {
+		controlGroup.history.previousTrigger();
+	}
+	
+	function mapHistNext() {
+		controlGroup.history.nextTrigger();
+	}
+
+	function mapInfo(){
+		deactivateControls();
+		
+		$('#map').css('cursor', 'pointer');
+		
+		map.events.register("click", map, handleSelection);
+	}
+
+	function handleSelection(event) {
+		console.log(event);
+		var lonlat = map.getLonLatFromViewPortPx(event.xy);
+		
+		var buffered = OpenLayers.Geometry.Polygon.createRegularPolygon(new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat), 3, 20);
+		
+        var wfsProtocol = new OpenLayers.Protocol.WFS.v1_1_0({
+			url: "proxy.jsp?"+gisDFMSWFSUrl+"Service=WFS",
+			featureType:"cctv_eqpmn", 
+			featurePrefix:"",
+			srsName:"EPSG:900913"
+		});
+        	
+    	var filter = new OpenLayers.Filter.Spatial({ 
+    	   	type : OpenLayers.Filter.Spatial.INTERSECTS,
+    	    value: buffered
+    	});
+    		
+    	wfsProtocol.read({
+    		filter: filter,
+    		callback: cctvCodeQuery
+    	});
+	}
+	
+	function mapCalcLen() {
+		deactivateControls();
+		map.calcDistance();
+	}
+
+	function mapCalcArea() {
+		deactivateControls();
+		map.calcArea();
+	}
+	
+	function collaspeAll(){
+		$('#gis_layout').layout('collapse','west');
+		$('#gis_layout').layout('collapse','east');
+		$('#gis_layout').layout('collapse','south');
+	}
+
+	function mapChangeBase() {
+		var baseLayer = map.getLayersByName("baseLayer")[0];	// 기본도
+		var airLayer = map.getLayersByName("airLayer")[0];	// 항공영상
+		if($('#map_air').linkbutton('options').selected){
+			$('#map_air').linkbutton({text:'일반영상'})
+			airLayer.setVisibility(false);
+			baseLayer.setVisibility(true);
+		}else{
+			$('#map_air').linkbutton({text:'항공영상'})
+			baseLayer.setVisibility(false);
+			airLayer.setVisibility(true);
+		}
+	}
+
+	function searchCctv(){
+		var wktString = '';
+		
+		if(conditionLayer.features.length > 0){
+			var coordChanged = myBuffered.geometry.clone().transform(projectionGroup["google"], projectionGroup["utmk"] );
+			
+			wkt = new OpenLayers.Format.WKT();
+
+			wktString = wkt.write(new OpenLayers.Feature.Vector(coordChanged));
+		}
+		//
+		$('#cctvdg').datagrid('options').url = "dfms/danusys/com/selectCctvs.do"; 
+		$('#cctvdg').datagrid('options').pageNumber = 1;
+		$('#cctvdg').datagrid('load', {                                                //   name과 message 파라미터 
+			emdCd: $('#emdCd').combobox('getValue'),
+			seqNo: $("#seqNo")[0].value,
+			propos: $('#propos').combobox('getValue'),
+			adres: $("#adres")[0].value,
+			cntlrServerIp: $("#cntlrServerIp")[0].value,
+			cctvQy: $("#cctvQy")[0].value,
+			instlDeF: $("#instlDeF").datebox('getValue').replace(/\//g, ''),
+			instlDeT: $("#instlDeT").datebox('getValue').replace(/\//g, ''),
+			wkt:wktString
+        });
+		
+		if($('#gis_layout').layout('panel', 'south')[0].clientHeight == 0)
+			$('#gis_layout').layout('expand','south');
+		
+		deactivateDrawControls();
+		mapMoveControl();
+		closeCCTVEast();
+	}
+
+	function deactivateDrawControls() {
+		layerClean(conditionLayer);
+		layerClean(markerLayer);
+		drawrect.deactivate();
+		drawpolygon.deactivate();
+		map.events.unregister("click", map, circleSelection);
+		map.events.unregister("click", map, pointSelection);
+		$("#condRadius")[0].value = "";
+		$('#dlg').dialog('close');
+		$('#drawCircle').linkbutton('unselect');
+		$('#drawRect').linkbutton('unselect');
+		$('#drawPolygon').linkbutton('unselect');
+	}
+	
+	function drawC(){
+		deactivateDrawControls();
+		map.events.register("click", map, circleSelection);
+	}
+
+	var centerP;
+	function circleSelection(event) {
+		console.log(event);
+		centerP = map.getLonLatFromViewPortPx(event.xy);
+		
+		$('#dlg').dialog('open');
+	}
+
+	function drawP(){
+		deactivateDrawControls();
+		drawpolygon.activate();
+	}
+
+	function drawR(){
+		deactivateDrawControls();
+		drawrect.activate();
+	}
+	
+	var myBuffered;
+	function insertCircleCond(){
+		$('#dlg').dialog('close');
+		var buffered = new OpenLayers.Feature.Vector(OpenLayers.Geometry.Polygon.createRegularPolygon(new OpenLayers.Geometry.Point(centerP.lon, centerP.lat), parseInt($("#condRadius")[0].value), 20));
+		myBuffered = buffered.clone();
+		conditionLayer.addFeatures([buffered]);
+	}
+
+	function resizeMe(){
+		if(map != undefined){
+			setTimeout( function myFunction(){
+				map.updateSize();
+			}, 500);
+		}
+	}
+
+	function eqpmnCdSelect(rec){
+		if($('#dtl_layout').layout('panel', 'east')[0].clientWidth != 0)
+			$('#dtl_layout').layout('collapse','east');
+		
+		var tmp = rec.value;
+		var defObj = getSelectEqpmnDefObj(tmp);
+		
+		var keys = Object.keys(defObj);
+		
+		// 테이블 세팅 후 datagrid에 데이터 로드
+		for(var i = 0; i < keys.length; i++){
+			if(keys[i] == "text" || keys[i] == "value" || keys[i] == "eqpmnCd"){
+				continue;
+			}else{
+				if($.parseJSON(defObj[keys[i]])){
+					$('#cctvdtldg').datagrid('showColumn', keys[i]);
+				}else{
+					$('#cctvdtldg').datagrid('hideColumn', keys[i]);
+				}
+			}
+		}
+		
+   		var seqNo = $('#cctvdg').datagrid('getSelected').seqNo; // 현재 선택된 키값을 얻기위해
+   		var eqpmnCd = rec.value; // 선택된 값
+
+   		closeDtlEast();
+   		
+		$('#cctvdtldg').datagrid('options').url = "dfms/danusys/com/selectCctvDtlList.do"; 
+		$('#cctvdtldg').datagrid('options').pageNumber = 1;
+		$('#cctvdtldg').datagrid('load', {                                                //   name과 message 파라미터 
+			seqNo: seqNo,
+			eqpmnCd:eqpmnCd
+        });
+	}
+	
+	function getSelectEqpmnDefObj(val){
+		for(var i = 0; i < cctvDetailDef.length; i++){
+			if(cctvDetailDef[i].value == val)
+				return cctvDetailDef[i];
+		}
+	}
+	
+   	function onClickRow2(index){
+   		var selectedRow = $('#cctvdtldg').datagrid('getSelected');
+   		
+   		if(selectedRow == null){
+   			closeDtlEast();
+   			return;
+   		}
+   		
+   		var opts = $('#cctvdtldg').datagrid("getColumnFields");
+   		var rslt = new Array();
+   		for(i = 1; i < opts.length; i++){ // checkbox는 벗어나기 위해 1부터 시작
+   			if($('#cctvdtldg').datagrid("getColumnOption", opts[i]).hidden)
+   				continue;
+   			var obj = new Object();
+   			obj.name = $('#cctvdtldg').datagrid("getColumnOption", opts[i]).title;
+   			obj.value = selectedRow[opts[i]];
+   			if(opts[i].lastIndexOf("atchFileId") > 0 || opts[i] == "dtlSeqNo")
+   				continue;
+   			else if(opts[i] == "seqNo" || opts[i] == "eqpmnCd")
+   				obj.editor = "empty";
+   			else if(opts[i].lastIndexOf("No") > 0||opts[i].lastIndexOf("Trm") > 0)
+   				obj.editor = "numberbox";
+   			else if(opts[i].lastIndexOf("De") > 0)
+   				obj.editor = "datebox";
+   			else if(opts[i].indexOf("ntwrk") == 0) // 아이피 발리데이팅
+   				obj.editor = {"type":"textbox","options":{"validType":"ip"}};
+   			else if(opts[i].indexOf("opersysm") == 0) // 운영체제일 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV02",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdtldg').datagrid('getSelected')['opersysm']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else if(opts[i].indexOf("manp_mtrqlt") == 0) // 재질 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV03",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdtldg').datagrid('getSelected')['manp_mtrqlt']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else if(opts[i].indexOf("manp_stle") == 0) // 형태 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV04",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdtldg').datagrid('getSelected')['manp_stle']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else if(opts[i].indexOf("extrl_wire_composition") == 0) // 망구성 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV05",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdtldg').datagrid('getSelected')['extrl_wire_composition']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else if(opts[i].indexOf("extrl_wire_ring") == 0) // 링 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV06",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdtldg').datagrid('getSelected')['extrl_wire_ring']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else if(opts[i].indexOf("extrl_wire_ring_no") == 0) // 링 순번  경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV07",
+   						"onLoadSuccess":function(rows){
+   							for(var j=0; j<rows.length; j++){
+   								if(rows[j].codeNm == $('#cctvdtldg').datagrid('getSelected')['extrl_wire_ring_no']){
+   									$(this).combobox('select', rows[j].code);
+   									return;
+   								}
+   							}
+   						}
+   					}
+   				};
+   			else
+   				obj.editor = "text";
+   			rslt.push(obj);
+   		}
+   		
+   		$('#cctvdtlpg').propertygrid('loadData', rslt);
+   		
+		if($('#dtl_layout').layout('panel', 'east')[0].clientWidth == 0)
+			$('#dtl_layout').layout('expand','east');
+		
+		$("#dtlSaveButton").show();
+		$("#dtlImageButton").show();
+   	}
+   	
+   	function appendRow2(){
+   		$('#cctvdtldg').datagrid("unselectAll");
+   		var opts = $('#cctvdtldg').datagrid("getColumnFields");
+   		var rslt = new Array();
+   		for(i = 1; i < opts.length; i++){ // checkbox는 벗어나기 위해 1부터 시작
+   			if($('#cctvdtldg').datagrid("getColumnOption", opts[i]).hidden)
+   				continue;
+
+   			var obj = new Object();
+   			obj.name = $('#cctvdtldg').datagrid("getColumnOption", opts[i]).title;
+   			obj.value = "";
+   			if(opts[i].lastIndexOf("atchFileId") > 0 || opts[i] == "dtlSeqNo")
+   				continue;
+   			else if(opts[i] == "seqNo"){
+   				obj.value = $('#cctvdg').datagrid('getSelected').seqNo;
+   				obj.editor = "empty";
+   			}else if(opts[i] == "eqpmnCd"){
+   				obj.value = $('#eqpmnCdcc').combobox('getText');;
+   				obj.editor = "empty";
+   			}else if(opts[i].lastIndexOf("No") > 0||opts[i].lastIndexOf("Trm") > 0)
+   				obj.editor = "numberbox";
+   			else if(opts[i].lastIndexOf("De") > 0)
+   				obj.editor = "datebox";
+   			else if(opts[i].indexOf("ntwrk") == 0) // 아이피 발리데이팅
+   				obj.editor = {"type":"textbox","options":{"validType":"ip"}};
+   			else if(opts[i].indexOf("opersysm") == 0) // 운영체제일 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV02"
+   					}
+   				};
+   			else if(opts[i].indexOf("manp_mtrqlt") == 0) // 재질 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV03"
+   					}
+   				};
+   			else if(opts[i].indexOf("manp_stle") == 0) // 형태 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV04"
+   					}
+   				};
+   			else if(opts[i].indexOf("extrl_wire_composition") == 0) // 망구성 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV05"
+   					}
+   				};
+   			else if(opts[i].indexOf("extrl_wire_ring") == 0) // 링 경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV06"
+   					}
+   				};
+   			else if(opts[i].indexOf("extrl_wire_ring_no") == 0) // 링 순번  경우 콤보 세팅
+   				obj.editor = {"type":"combobox",
+   					"options":{"valueField":"code", 
+   						"textField":"codeNm", 
+   						"url":"dfms/danusys/com/selectCode.do?codeId=CCTV07"
+   					}
+   				};
+   			else
+   				obj.editor = "text";
+   			rslt.push(obj);
+   		}
+   		
+   		$('#cctvdtlpg').propertygrid('loadData', rslt);
+   		
+		if($('#dtl_layout').layout('panel', 'east')[0].clientWidth == 0)
+			$('#dtl_layout').layout('expand','east');
+
+		$("#dtlSaveButton").show();
+   	}
+
+   	function removeRow(){
+   		var checkedRows = $('#cctvdg').datagrid("getChecked");
+   		
+   		if(checkedRows.length == 0){
+   			alert("선택된 열이 없습니다.");
+   			return;
+   		}
+   		
+   		var data = new Object();
+   		data.cnt = checkedRows.length;
+   		
+   		for(var i = 0; i < checkedRows.length; i++){
+   			data["seqNo"+i] = checkedRows[i]["seqNo"];   			
+   		}
+
+		$.post( "dfms/danusys/com/deleteCctv.do", data)
+			.done(function( json ) {
+				responseCCTV(json);
+		});
+   	}
+
+	function responseCCTV(json){
+		if(json.stat == "sucess"){ // 처리가 성공 했을 때 그리드 리로드
+			$('#cctvdg').datagrid('reload');
+			map.zoomOut(); 
+			map.zoomIn();
+			closeCCTVEast();
+			alert("저장되었습니다.");
+		}else{
+			alert("에러: "+json.stat);
+		}
+	}
+
+   	function closeCCTVEast(){
+		if($('#gis_layout').layout('panel', 'east')[0].clientWidth != 0)
+			$('#gis_layout').layout('collapse','east');
+		$('#cctvpg').propertygrid('loadData', {"total":0,"rows":[]});
+		$('#cctvdg').datagrid("unselectAll");		
+		$("#detailButtons").hide();
+   	}
+	
+   	function closeDtlEast(){
+		if($('#dtl_layout').layout('panel', 'east')[0].clientWidth != 0)
+			$('#dtl_layout').layout('collapse','east');
+		$('#cctvdtlpg').propertygrid('loadData', {"total":0,"rows":[]});
+		$('#cctvdtldg').datagrid("unselectAll");		
+		$("#dtlSaveButton").hide();
+		$("#dtlImageButton").hide();
+   	}
+   	
+   	function dtlSave(){
+   		var dtlRows = $('#cctvdtlpg').propertygrid('getRows');
+
+   		var selectedRow = $('#cctvdtldg').datagrid('getSelected');
+   		
+   		var dtlSeqNo = null; 
+   		if(selectedRow != null){
+   			dtlSeqNo = selectedRow['dtlSeqNo']; // 이것으로 Update인지 Insert 인지 구분
+   		}
+   		
+   		var data = new Object();
+   		
+   		for(var i = 0; i < dtlRows.length; i++){
+   			data[getDtlFieldByTitle(dtlRows[i].name)] = dtlRows[i].value;
+   		}
+   		
+   		data['dtlSeqNo'] = dtlSeqNo;
+   		
+   		if(dtlSeqNo == null){
+   			$.post( "dfms/danusys/com/insertCctvDtl.do", data)
+   		  		.done(function( json ) {
+   		  			responseDtl(json);
+   		  	});
+   		}else{
+   			$.post( "dfms/danusys/com/updateCctvDtl.do", data)
+		  		.done(function( json ) {
+		  			responseDtl(json);
+		  	});
+   		}
+
+   	}
+   	
+   	function getDtlFieldByTitle(title){
+   		var opts = $('#cctvdtldg').datagrid("getColumnFields");
+   		
+   		for(var i = 0; i < opts.length; i++){
+   			if($('#cctvdtldg').datagrid("getColumnOption", opts[i]).title == title){
+   				return opts[i];
+   			}
+   		}
+   	}
+
+	function responseDtl(json){
+		if(json.stat == "sucess"){ // 처리가 성공 했을 때 그리드 리로드
+			$('#cctvdtldg').datagrid('reload');
+			closeDtlEast();
+			alert("저장되었습니다.");
+		}else{
+			alert("에러: "+json.stat);
+		}
+	}
+
+   	function removeRow2(){
+   		var checkedRows = $('#cctvdtldg').datagrid("getChecked");
+   		
+   		if(checkedRows.length == 0){
+   			alert("선택된 열이 없습니다.");
+   			return;
+   		}
+   		
+   		var data = new Object();
+   		data.cnt = checkedRows.length;
+   		
+   		for(var i = 0; i < checkedRows.length; i++){
+   			data["dtlSeqNo"+i] = checkedRows[i]["dtlSeqNo"];   			
+   		}
+
+		$.post( "dfms/danusys/com/deleteCctvDtl.do", data)
+			.done(function( json ) {
+				responseDtl(json);
+		});
+   	}
+
+   	function setImgList(atchFileId){
+   		var oImage = document.getElementById('preview2');
+   		oImage.src = "";
+   		$('#imglistdl').datalist({
+   			url:"dfms/danusys/com/selectFileInfs.do",
+   			valueField:'fileSn',
+   			textField:'orignlFileNm',
+   			queryParams:{atchFileId: atchFileId},
+   			onSelect:function(inx, row){
+   		   		oImage.src = "cmm/fms/getImage.do?atchFileId="+atchFileId+"&fileSn="+row.fileSn;   				
+   			},
+   			toolbar:[{
+   				text:'업로드',
+   				iconCls:'icon-add',
+   				handler:function(){
+					$("#fileAtchFileId").val(atchFileId);
+   					if($('#cctvdtldg').datagrid('getSelected') != null){
+   						$("#fileSeqNo").val("");
+   						$("#fileDtlSeqNo").val($('#cctvdtldg').datagrid('getSelected').dtlSeqNo);
+   					}else{
+   						$("#fileSeqNo").val($('#cctvdg').datagrid('getSelected').seqNo);
+   						$("#fileDtlSeqNo").val("");
+   					}
+   						 
+   					$('#imgmngdlg').dialog('open');
+   				}
+   			},{
+   				text:'다운로드',
+   				iconCls:'icon-save',
+   				handler:function(){
+   					if($('#imglistdl').datalist("getSelected") == null){
+   						alert("선택하신 파일이 없습니다.");
+   						return;
+   					}
+   					window.location = "cmm/fms/FileDown.do?atchFileId="+atchFileId+"&fileSn="+$('#imglistdl').datalist("getSelected").fileSn;
+   				}
+   			},{
+   				text:'삭제',
+   				iconCls:'icon-cut',
+   				handler:function(){
+   					if($('#imglistdl').datalist("getSelected") == null){
+   						alert("선택하신 파일이 없습니다.");
+   						return;
+   					}
+   					
+   					if (confirm("정말 삭제하시겠습니까??") != true){    //확인
+   					    return;
+   					}
+   					
+   					var data = new Object();
+   					data.atchFileId = atchFileId;
+   					data.fileSn = $('#imglistdl').datalist("getSelected").fileSn;
+   					
+   					$.post( "dfms/danusys/com/deleteFileInfs.do", data)
+   					.done(function( json ) {
+   						if(json.stat == "sucess"){ // 처리가 성공 했을 때 그리드 리로드
+   							$('#imglistdl').datalist('reload');
+   						}else{
+   							alert("에러: "+json.stat);
+   						}
+	   				});
+   				}
+   			}]
+   		});
+   	}
+   	
+   	function setAtchFileId(_atchFileId){
+		if($('#cctvdtldg').datagrid('getSelected') != null){
+			if($('#cctvdtldg').datagrid('getSelected').atchFileId != _atchFileId)
+				$('#cctvdtldg').datagrid('reload');
+		}else{
+			if($('#cctvdg').datagrid('getSelected').atchFileId != _atchFileId)
+				$('#cctvdg').datagrid('reload');
+		}
+		
+		setImgList(_atchFileId);
+   	}
+
+   	function removeRow(){
+   		var checkedRows = $('#cctvdg').datagrid("getChecked");
+   		
+   		if(checkedRows.length == 0){
+   			alert("선택된 열이 없습니다.");
+   			return;
+   		}
+   		
+   		var data = new Object();
+   		data.cnt = checkedRows.length;
+   		
+   		for(var i = 0; i < checkedRows.length; i++){
+   			data["seqNo"+i] = checkedRows[i]["seqNo"];   			
+   		}
+
+		$.post( "dfms/danusys/com/deleteCctv.do", data)
+			.done(function( json ) {
+				responseCCTV(json);
+		});
+   	}
+   	
+   	function convertTreeData(rows){
+   	    function exists(rows, parentId){
+   	        for(var i=0; i<rows.length; i++){
+   	            if (rows[i].id == parentId) return true;
+   	        }
+   	        return false;
+   	    }
+   	    
+   	    var nodes = [];
+   	    // get the top level nodes
+   	    for(var i=0; i<rows.length; i++){
+   	        var row = rows[i];
+   	        if (!exists(rows, row.parentId)){
+   	        	if(row.iconCls != null && row.iconCls != "")
+   	 	            nodes.push({
+   	  	               	id:row.id,
+   	  	               	text:row.name,
+   	   	               	state:row.state,
+   	   	               	checked:$.parseJSON(row.checked),
+   	   	               	iconCls:row.iconCls
+   	   	           	});
+   	        	else
+   	 	            nodes.push({
+   	  	               	id:row.id,
+   	  	               	text:row.name,
+   	   	               	state:row.state,
+   	   	               	checked:$.parseJSON(row.checked)
+   	   	           	});
+   	        }
+   	    }
+   	    
+   	    var toDo = [];
+   	    for(var i=0; i<nodes.length; i++){
+   	        toDo.push(nodes[i]);
+   	    }
+   	    while(toDo.length){
+   	        var node = toDo.shift();    // the parent node
+   	        // get the children nodes
+   	        for(var i=0; i<rows.length; i++){
+   	            var row = rows[i];
+   	            if (row.parentId == node.id){
+   	                var child = {id:row.id,text:row.name,state:row.state,checked:$.parseJSON(row.checked)};
+   	   	        	if(row.iconCls != null && row.iconCls != "")
+   	   	        		child = {id:row.id,text:row.name,state:row.state,checked:$.parseJSON(row.checked), iconCls:row.iconCls};
+   	   	        	
+   	                if (node.children){
+   	                    node.children.push(child);
+   	                } else {
+   	                    node.children = [child];
+   	                }
+   	                toDo.push(child);
+   	            }
+   	        }
+   	    }
+   	    return nodes;
+   	}
+   	
+   	function mapChange(){
+   		var nodes = $('#layerTree').tree('getChecked');
+        var s = '';
+        for(var i=0; i<nodes.length; i++){
+            if (s != '') s += ',';
+            s += nodes[i].id;
+        }
+        addWMS(s);   		
+   	}
+   	
+   	
+   	function searchPos(){
+   		if($("#pointX").val() == null || $("#pointX").val() == "" || $("#pointY").val() == null || $("#pointY").val() == ""){
+   			alert("좌표값이 입력되지 않았습니다.");
+   			return;
+   		}
+   		
+		layerClean(resultLayer);
+		
+		var sourceProjection = projectionGroup[$("#coordsystem").combobox("getValue")];
+
+		var myFeature = new OpenLayers.Feature.Vector((new OpenLayers.Geometry.Point($("#pointX").val(), $("#pointY").val())).transform(sourceProjection, projectionGroup["google"]));
+
+		/*
+		var point5186 = (new OpenLayers.Geometry.Point(myFeature.geometry.x, myFeature.geometry.y)).transform(projectionGroup["google"], projectionGroup["utmk"]);
+		if(!map.restrictedExtent.containsLonLat(new OpenLayers.LonLat(point5186.x, point5186.y))){
+			alert("입력하신 지점이 anyang권역을 벗어나거나 잘못된 좌표값입니다.");
+			return;
+		}
+		*/
+   		resultLayer.addFeatures([myFeature]);
+   		map.setCenter(new OpenLayers.LonLat(myFeature.geometry.x, myFeature.geometry.y), 18);
+   	}
+   	
+   	function excelExport(){
+		var wktString = '';
+   			
+   		if(conditionLayer.features.length > 0){
+   			var coordChanged = conditionLayer.features[0].geometry.clone().transform(projectionGroup["google"], projectionGroup["utmk"] );
+   			
+   			wkt = new OpenLayers.Format.WKT();
+
+   			wktString = wkt.write(new OpenLayers.Feature.Vector(coordChanged));
+   		}
+   		
+   		var data = {                                                //   name과 message 파라미터 
+   				emdCd: $('#emdCd').combobox('getValue'),
+   				seqNo: $("#seqNo")[0].value,
+   				propos: $('#propos').combobox('getValue'),
+   				adres: $("#adres")[0].value,
+   				cntlrServerIp: $("#cntlrServerIp")[0].value,
+   				cctvQy: $("#cctvQy")[0].value,
+   				instlDeF: $("#instlDeF").datebox('getValue').replace(/\//g, ''),
+   				instlDeT: $("#instlDeT").datebox('getValue').replace(/\//g, ''),
+   				wkt:wktString
+   	        };
+   		
+   		var opts = $('#cctvdg').datagrid("getColumnFields");
+
+   		var cnt = 0;
+   		for(i = 1; i < opts.length; i++){ // checkbox는 벗어나기 위해 1부터 시작
+   			if(opts[i] == "atchFileId")
+   				continue;
+   			data["headerText"+cnt] = $('#cctvdg').datagrid("getColumnOption", opts[i]).title;
+   			data["headerField"+cnt] = opts[i];
+   			data["headerUse"+cnt] = "true";
+   			cnt++;
+   		}
+   		
+   		data["headerCnt"]=cnt;
+
+   		
+   		$.download( "dfms/danusys/com/selectCctvsExcel.do", data);
+   	}
+
+   	function excelExport2(){
+   		var seqNo = $('#cctvdg').datagrid('getSelected').seqNo; // 현재 선택된 키값을 얻기위해
+   		var eqpmnCd = $('#eqpmnCdcc').combobox("getValue"); // 선택된 값
+
+   			
+   		var data = {                                                //   name과 message 파라미터 
+   				seqNo: seqNo,
+   				eqpmnCd: eqpmnCd
+   	        };
+   		
+   		var opts = $('#cctvdtldg').datagrid("getColumnFields");
+
+   		var defObj = getSelectEqpmnDefObj(eqpmnCd);
+   		
+		var keys = Object.keys(defObj);
+		
+   		var cnt = 0;
+		// 테이블 세팅 후 datagrid에 데이터 로드
+		for(var i = 0; i < keys.length; i++){
+			if(keys[i] == "text" || keys[i] == "value" || keys[i] == "eqpmnCd"){
+				continue;
+			}else{
+				data["headerText"+cnt] = $('#cctvdtldg').datagrid("getColumnOption", keys[i]).title;
+				data["headerField"+cnt] = keys[i];
+				data["headerUse"+cnt] = ""+$.parseJSON(defObj[keys[i]]);
+				cnt++;
+			}
+		}
+
+   		data["headerCnt"]=cnt;
+
+   		
+   		$.download( "dfms/danusys/com/selectCctvDtlsExcel.do", data);
+   	}
+
+</script>
+</head>
+
+<body onload="init()">
+<!-- wrap ("gis_layout) -->
+<div id="gis_layout" class="easyui-layout" style="width:100%;">
+    <!-- header -->
+    <div data-options="region:'north'" style="height:85px;padding:15px 10px 0 10px;border:0;border-bottom:1px solid #3774b3;">
+        <h1 class="blind">시설물관리시스템</h1>
+        <h2 class="logo_tit">시설물관리시스템 GIS</h2>
+    </div>
+    <!-- //header -->
+    
+    <!-- Nav : West -->   
+    <div data-options="region:'west', split:false, collapsed:false, collapsedSize:0" title="&nbsp;" style="width:250px;overflow:hidden;">
+        <!-- accordion -->
+        <div class="easyui-accordion" style="width:100%;height:100%;">
+            <!-- 레이어 관리 -->
+            <div title="레이어 관리" style="padding:15px;display:none;">
+                <div id="layerTree" class="easyui-tree" data-options="animate:true, checkbox:true, onlyLeafCheck:true, url:'dfms/danusys/com/selectCctvTreeList.do', loadFilter:convertTreeData, onLoadSuccess:mapChange, onCheck:mapChange">
+                레이어관리
+                </div>
+            </div>
+            <!-- //레이어 관리 -->
+            
+            <!-- 검색 -->
+            <div title="검색" data-options="iconCls:'icon-search'" style="overflow:auto;">
+                <!-- easyui-tabs -->
+                <div class="easyui-tabs" style="width:100%;height:100%">
+                    <!-- 지번 -->
+                    <div title="지번" style="padding:15px" data-options="tabWidth:75">
+                        <ul class="list_ty">
+                            <li class="list"><em>동</em>
+                                <input id="dong" class="easyui-combobox" name="browser" style="width:100%;" data-options="url: 'dfms/danusys/com/selectEmdList.do', method: 'get', valueField:'value', textField:'text', onSelect:dongSelect">
+                            </li>
+                            <li class="list"><em>지번</em>
+                                <input id="bonbun" class="easyui-numberbox" data-options="min:1,max:9999,prompt:'본번'" style="width:65px;"> -
+                                <input id="bubun" class="easyui-numberbox" data-options="min:1,max:9999,prompt:'부번'" style="width:65px;">
+                                <p class="mt5"><input type="checkbox" id="san" value="2"> <label for="san">산</label></p>
+                            </li>
+                            <li class="mt20"><a href="#"  onclick="searchJibun()" class="easyui-linkbutton" iconCls="icon-search" style="width:100%;padding:3px 0;">검색</a></li>
+                        </ul>
+                    </div>
+                    <!-- //지번 -->
+                    <!-- 도로명주소 -->
+                    <div title="도로명주소" style="padding:15px" data-options="tabWidth:85">
+                        <ul class="list_ty">
+                            <li><input id="newAddr" class="easyui-textbox" data-options="prompt:'도로명 주소를 입력하세요.'" style="width:100%;"></li>
+                            <li><a href="#"  onclick="searchNewAddr()" class="easyui-linkbutton" iconCls="icon-search" style="width:100%;padding:3px 0;">검색</a></li>
+                        </ul>
+                        <ul class="list_ty mt20">
+                            <li>
+                                <table id="newaddrdg" class="easyui-datagrid" title="" style="width:100%;height:200px" data-options="view:bufferview,singleSelect:true,pageSize:30, onClickRow: onClickRow3">
+                                    <thead>
+                                        <tr>
+                                            <th data-options="field:'jibunAddr',width:200,align:'left'">주소</th>
+                                            <!--  
+                                            <th data-options="field:'roadAddr',width:200,align:'left'">도로명주소</th>
+                                            -->
+                                            <th data-options="field:'pnu',align:'left',hidden:true">PNU</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </li>
+                        </ul>
+                     </div>
+                    <!-- //도로명주소 -->
+                    <!-- 좌표로이동 -->
+                    <div title="좌표로이동" style="padding:10px" data-options="tabWidth:88, animate:true" >
+                        <ul class="list_ty">
+                            <li class="list"><em>좌표계</em>
+                                 <select class="easyui-combobox" name="coordsystem" id="coordsystem" style="width:100%;">
+                                    <option value="utmk">UTMK(세계측지계)</option>
+                                    <option value="grs80">위경도 좌표계</option>
+                                    <option value="daum">다음 좌표계</option>
+                                    <option value="naver">네이버 좌표계</option>
+                                    <option value="google">구글 좌표계</option>
+                                </select>
+                            </li>
+                            <li class="list"><em>X(경도)</em>
+                                <input id="pointX" class="easyui-numberbox" data-options="prompt:'X(경도) 좌표를 입력하세요.'" precision="6" style="width:100%;">
+                            </li>
+                            <li class="list"><em>Y(위도)</em>
+                                <input id="pointY" class="easyui-numberbox" data-options="prompt:'Y(위도) 좌표를 입력하세요.'" label="Y(위도):" labelPosition="top" precision="6" style="width:100%;">
+                            </li>
+                            <li class="mt20"><a href="#"  onclick="searchPos()" class="easyui-linkbutton" iconCls="icon-search" style="width:100%;padding:3px 0;">위치이동</a></li>
+                        </ul>
+                    </div>
+                    <!-- //좌표로이동 -->
+                </div>	
+                <!-- //easyui-tabs -->
+            </div>
+            <!-- //검색-->
+                          
+            <!-- 시설물 관리 -->                
+            <div title="시설물 관리" style="padding:15px;">
+                <ul class="list_ty">
+                    <li class="list02"><em>동</em>
+                        <input id="emdCd" class="easyui-combobox" name="browser" style="width:100%" data-options="url: 'dfms/danusys/com/selectEmdList.do',method: 'get',valueField:'value',textField:'text',groupField:'group',onSelect:dongSelect">
+                    </li>
+                    <li class="list02"><em>일련번호</em>
+                        <input id="seqNo" class="easyui-numberbox" style="width:100%">
+                    </li>
+                    <li class="list02"><em>용도</em>
+                        <input id="propos" class="easyui-combobox" name="browser" style="width:100%;" data-options="url: 'dfms/danusys/com/selectCode.do?codeId=CCTV00&all=y',method: 'get',valueField:'code',textField:'codeNm'">
+                    </li>
+                    <li class="list02"><em>주소</em>
+                        <input id="adres" class="easyui-textbox" style="width:100%;">
+                    </li>
+                    <li class="list02"><em>서버IP</em>
+                        <input id="cntlrServerIp" class="easyui-textbox" data-options="validType:'ip'" style="width:100%">
+                    </li>
+                    <li class="list02"><em>CCTV갯수</em>
+                        <input id="cctvQy" class="easyui-numberspinner" data-options="min:1,max:100" style="width:100%;">
+                    </li>
+                    <li class="list02"><em>설치일</em>
+                        <p><input id="instlDeF" class="easyui-datebox"  data-options="prompt:'시작일 입력'" style="width:100%"></p>
+                        <p class="mt5"><input id="instlDeT" class="easyui-datebox"  data-options="prompt:'종료일 입력'" style="width:100%"> </p>                     
+                    </li>
+                    <li class="list02"><em>검색영역<br>설정</em>
+                        <a href="#" id="drawCircle" onClick="drawC()" class="easyui-linkbutton" data-options="iconCls:'icon-circle',toggle:true">반경</a>
+                        <a href="#" id="drawRect" onClick="drawR()" class="easyui-linkbutton" data-options="iconCls:'icon-rectangle',toggle:true">영역</a>
+                        <p class="mt5"><a href="#" id="drawPolygon" onclick="drawP()" class="easyui-linkbutton" data-options="iconCls:'icon-polygon',toggle:true">폴리곤</a></p>	
+                    </li>
+
+                    <li class="mt20"><a href="#" onclick="searchCctv()" class="easyui-linkbutton" iconCls="icon-search" style="width:100%;padding:3px 0;">검색</a></li>
+                </ul>
+            </div>
+            <!-- //시설물 관리 -->
+            
+            <!-- 민원/장애 관리 -->
+            <div title="민원/장애 관리" style="padding:15px;">
+				민원장애 검색창
+            </div>
+            <!-- //민원/장애 관리 -->
+        </div>
+        <!-- //accordion -->
+    </div>
+    <!-- //Nav : West -->  
+    
+    <!-- 속성 : East -->  
+    <div data-options="region:'east', split:false, collapsed:true, collapsedSize:0" title="속성" style="width:250px;">
+<script type="text/javascript">
+$(function(){
+	$('.fiexd_height').css('min-height', $(this).find('table').innerHeight() + 100);  // 혹시라도 적용 안될 시 하단 테이블 테이타 부려질때 한줄 삽입 부탁드립니다.
+});
+</script>   
+        <div class="fiexd_height" style="position:relative;height:calc(100%  - 100px);padding-bottom:100px;">
+            <table id="cctvpg" class="easyui-propertygrid" style="width:100%;" data-options="showGroup:true,scrollbarSize:0,columns: mycolumns">
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            
+            <script>
+            var mycolumns = [[
+                {field:'name',title:'항목',width:70,sortable:true},
+                {field:'value',title:'값',width:100,resizable:false}
+            ]];
+            </script>
+            
+            <div id="detailButtons" class="btn_area fiexd_b">
+                <a href="#" id="editPButton" onclick="editP();" class="easyui-linkbutton" data-options="iconCls:'icon-map_edit',toggle:true">지도에서 좌표 선택</a>
+                <a href="#" id="saveButton" onclick="saveCCTV()" class="easyui-linkbutton" iconCls="icon-save">저장</a>
+                <a href="#" id="detailButton" onclick="$('#dtldlg').dialog('open')" class="easyui-linkbutton" iconCls="icon-info">상세정보</a>
+                <a href="#" id="imgButton" onclick="$('#imgdlg').dialog('open');setImgList($('#cctvdg').datagrid('getSelected').atchFileId);" class="easyui-linkbutton" iconCls="icon-image">사진관리</a>
+            </div>
+        </div>
+    </div>
+    <!-- //속성 : East --> 
+    
+    <!-- Map -->
+    <div id="map" data-options="region:'center'">
+        <!-- map_btn_area -->
+        <ul class="map_btn_area">
+            <li>
+                <a href="#" id="map_undo" onclick="mapHistPrev();" class="easyui-linkbutton" data-options="iconCls:'icon-undo',toggle:false">이전</a>
+                <a href="#" id="map_redo" onclick="mapHistNext();" class="easyui-linkbutton" data-options="iconCls:'icon-redo',toggle:false">이후</a>
+            </li>
+            <li>
+                <a href="#" id="map_zoomin" onclick="mapZoomIn();" class="easyui-linkbutton" data-options="iconCls:'icon-zoomin',toggle:true">확대</a>
+                <a href="#" id="map_zoomout" onclick="mapZoomOut();" class="easyui-linkbutton" data-options="iconCls:'icon-zoomout',toggle:true">축소</a>
+                <a href="#" id="map_move" onclick="mapMoveControl();" class="easyui-linkbutton" data-options="iconCls:'icon-move',toggle:true,selected:true">이동</a>
+            </li>
+            <li>
+                <a href="#" id="map_fullextent" onclick="mapFullExtent();" class="easyui-linkbutton" data-options="toggle:false">전체영역</a>
+                <a href="#" id="map_expend" onclick="collaspeAll();" class="easyui-linkbutton" data-options="iconCls:'icon-expand',toggle:false">지도확장</a>
+            </li>
+            <li>
+                <a href="#" id="map_measure_len" onclick="mapCalcLen();" class="easyui-linkbutton" data-options="iconCls:'icon-measurelen',toggle:true">거리측정</a>
+                <a href="#" id="map_measure_area" onclick="mapCalcArea();" class="easyui-linkbutton" data-options="iconCls:'icon-measurearea',toggle:true">면적측정</a>
+                <a href="#" id="map_measure_print" class="easyui-linkbutton" data-options="iconCls:'icon-print',toggle:false">출력</a>
+            </li>
+            <li>
+                <!--<a href="#" id="map_stat_print" class="easyui-linkbutton" data-options="toggle:false">통계</a>-->
+                <a href="#" id="map_info" onclick="mapInfo();" class="easyui-linkbutton" data-options="toggle:true">정보</a>
+            </li>
+            <li class="btn_ty_a ml">
+                <a href="#" id="map_air" onclick="mapChangeBase();" class="easyui-linkbutton btn_ty" data-options="toggle:true">일반영상</a>
+            </li>
+        </ul>
+        <!-- //map_btn_area -->
+    </div>
+    <!-- //Map -->
+    
+    <!-- 검색결과 : South -->
+    <div data-options="region:'south', split:false, collapsed:true, collapsedSize:40" title="검색결과 / CCTV" style="height:270px;">
+        <table id="cctvdg" class="easyui-datagrid" title="" style="width:100%;height:100%" pageList="[10,20,30]"  data-options="rownumbers:true,singleSelect:true,url:'datagrid_data1.json',method:'get',toolbar:'#tb', footer:'#ft', pagination:true">
+            <thead>
+                <tr>
+                    <th data-options="field:'ck',checkbox:true"></th>
+                    <th data-options="field:'seqNo',width:80,align:'center'">연번</th>
+                    <th data-options="field:'propos',width:100,align:'center'">용도</th>
+                    <th data-options="field:'cntlrServerIp',width:180,align:'center'">제어기/서버IP</th>
+                    <th data-options="field:'cctvQy',width:80,align:'center'">카메라수량</th>
+                    <th data-options="field:'adres',width:400,align:'center'">주소</th>
+                    <th data-options="field:'instlDe',width:100,align:'center'">설치일</th>
+                    <th data-options="field:'atchFileId',width:100,align:'left',hidden:true">파일아이디</th>
+                    <th data-options="field:'xPos',width:100,align:'left',hidden:true">X좌표</th>
+                    <th data-options="field:'yPos',width:100,align:'left',hidden:true">Y좌표</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- tf -->
+        <div id="ft" class="fo_nav">
+            <p class="br_a"><a href="#" class="easyui-linkbutton" iconCls="pagination-load" plain="true">새로고침</a></p>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">삭제</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">추가</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">수정하기</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-excel" plain="true">엑셀다운</a>
+        </div>
+        <!-- //tf -->
+        
+        
+        <script type="text/javascript">
+        /*$(function(){
+            var pager = $('#cctvdg').datagrid().datagrid('getPager');	// get the pager of datagrid
+            pager.pagination({
+                buttons:[{
+                    iconCls:'icon-remove',
+                    text:'삭제',
+                    handler:function(){
+                        removeRow();
+                    }
+               },{
+                    iconCls:'icon-add',
+                    text:'추가',
+                    handler:function(){
+                        appendRow();
+                    }
+                },{
+                    iconCls:'icon-excel',
+                    text:'엑셀다운',
+                    handler:function(){
+                        excelExport();
+                    }
+                }]
+            });			
+        })*/
+        </script>
+    </div>
+    <!-- //검색결과 : South -->
+</div>
+<!-- //wrap ("gis_layout) -->
+<!-- footer -->
+<footer>
+<div class="cont">Copyright All rights Reserved 2016 by Anyang City</div>
+</footer>
+<!-- //footer -->
+
+
+
+<script type="text/javascript">
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        var d = date.getDate();
+        return y+'/'+(m<10?('0'+m):m)+'/'+(d<10?('0'+d):d);
+    }
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('/'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        var d = parseInt(ss[2],10);
+        if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+            return new Date(y,m-1,d);
+        } else {
+            return new Date();
+        }
+    }
+</script>
+
+<!-- 반경입력 -->
+<div id="dlg" class="easyui-dialog" title="반경입력" style="width:400px;height:200px;padding:15px 20px 20px 20px;"
+data-options="resizable:false,modal:true,closed:false,
+    buttons: [{
+        text:'확인',
+        
+        handler:function(){
+            insertCircleCond();
+        }
+    },{
+        text:'닫기',
+        handler:function(){
+            deactivateDrawControls();
+        }
+    }]
+">
+    <ul class="list_ty">
+        <li class="list"><em>반경</em>
+            <input id="condRadius" class="easyui-numberspinner" data-options="min:1,max:1000" style="width:100%;">
+        </li>
+    </ul>
+</div>
+<!-- //반경입력 -->
+   
+<!-- 상세정보관리 -->
+<div id="dtldlg" class="easyui-dialog" title="상세정보관리" style="width:1120px;height:640px;padding:15px 20px 20px 20px;" data-options="resizable:false,modal:true,closed:true,onOpen:function(){$('#eqpmnCdcc').combobox('select', '0CNTLR');},onBeforeClose:closeDtlEast">
+    <!-- pop_cont -->
+    <div class="pop_cont">
+        <div class="hr10">
+            <em class="b_tit">구분</em>
+            <input id="eqpmnCdcc" class="easyui-combobox" name="browser" style="width:150px;" data-options="valueField:'value',textField:'text',groupField:'group',onSelect:eqpmnCdSelect">
+        </div>
+        <!-- pop_left -->
+        <div class="pop_left" style="width:810px;">
+            <table id="cctvdtldg" class="easyui-datagrid" title="상세정보" style="width:100%;height:530px" pageList="[10,20,30]"
+            data-options="rownumbers:true,singleSelect:true,selectOnCheck:false,checkOnSelect:false,pagination:true,pageSize:10, onClickRow: onClickRow2,footer:'#ft02'">
+                <thead>
+                    <tr>
+                        <th data-options="field:'ck',checkbox:true"></th>
+                        <th data-options="field:'dtlSeqNo',width:80,align:'center'">상세연번</th>
+                        <th data-options="field:'seqNo',width:80,align:'center'">연번</th>
+                        <th data-options="field:'eqpmnCd',width:100,align:'left'">장비명</th>
+                        <th data-options="field:'modlNm',width:180,align:'center'">기본정보(모델명)</th>
+                        <th data-options="field:'mfbiz',width:120,align:'left'">기본정보(제조사)</th>
+                        <th data-options="field:'srlNo',width:150,align:'left'">기본정보(시리얼번호)</th>
+                        <th data-options="field:'instlDe',width:70,align:'center'">설치일</th>
+                        <th data-options="field:'instlDuraTrm',width:150,align:'right'">내구연한(설치기준)</th>
+                        <th data-options="field:'chngDe',width:70,align:'left'">교체일</th>
+                        <th data-options="field:'chngDuraTrm',width:150,align:'right'">내구연한(교체기준)</th>
+                        <th data-options="field:'ntwrkIp',width:70,align:'center'">IP</th>
+                        <th data-options="field:'ntwrkSm',width:70,align:'center'">S/M</th>
+                        <th data-options="field:'ntwrkGw',width:70,align:'center'">G/W</th>
+                        <th data-options="field:'usid',width:70,align:'left'">아이디</th>
+                        <th data-options="field:'uspwd',width:70,align:'left'">암호</th>
+                        <th data-options="field:'opersysm',width:100,align:'left'">OS</th>
+                        <th data-options="field:'manpMtrqlt',width:100,align:'left'">재질</th>
+                        <th data-options="field:'manpSize',width:100,align:'left'">사이즈</th>
+                        <th data-options="field:'manpStle',width:100,align:'left'">형태</th>
+                        <th data-options="field:'extrlWireComposition',width:100,align:'left'">망구성</th>
+                        <th data-options="field:'extrlWireRing',width:100,align:'left'">링(자가망시)</th>
+                        <th data-options="field:'extrlWireRingNo',width:100,align:'left'">링 순번(자가망시)</th>
+                        <th data-options="field:'extrlWireNo',width:100,align:'left'">회번번호(임대)</th>
+                        <th data-options="field:'dlvgbiz',width:100,align:'left'">납품업체명</th>
+                        <th data-options="field:'dlvgbizCharger',width:100,align:'left'">납품담당자</th>
+                        <th data-options="field:'rm',width:100,align:'left'">비고</th>
+                        <th data-options="field:'atchFileId',align:'left',hidden:true">파일아이디</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- tf -->
+            <div id="ft02" class="fo_nav">
+                <p class="br_a"><a href="#" class="easyui-linkbutton" iconCls="pagination-load" plain="true">새로고침</a></p>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">삭제</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">추가</a>
+                <!--<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">수정하기</a>-->
+                <a href="#" class="easyui-linkbutton" iconCls="icon-excel" plain="true">엑셀다운</a>
+            </div>
+            <!-- //tf -->
+    
+        </div>
+        <!-- //pop_left -->
+        <!-- pop_right -->
+        <div class="pop_right" style="width:260px;">
+            <table id="cctvdtlpg" class="easyui-propertygrid" style="width:100%;height:455px" data-options="scrollbarSize:0,columns: mycolumns">
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <div id="dtlSaveButton" class="btn_area">
+                <a href="#" onclick="dtlSave()" class="easyui-linkbutton" iconCls="icon-save">저장</a>
+                <a href="#" onclick="$('#imgdlg').dialog('open');setImgList($('#cctvdtldg').datagrid('getSelected').atchFileId);" class="easyui-linkbutton" iconCls="icon-image">사진관리</a>
+            </div>
+        </div>
+        <!-- //pop_right -->
+    </div>
+    <!-- //pop_cont -->
+</div>
+<!-- //상세정보관리 -->
+
+<!-- 이미지관리 -->
+<div id="imgdlg" class="easyui-dialog" title="이미지관리" style="width:900px;height:500px;padding:15px 20px 20px 20px;" data-options="resizable:false,modal:true,closed:true">
+    <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'west',split:false" style="width:210px;height:100%">
+            <div id="imglistdl" style="width:205px;height:100%">
+            </div>
+        </div>
+        <div id="imgRegion" data-options="region:'center'" style="padding:10px;">
+            <img id="preview2">
+        </div>
+    </div>
+</div>
+<!-- //이미지관리 -->
+
+<!-- 이미지업로드 -->
+<div id="imgmngdlg" class="easyui-dialog" title="이미지업로드" style="width:800px;height:450px;padding:15px 20px 20px 20px;" data-options="resizable:false,modal:true,closed:true,onClose:function(){$('#imglistdl').datalist('reload')}">
+    <div class="container">
+        <div class="upload_form_cont">
+            <form id="upload_form" enctype="multipart/form-data" method="post">
+                <div>
+                    <div><label for="image_file">이미지를 선택해 주세요.</label></div>
+                    <div class="b_file_area mt10">
+						<input type="file" name="image_file" id="image_file" onchange="fileSelected();">
+                    </div>
+                </div>
+                <div class="btn_area">
+                    <input id="imgFileButton" class="btn_upload" name="imgFileButton" type="button" value="업로드" onclick="startUploading()">
+                </div>
+                <div id="fileinfo" class="mt20">
+                    <div id="filename"></div>
+                    <div id="filesize"></div>
+                    <div id="filetype"></div>
+                    <div id="filedim"></div>
+                </div>
+                <div id="error">이미지 파일만 선택이 가능합니다.!</div>
+                <div id="error2">파일 업로드중 에러가 발생했습니다.</div>
+                <div id="abort">업로드가 사용자에 의해 취소되었거나, 인터넷 연결이 끊어졌습니다.</div>
+                <div id="warnsize">파일이 너무 큽니다. 10M 이하의 이미지만 올릴 수 있습니다.</div>
+
+                <div id="progress_info">
+                    <div id="progress"></div>
+                    <div id="progress_percent">&nbsp;</div>
+                    <div class="clear_both"></div>
+                    <div>
+                        <div id="speed">&nbsp;</div>
+                        <div id="remaining">&nbsp;</div>
+                        <div id="b_transfered">&nbsp;</div>
+                        <div class="clear_both"></div>
+                    </div>
+                    <div id="upload_response"></div>
+                </div>
+                <input type="hidden" id="fileSeqNo" name="fileSeqNo" value="">
+                <input type="hidden" id="fileDtlSeqNo" name="fileDtlSeqNo" value="">
+                <input type="hidden" id="fileAtchFileId" name="fileAtchFileId" value="">
+            </form>
+
+            <img id="preview" alt="">
+        </div>
+    </div>
+</div>
+<!-- //이미지업로드 -->
+    
+</body>
+</html>

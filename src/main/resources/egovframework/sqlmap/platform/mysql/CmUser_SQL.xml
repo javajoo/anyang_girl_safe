@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CmUser">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="cmUserSerarchVO" type="com.danusys.platform.user.service.AdminDefaultVO"/>
+	
+	<resultMap id="cmUser" class="com.danusys.platform.user.service.CmUserVO">
+		<result property="userId" column="USER_ID" columnIndex="1"/>
+		<result property="password" column="PASSWORD" columnIndex="2"/>
+		<result property="userNmKo" column="USER_NM_KO" columnIndex="3"/>
+		<result property="userNmEn" column="USER_NM_EN" columnIndex="4"/>
+		<result property="useTyCd" column="USE_TY_CD" columnIndex="5"/>
+		<result property="moblNo" column="MOBL_NO" columnIndex="6"/>
+		<result property="email" column="EMAIL" columnIndex="7"/>
+		<result property="ipAdres" column="IP_ADRES" columnIndex="8"/>
+		<result property="ipTyCd" column="IP_TY_CD" columnIndex="9"/>
+		<result property="ipCd" column="IP_CD" columnIndex="10"/>
+		<result property="offcTelNo" column="OFFC_TEL_NO" columnIndex="11"/>
+		<result property="rankNm" column="RANK_NM" columnIndex="12"/>
+		<result property="deptNm" column="DEPT_NM" columnIndex="13"/>
+		<result property="insttNm" column="INSTT_NM" columnIndex="14"/>
+		<result property="rpsbWork" column="RPSB_WORK" columnIndex="15"/>
+		<result property="remark" column="REMARK" columnIndex="16"/>
+		<result property="rgsUserId" column="RGS_USER_ID" columnIndex="17"/>
+		<result property="rgsDate" column="RGS_DATE" columnIndex="18"/>
+		<result property="updUserId" column="UPD_USER_ID" columnIndex="19"/>
+		<result property="updDate" column="UPD_DATE" columnIndex="20"/>
+	</resultMap>
+	
+	<insert id="cmUserDAO.insertCmUser_S">
+		<![CDATA[
+			INSERT INTO cm_user 
+				( USER_ID
+				  , PASSWORD
+				  , USER_NM_KO
+				  , USER_NM_EN
+				  , USE_TY_CD
+				  , MOBL_NO
+				  , EMAIL
+				  , IP_ADRES
+				  , IP_TY_CD
+				  , IP_CD
+				  , OFFC_TEL_NO
+				  , RANK_NM
+				  , DEPT_NM
+				  , INSTT_NM
+				  , RPSB_WORK
+				  , REMARK
+				  , RGS_USER_ID
+				  , RGS_DATE
+				  , UPD_USER_ID
+				  , UPD_DATE )
+			VALUES ( #userId#
+				  , #password#
+				  , #userNmKo#
+				  , #userNmEn#
+				  , #useTyCd#
+				  , #moblNo#
+				  , #email#
+				  , #ipAdres#
+				  , #ipTyCd#
+				  , #ipCd#
+				  , #offcTelNo#
+				  , #rankNm#
+				  , #deptNm#
+				  , #insttNm#
+				  , #rpsbWork#
+				  , #remark#
+				  , #rgsUserId#
+				  , #rgsDate#
+				  , #updUserId#
+				  , #updDate# )
+		]]>
+	</insert>
+	
+	<update id="cmUserDAO.updateCmUser_S">
+		<![CDATA[
+			UPDATE cm_user
+			SET USER_ID=#userId#
+				, PASSWORD=#password#
+				, USER_NM_KO=#userNmKo#
+				, USER_NM_EN=#userNmEn#
+				, USE_TY_CD=#useTyCd#
+				, MOBL_NO=#moblNo#
+				, EMAIL=#email#
+				, IP_ADRES=#ipAdres#
+				, IP_TY_CD=#ipTyCd#
+				, IP_CD=#ipCd#
+				, OFFC_TEL_NO=#offcTelNo#
+				, RANK_NM=#rankNm#
+				, DEPT_NM=#deptNm#
+				, INSTT_NM=#insttNm#
+				, RPSB_WORK=#rpsbWork#
+				, REMARK=#remark#
+				, RGS_USER_ID=#rgsUserId#
+				, RGS_DATE=#rgsDate#
+				, UPD_USER_ID=#updUserId#
+				, UPD_DATE=#updDate#
+			]]>
+	</update>
+	
+	<delete id="cmUserDAO.deleteCmUser_S">
+		<![CDATA[
+			DELETE FROM cm_user 
+			]]>
+	</delete>
+	
+	<select id="cmUserDAO.selectCmUser_S" resultMap="cmUser">
+		<![CDATA[
+			SELECT
+				USER_ID
+				, PASSWORD
+				, USER_NM_KO
+				, USER_NM_EN
+				, USE_TY_CD
+				, MOBL_NO
+				, EMAIL
+				, IP_ADRES
+				, IP_TY_CD
+				, IP_CD
+				, OFFC_TEL_NO
+				, RANK_NM
+				, DEPT_NM
+				, INSTT_NM
+				, RPSB_WORK
+				, REMARK
+				, RGS_USER_ID
+				, RGS_DATE
+				, UPD_USER_ID
+				, UPD_DATE
+			FROM cm_user
+			]]>
+	</select>
+	
+	<select id="cmUserDAO.selectCmUserList_D" parameterClass="cmUserSerarchVO" resultClass="egovMap">
+			SELECT
+								USER_ID
+								, PASSWORD
+								, USER_NM_KO
+								, USER_NM_EN
+								, USE_TY_CD
+								, MOBL_NO
+								, EMAIL
+								, IP_ADRES
+								, IP_TY_CD
+								, IP_CD
+								, OFFC_TEL_NO
+								, RANK_NM
+								, DEPT_NM
+								, INSTT_NM
+								, RPSB_WORK
+								, REMARK
+								, RGS_USER_ID
+								, RGS_DATE
+								, UPD_USER_ID
+								, UPD_DATE
+					FROM cm_user
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				USER_ID = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				PASSWORD LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+				ORDER BY USER_ID
+				limit #firstIndex#, #recordCountPerPage#	
+	</select>	
+	<select id="cmUserDAO.selectCmUserListTotCnt_S" parameterClass="cmUserSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM cm_user
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				USER_ID = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				PASSWORD LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+
+</sqlMap>

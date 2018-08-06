@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AdminGroup">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminGroupSerarchVO" type="com.danusys.platform.user.service.AdminGroupDefaultVO"/>
+	
+	<resultMap id="adminGroup" class="com.danusys.platform.user.service.AdminGroupVO">
+		<result property="seqNo" column="seq_no" columnIndex="1"/>
+		<result property="grpId" column="grp_id" columnIndex="2"/>
+		<result property="grpNm" column="grp_nm" columnIndex="3"/>
+		<result property="dstrtCd" column="dstrt_cd" columnIndex="4"/>
+		<result property="useTyCd" column="use_ty_cd" columnIndex="5"/>
+		<result property="startPgmMenuId" column="start_pgm_menu_id" columnIndex="6"/>
+		<result property="authority" column="authority" columnIndex="7"/>
+		<result property="updUserId" column="upd_user_id" columnIndex="8"/>
+		<result property="updDate" column="upd_date" columnIndex="9"/>
+		<result property="rgsUserId" column="rgs_user_id" columnIndex="10"/>
+		<result property="rgsDate" column="rgs_date" columnIndex="11"/>
+	</resultMap>
+	
+	<insert id="adminGroupDAO.insertAdminGroup_S">
+		<![CDATA[
+			INSERT INTO admin_group 
+				( seq_no
+				  , grp_id
+				  , grp_nm
+				  , dstrt_cd
+				  , use_ty_cd
+				  , start_pgm_menu_id
+				  , authority
+				  , upd_user_id
+				  , upd_date
+				  , rgs_user_id
+				  , rgs_date )
+			VALUES ( #seqNo#
+				  , #grpId#
+				  , #grpNm#
+				  , #dstrtCd#
+				  , #useTyCd#
+				  , #startPgmMenuId#
+				  , #authority#
+				  , #updUserId#
+				  , #updDate#
+				  , #rgsUserId#
+				  , #rgsDate# )
+		]]>
+	</insert>
+	
+	<update id="adminGroupDAO.updateAdminGroup_S">
+		<![CDATA[
+			UPDATE admin_group
+			SET seq_no=#seqNo#
+				, grp_id=#grpId#
+				, grp_nm=#grpNm#
+				, dstrt_cd=#dstrtCd#
+				, use_ty_cd=#useTyCd#
+				, start_pgm_menu_id=#startPgmMenuId#
+				, authority=#authority#
+				, upd_user_id=#updUserId#
+				, upd_date=#updDate#
+				, rgs_user_id=#rgsUserId#
+				, rgs_date=#rgsDate#
+						WHERE grp_id=#grpId#
+				]]>
+	</update>
+	
+	<delete id="adminGroupDAO.deleteAdminGroup_S">
+		<![CDATA[
+			DELETE FROM admin_group 
+						WHERE grp_id=#grpId#
+				]]>
+	</delete>
+	
+	<select id="adminGroupDAO.selectAdminGroup_S" resultMap="adminGroup">
+		<![CDATA[
+			SELECT
+				seq_no
+				, grp_id
+				, grp_nm
+				, dstrt_cd
+				, use_ty_cd
+				, start_pgm_menu_id
+				, authority
+				, upd_user_id
+				, upd_date
+				, rgs_user_id
+				, rgs_date
+			FROM admin_group
+						WHERE grp_id=#grpId#
+				]]>
+	</select>
+	
+	<select id="adminGroupDAO.selectAdminGroupList_D" parameterClass="adminGroupSerarchVO" resultClass="egovMap">
+			SELECT
+								seq_no
+								, grp_id
+								, grp_nm
+								, dstrt_cd
+								, use_ty_cd
+								, start_pgm_menu_id
+								, authority
+								, upd_user_id
+								, upd_date
+								, rgs_user_id
+								, rgs_date
+					FROM admin_group
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				grp_id LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+				ORDER BY 
+						grp_id DESC
+					limit #firstIndex#, #recordCountPerPage#	
+	</select>	
+	<select id="adminGroupDAO.selectAdminGroupListTotCnt_S" parameterClass="adminGroupSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM admin_group
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				grp_id LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+
+</sqlMap>

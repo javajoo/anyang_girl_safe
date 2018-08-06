@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+/* 기본 적용 소스 */
+
+html { height: 100%; }
+* { font-size: 12px; font-family:Dotum,"돋움",Verdana,san-serif; line-height:150%;}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, blockquote, th, td, p { margin: 0px; padding:0px;  list-style:none; }
+fieldset, img { border: 0px; }
+a{font-style:normal; text-decoration:none;}
+hr, legend {
+    height: 0;
+    left: -5000px;
+    line-height: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: absolute;
+    visibility: hidden;
+    width: 0;
+}
+caption {
+	font-size: 0;
+    height: 0;
+    line-height: 0;
+    visibility: hidden;
+    width: 0;
+}

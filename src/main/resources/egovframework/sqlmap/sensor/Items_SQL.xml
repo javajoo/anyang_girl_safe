@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Items">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="itemsSerarchVO" type="com.danusys.platform.sensor.service.ItemsVO"/>
+	
+	<resultMap id="itemsList" class="com.danusys.platform.sensor.service.ItemsVO">
+		<result property="id" column="ID" columnIndex="1"/>
+		<result property="name" column="NAME" columnIndex="2"/>
+		<result property="unit" column="UNIT" columnIndex="3"/>
+		<result property="dec" column="DEC" columnIndex="4"/>
+		<result property="lo" column="LO" columnIndex="5"/>
+		<result property="hi" column="HI" columnIndex="6"/>
+		<result property="bottom" column="BOTTOM" columnIndex="7"/>
+		<result property="top" column="TOP" columnIndex="8"/>
+		<result property="remark" column="REMARK" columnIndex="9"/>
+		<result property="order" column="ORDER" columnIndex="10"/>
+		<result property="using" column="USING" columnIndex="11"/>
+	</resultMap>
+	
+	<insert id="itemsDAO.insertItems_S">
+		<![CDATA[
+			INSERT INTO items 
+				( ID
+				  , NAME
+				  , UNIT
+				  , DEC
+				  , LO
+				  , HI
+				  , BOTTOM
+				  , TOP
+				  , REMARK
+				  , ORDER
+				  , USING )
+			VALUES ( #id#
+				  , #name#
+				  , #unit#
+				  , #dec#
+				  , #lo#
+				  , #hi#
+				  , #bottom#
+				  , #top#
+				  , #remark#
+				  , #order#
+				  , #using# )
+		]]>
+	</insert>
+	
+	<update id="itemsDAO.updateItems_S">
+		<![CDATA[
+			UPDATE items
+			SET ID=#id#
+				, NAME=#name#
+				, UNIT=#unit#
+				, DEC=#dec#
+				, LO=#lo#
+				, HI=#hi#
+				, BOTTOM=#bottom#
+				, TOP=#top#
+				, REMARK=#remark#
+				, ORDER=#order#
+				, USING=#using#
+			]]>
+	</update>
+	
+	<delete id="itemsDAO.deleteItems_S">
+		<![CDATA[
+			DELETE FROM items 
+			]]>
+	</delete>
+	
+	<select id="itemsDAO.selectItems_S" resultMap="itemsList">
+		<![CDATA[
+			SELECT
+				ID
+				, NAME
+				, UNIT
+				, DEC
+				, LO
+				, HI
+				, BOTTOM
+				, TOP
+				, REMARK
+				, ORDER
+				, USING
+			FROM items
+			]]>
+	</select>
+	
+	<select id="itemsDAO.selectAllItems_S" resultMap="itemsList">
+		<![CDATA[
+			SELECT
+				ID
+				, NAME
+				, UNIT
+				, DEC
+				, LO
+				, HI
+				, BOTTOM
+				, TOP
+				, REMARK
+				, ORDER
+				, USING
+			FROM items
+			]]>
+	</select>
+	
+	<select id="itemsDAO.selectItemsList_D" parameterClass="itemsSerarchVO" resultClass="egovMap">
+			SELECT
+								ID
+								, NAME
+								, UNIT
+								, DEC
+								, LO
+								, HI
+								, BOTTOM
+								, TOP
+								, REMARK
+								, ORDER
+								, USING
+					FROM items
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ID = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+				ORDER BY 
+				limit #firstIndex#, #recordCountPerPage#	
+	</select>	
+	<select id="itemsDAO.selectItemsListTotCnt_S" parameterClass="itemsSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM items
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ID = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+
+</sqlMap>

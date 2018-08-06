@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CctvViewLog">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="cctvViewLogSerarchVO" type="com.danusys.platform.west.service.CctvViewLogVO"/>
+	
+	<resultMap id="cctvViewLog" class="com.danusys.platform.west.service.CctvViewLogVO">
+		<result property="seqId" column="seq_id" columnIndex="1"/>
+		<result property="sessionId" column="session_id" columnIndex="2"/>
+		<result property="userId" column="user_id" columnIndex="3"/>
+		<result property="camera1Id" column="camera1_id" columnIndex="4"/>
+		<result property="camera2Id" column="camera2_id" columnIndex="5"/>
+		<result property="camera3Id" column="camera3_id" columnIndex="6"/>
+		<result property="camera4Id" column="camera4_id" columnIndex="7"/>
+		<result property="camera5Id" column="camera5_id" columnIndex="8"/>
+		<result property="camera6Id" column="camera6_id" columnIndex="9"/>
+		<result property="camera1Name" column="camera1_name" columnIndex="10"/>
+		<result property="camera2Name" column="camera2_name" columnIndex="11"/>
+		<result property="camera3Name" column="camera3_name" columnIndex="12"/>
+		<result property="camera4Name" column="camera4_name" columnIndex="13"/>
+		<result property="camera5Name" column="camera5_name" columnIndex="14"/>
+		<result property="camera6Name" column="camera6_name" columnIndex="15"/>
+		<result property="videoType" column="video_type" columnIndex="16"/>
+		<result property="menuType" column="menu_type" columnIndex="17"/>
+		<result property="videoStartTime" column="video_start_time" columnIndex="18"/>
+		<result property="videoEndTime" column="video_end_time" columnIndex="19"/>
+		<result property="viewStartTime" column="view_start_time" columnIndex="20"/>
+		<result property="viewEndTime" column="view_end_time" columnIndex="21"/>
+	</resultMap>
+	
+	<insert id="cctvViewLogDAO.insertCctvViewLog_S">
+		<![CDATA[
+			INSERT INTO cctv_view_log 
+				( session_id
+				  , user_id
+				  , camera1_id
+				  , camera2_id
+				  , camera3_id
+				  , camera4_id
+				  , camera5_id
+				  , camera6_id
+				  , camera1_name
+				  , camera2_name
+				  , camera3_name
+				  , camera4_name
+				  , camera5_name
+				  , camera6_name
+				  , video_type 
+				  , menu_type
+				  , video_start_time
+				  , video_end_time
+				  , view_start_time
+				  , view_end_time )
+			VALUES ( #sessionId#
+				  , #userId#
+				  , #camera1Id#
+				  , #camera2Id#
+				  , #camera3Id#
+				  , #camera4Id#
+				  , #camera5Id#
+				  , #camera6Id#
+				  , #camera1Name#
+				  , #camera2Name#
+				  , #camera3Name#
+				  , #camera4Name#
+				  , #camera5Name#
+				  , #camera6Name#
+				  , #videoType#
+				  , #menuType#
+				  , #videoStartTime#
+				  , #videoEndTime#
+				  , #viewStartTime#
+				  , #viewEndTime# )
+		]]>
+		<selectKey keyProperty="seqId" resultClass="Integer">
+        	SELECT LAST_INSERT_ID()
+    </selectKey>
+	</insert>
+	
+	<update id="cctvViewLogDAO.updateCctvViewLog_S">
+		<![CDATA[
+			UPDATE cctv_view_log
+			SET session_id=#sessionId#
+				, user_id=#userId#
+				, camera1_id=#camera1Id#
+				, camera2_id=#camera2Id#
+				, camera3_id=#camera3Id#
+				, camera4_id=#camera4Id#
+				, camera5_id=#camera5Id#
+				, camera6_id=#camera6Id#
+				, camera1_name=#camera1Name#
+				, camera2_name=#camera2Name#
+				, camera3_name=#camera3Name#
+				, camera4_name=#camera4Name#
+				, camera5_name=#camera5Name#
+				, camera6_name=#camera6Name#
+				, video_type=#videoType#
+				, menu_type=#menuType#
+				, video_start_time=#videoStartTime#
+				, video_end_time=#videoEndTime#
+				, view_start_time=#viewStartTime#
+				, view_end_time=#viewEndTime#
+			WHERE seq_id=#seqId#
+			]]>
+	</update>
+	
+	<update id="cctvViewLogDAO.updateCctvViewLog_viewEnd">
+		<![CDATA[
+			UPDATE cctv_view_log
+			SET view_end_time=#viewEndTime#
+			WHERE seq_id=#seqId#
+			]]>
+	</update>
+	
+	<select id="cctvViewLogDAO.selectCctvViewLogList" parameterClass="cctvViewLogSerarchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT seq_id
+				 , session_id
+				 , user_id
+				 , CONCAT(IF(menu_type='EVENT','이벤트모니터링','투망감시'),' >> ',IF(video_type='R','실시간','저장')) type_nm
+				 , CONCAT(camera1_name,'<br>',camera2_name,'<br>',camera3_name,'<br>',camera4_name,'<br>',camera5_name,'<br>',camera6_name) cctv_nm
+				 , CONCAT(IFNULL(date_format(video_start_time, '%Y-%m-%d %H:%i:%s'),'-'),'<br>',IFNULL(date_format(video_end_time, '%Y-%m-%d %H:%i:%s'),'-')) time1
+				 , CONCAT(IFNULL(date_format(view_start_time, '%Y-%m-%d %H:%i:%s'),'-'),'<br>',IFNULL(date_format(view_end_time, '%Y-%m-%d %H:%i:%s'),'-')) time2
+			FROM cctv_view_log
+			WHERE session_id = #sessionId#
+			ORDER BY seq_id DESC
+			]]>
+			<isNotEqual property="recordCountPerPage" compareValue="-1"> 
+			limit #firstIndex#, #recordCountPerPage#	
+			</isNotEqual>
+	</select>	
+	<select id="cctvViewLogDAO.selectCctvViewLogListTotCnt" parameterClass="cctvViewLogSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM cctv_view_log
+			WHERE session_id = #sessionId#
+	</select>
+
+</sqlMap>

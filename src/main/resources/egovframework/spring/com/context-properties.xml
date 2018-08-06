@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+    
+    <!-- 프로퍼티 정보 설정 -->
+    <bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+        <property name="properties">
+            <map>
+                <entry key="pageUnit" value="15"/>
+                <entry key="pageSize" value="10"/>
+                <entry key="posblAtchFileSize" value="5242880"/>
+				<entry key="Globals.WinfileStorePath" value="C:/ucp/"/>
+                <entry key="Globals.LinuxfileStorePath" value="/tmp/safeguide/"/>
+                <entry key="Globals.addedOptions" value="false"/>
+                <entry key="AES_KEY" value="082-70-7167-0701"/>
+                <entry key="access_token" value="fcee440e5a09a6651133e6550e37f91a" />
+                <entry key="Globals.SSOLogin" value="${Globals.SSOLogin}"/>
+				<entry key="Globals.DBEncrypt" value="${Globals.DBEncrypt}"/>
+				<entry key="Globals.SaltText" value="${Globals.SaltText}"/>
+				<entry key="Globals.UcpSite" value="${Globals.UcpSite}"/>
+				<!-- 파일업로드경로 -->
+				<!-- <entry key="Globals.filePath"                     value="${Globals.filePath}"/>
+				<entry key="Globals.fileStorePath"                value="${Globals.fileStorePath}"/>
+				<entry key="Globals.BBSAtchFilePath"              value="${Globals.BBSAtchFilePath}"/>
+				<entry key="Globals.UploadDirectory"              value="${Globals.UploadDirectory}"/>
+				<entry key="Globals.EventUploadDirectory"         value="${Globals.EventUploadDirectory}"/>
+				<entry key="Globals.IconUploadDirectory"          value="${Globals.IconUploadDirectory}"/>
+				<entry key="Globals.ManualUploadDirectory"        value="${Globals.ManualUploadDirectory}"/>
+				<entry key="Globals.MenuUploadDirectory"          value="${Globals.MenuUploadDirectory}"/>
+				<entry key="Globals.FcltUploadDirectory"          value="${Globals.FcltUploadDirectory}"/>
+				<entry key="Globals.CarNoImagesDirectory"         value="${Globals.CarNoImagesDirectory}"/>
+				<entry key="Globals.ReqMngDirectory"              value="${Globals.ReqMngDirectory}"/>
+				<entry key="Globals.RecognizeImagesDirectory"     value="${Globals.RecognizeImagesDirectory}"/>
+				<entry key="Globals.Recognize2ImagesDirectory"    value="${Globals.Recognize2ImagesDirectory}"/>
+				<entry key="Globals.EventImagesDirectory"         value="${Globals.EventImagesDirectory}"/>
+				<entry key="Globals.ImageTempDirectory"           value="${Globals.ImageTempDirectory}"/> -->
+            </map>
+        </property>
+    </bean>
+</beans>    

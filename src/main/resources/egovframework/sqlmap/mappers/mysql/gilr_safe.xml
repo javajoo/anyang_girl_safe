@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    
+<mapper namespace="girlSafe">
+	<select id="getUserList" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+				@ROWNUM := @ROWNUM + 1 AS num,
+				a.ENCRYPT_NAME as name,
+				a.AGE as age,
+				a.PHONE_NUMBER as phoneNumber,
+				a.ENCRYPT_ADRES as address,
+				CASE a.APPROVAL
+					WHEN 'N' THEN '비승인'
+					WHEN 'Y' THEN '승인'
+				END as approval,
+				b.SMART_ID as smartId,
+				b.SENSOR_ID as sensorId,				
+				CASE b.STATUS
+					WHEN '0' THEN 'ON'
+					WHEN '1' THEN 'OFF'
+				END as status,
+				b.STATUS as chkStatus,
+				CASE b.BAT
+					WHEN '0' THEN '정상(대)'
+					WHEN '1' THEN '정상(중)'
+					WHEN '2' THEN '교체필요'
+				END as bat,
+				b.BAT as chkBat,
+				b.EMERGENCY as emergency,
+				b.POINT_X as pointX,
+				b.POINT_Y as pointY,
+				b.M_POINT_X as mPointX,
+				b.M_POINT_Y as mPointY,
+				date_format(a.INSERT_DATE,'%Y-%m-%d %H:%i:%s')as insertDate,
+				date_format(a.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as updateDate,
+				c.S_PHONE_NUMBER as sPhoneNumber
+			FROM girl_safe_user a
+	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
+	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        ,(SELECT @ROWNUM := #{firstIndex}) R 
+	        WHERE 1=1
+	       
+	     ]]> 
+		<if test="approval == null or approval == '' ">
+			AND a.APPROVAL = 'Y'
+		</if>
+		<if test="totSearch != null and totSearch != '' ">
+			AND a.ENCRYPT_NAME LIKE '%' #{totSearch} '%'
+		</if>	
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getUserListCnt" parameterType="map" resultType="String">
+		<![CDATA[		
+	         SELECT 
+				COUNT(*)
+			FROM girl_safe_user a
+	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
+	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        WHERE 1=1
+	        AND a.APPROVAL = 'Y'
+	     ]]> 
+        <if test="totSearch != null and totSearch != '' ">
+        	AND a.ENCRYPT_NAME LIEK '%' #{totSearch} '%'
+        </if>	
+   
+	</select>
+	
+	<select id="getHwInfo" parameterType="map" resultType="HashMap">
+	       SELECT 
+				a.PHONE_NUMBER as phoneNumber,
+				b.SMART_ID as smartId,
+				b.SENSOR_ID as sensorId,
+				b.EMERGENCY as emergency,
+				b.POINT_X as pointX,
+				b.POINT_Y as pointY,
+				b.M_POINT_X as mPointX,
+				b.M_POINT_Y as mPointY
+			FROM girl_safe_user a
+	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
+	        WHERE 1=1
+        	AND b.SENSOR_ID = #{sensorId}
+	</select>
+	
+	<update id="updateSensorStat" parameterType="map">
+			UPDATE girl_safe_hw
+			SET 
+				STATUS=#{status},
+				BAT=#{bat},
+				<if test="pointX != null">
+					POINT_Y=#{pointY},
+					POINT_X=#{pointX},
+				</if>
+				UPDATE_DATE=NOW()
+			WHERE SENSOR_ID=#{sensorId};
+	</update>
+	
+	<update id="updateEmergency" parameterType="map">
+			UPDATE girl_safe_hw
+			SET 
+				EMERGENCY=#{emergency},
+				<if test="pointX != null">
+					POINT_Y=#{pointY},
+					POINT_X=#{pointX},
+				</if>
+				UPDATE_DATE=NOW()
+			WHERE SENSOR_ID=#{sensorId};
+	</update>
+	
+	<update id="updateApproval" parameterType="map">
+			UPDATE girl_safe_user
+			SET 
+				APPROVAL='Y',
+				UPDATE_DATE=NOW()
+			WHERE PHONE_NUMBER=#{phoneNumber};
+	</update>
+	
+	<select id="getEventList" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+				@ROWNUM := @ROWNUM + 1 AS num,
+				PHONE_NUMBER as phoneNumber,
+				ENCRYPT_NAME as name,
+				AGE as age,
+				ENCRYPT_ADRES as address,
+				SMART_ID as smartId,
+				SENSOR_ID as sensorId,
+				DIVISION as division,
+				CASE END_YN
+					WHEN '0' THEN '발생'
+					WHEN '1' THEN '종료'
+				END as endYN,
+				POINT_X as pointX,
+				POINT_Y as pointY,
+				date_format(START_TIME,'%Y-%m-%d %H:%i:%s') as startTime,
+				date_format(END_TIME,'%Y-%m-%d %H:%i:%s') as endTime,
+				date_format(INSERT_DATE,'%Y-%m-%d %H:%i:%s') as insertDate
+				
+			FROM girl_safe_event
+	        ,(SELECT @ROWNUM := #{firstIndex}) R 
+	        WHERE 1=1
+	    ]]> 
+        <if test="totSearch != null and totSearch != '' ">
+        	AND ENCRYPT_NAME LIKE '%' #{totSearch} '%'
+        </if>	
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if>
+	</select>
+	
+	<select id="getEventListCnt" parameterType="map" resultType="String">
+		<![CDATA[		
+	       SELECT 
+				COUNT(*)
+			FROM girl_safe_event a
+	        WHERE 1=1
+	     ]]> 
+        <if test="totSearch != null and totSearch != '' ">
+        	AND a.ENCRYPT_NAME LIKE '%' #{totSearch} '%'
+        </if>
+   
+	</select>
+	
+	<update id="insertEvent" parameterType="map">
+		INSERT INTO girl_safe_event
+			(PHONE_NUMBER, ENCRYPT_NAME, AGE, ENCRYPT_ADRES, SENSOR_ID, SMART_ID, DIVISION, END_YN, POINT_X, POINT_Y, START_TIME, END_TIME, INSERT_DATE)
+			SELECT 
+				a.PHONE_NUMBER,
+				a.ENCRYPT_NAME,
+				a.AGE,
+				a.ENCRYPT_ADRES,
+				b.SENSOR_ID,
+				b.SMART_ID,
+				'SENSOR',
+				'0',
+				b.POINT_X,
+				b.POINT_Y,
+				NOW(),
+				null,
+				NOW()
+			FROM girl_safe_user a
+			JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
+			WHERE b.SENSOR_ID=#{sensorId};
+	</update>
+	
+	<select id="getBoardList" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+				@ROWNUM := @ROWNUM + 1 AS num,
+				TITLE as title,
+				CONTENT as content,
+				PUSH_YN as pushYN,
+				COUNT as count,
+				date_format(INSERT_DATE,'%Y-%m-%d')as insertDate,
+				date_format(UPDATE_DATE,'%Y-%m-%d') as updateDate
+	        FROM girl_safe_board,(SELECT @ROWNUM := #{firstIndex}) R 
+	        WHERE 1=1
+	    ]]> 
+        <if test="totSearch != null and totSearch != '' ">
+        	AND TITLE LIKE '%' #{totSearch} '%'
+        </if>	
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if>
+	</select>
+	
+	<select id="getBoardListCnt" parameterType="map" resultType="String">
+		<![CDATA[		
+	       SELECT 
+				COUNT(*)
+			FROM girl_safe_board
+	        WHERE 1=1
+	     ]]> 
+        <if test="totSearch != null and totSearch != '' ">
+        	AND TITLE LIKE '%' #{totSearch} '%'
+        </if>	
+   
+	</select>
+	
+
+</mapper>

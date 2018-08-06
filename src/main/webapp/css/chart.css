@@ -1,0 +1,173 @@
+#chart {
+	position: absolute;
+    left: 250px;
+    top: 83px;
+	width: 100%;
+	height:100%;
+	z-index: 1;
+}
+
+#chart-refresh {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 1667px;
+	height: 36px;
+	background-color: #272830;
+	border: 1px solid #697071;
+}
+
+#join-chart1 {
+	position: absolute;
+    top: 37px;
+    left: 0;
+    border: 0px;
+    width: 833px;
+    height: 790px;
+}
+
+#join-chart2 {
+	position: absolute;
+    top: 37px;
+    left: 834px;
+    width: 833px;
+    height: 790px;
+    border: 0px;
+}
+
+#chart-top-left-div {
+	width: 100%;
+    height: 90%;
+}
+#chart-top-left {
+	position: relative;
+	top: 65px;
+	left: 115px;
+	width: 500px;
+	height: 210px;
+	border: 0px;
+}
+#chart-bottom-left {
+	position: relative;
+	top: 65px;
+	left: 115px;
+	width: 500px;
+	height: 210px;
+	border: 0px;
+}
+#chart-top-right {
+	position: relative;
+	top: 65px;
+	left: 115px;
+	width: 500px;
+	height: 210px;
+}
+#chart-bottom-right {
+	position: relative;
+	top: 65px;
+	left: 115px;
+	width: 500px;
+	height: 210px;
+}
+
+#top-left,#top-right,#bottom-left,#bottom-right {
+	position: absolute;
+    right: 70px;
+    top: 4px;
+    width: 29px;
+    height: 28px;
+    border: 0;
+    background: none;
+}
+#top-left-pdf,#top-right-pdf,#bottom-left-pdf,#bottom-right-pdf {
+	position: absolute;
+    right: 30px;
+    top: 4px;
+    width: 29px;
+    height: 28px;
+    border: 0;
+    background: none;
+}
+#chart-re-search {
+	position: absolute;
+    right: 10px;
+    top: 4px;
+    width: 29px;
+    height: 28px;
+    border: 0;
+    background: none;
+}
+#top-left .l-btn-left .l-btn-empty,
+#top-right .l-btn-left .l-btn-empty,
+#bottom-left .l-btn-left .l-btn-empty,
+#bottom-right .l-btn-left .l-btn-empty,
+#top-left-pdf .l-btn-left .l-btn-empty,
+#top-right-pdf .l-btn-left .l-btn-empty,
+#bottom-left-pdf .l-btn-left .l-btn-empty,
+#bottom-right-pdf .l-btn-left .l-btn-empty,
+#chart-re-search .l-btn-left .l-btn-empty {
+	width: 29px;
+    height: 28px;
+}
+#top-left .l-btn-icon-left .l-btn-icon,
+#top-right .l-btn-icon-left .l-btn-icon,
+#bottom-left .l-btn-icon-left .l-btn-icon,
+#bottom-right .l-btn-icon-left .l-btn-icon,
+#top-left-pdf .l-btn-icon-left .l-btn-icon,
+#top-right-pdf .l-btn-icon-left .l-btn-icon,
+#bottom-left-pdf .l-btn-icon-left .l-btn-icon,
+#bottom-right-pdf .l-btn-icon-left .l-btn-icon,
+#chart-re-search .l-btn-icon-left .l-btn-icon {
+	width: 29px;
+    height: 28px;
+    left: 0;
+    top: 8px;
+}
+
+#chart-top-left-background {
+	top: 128px;
+	left: 253px;
+	width: 833px;
+	height: 393px;
+	background-color: #212123;
+	border: 1px solid #697071;
+}
+#chart-bottom-left-background{
+	top: 530px;
+	left: 253px;
+	width: 833px;
+	height: 393px;
+	background-color: #212123;
+	border: 1px solid #697071;
+}
+#chart-top-right-background {
+	top: 128px;
+	left: 1091px;
+	width: 833px;
+	height: 393px;
+	background-color: #212123;
+	border: 1px solid #697071;
+}
+#chart-bottom-right-background {
+	top: 530px;
+	left: 1091px;
+	width: 833px;
+	height: 393px;
+	background-color: #212123;
+	border: 1px solid #697071;
+}
+
+#chart-top-left-title,
+#chart-bottom-left-title,
+#chart-top-right-title,
+#chart-bottom-right-title {
+	position: relative;
+	top: 0;
+	height: 36px;
+	border-bottom: 1px solid #697071;
+	padding-left: 20px;
+	color: #fff;
+    font-size: 14px;
+    font-family: 'nanum-barun-gothic-regular';
+    line-height: 33px;
+}

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="GirlSafe">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="GirlSafeSearchVO" type="com.danusys.platform.west.service.GirlSafeVO"/>
+	
+	<select id="girlSafeDAO.selectUserList" parameterClass="GirlSafeSearchVO" resultClass="egovMap">
+		SELECT 
+			@ROWNUM := @ROWNUM + 1 AS num,
+			a.ENCRYPT_NAME as name,
+			a.AGE as age,
+			a.PHONE_NUMBER as phoneNumber,
+			a.ENCRYPT_ADRES as address,
+			b.SMART_ID as smartId,
+			b.SENSOR_ID as sensorId,
+			b.STATUS as status,
+			b.BAT as bat,
+			b.EMERGENCY as emergency,
+			b.POINT_X as pointX,
+			b.POINT_Y as pointY,
+			b.M_POINT_X as mPointX,
+			b.M_POINT_Y as mPointY,
+			a.INSERT_DATE as inserDate,
+			a.UPDATE_DATE as updateDate,
+			c.S_PHONE_NUMBER as sPhoneNumber
+		FROM girl_safe_user a
+        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
+        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+        ,(SELECT @ROWNUM := 0) R 
+        <isNotEqual property="recordCountPerPage" compareValue="-1">
+			LIMIT #firstIndex#, #recordCountPerPage#
+		</isNotEqual>
+	</select>
+	
+	<update id="girlSafeDAO.updateSensorStatus">
+			UPDATE girl_safe_sensor
+			SET 
+				STATUS=#deStatus#,
+				BAT=#deBat#,
+				INSERT_DATE=NOW()
+			WHERE SENSOR_ID=#sensorId#				
+	</update>
+	
+	<update id="girlSafeDAO.updateSensorEmergency">
+			UPDATE girl_safe_sensor
+			SET 
+				EMERGENCY=#emergency#,
+				INSERT_DATE=NOW()
+			WHERE SENSOR_ID=#sensorId#				
+	</update>
+	
+	<update id="girlSafeDAO.updateSmartStatus">
+			UPDATE girl_safe_smart
+			SET 
+				STATUS=#status#,
+				BAT=#bat#,
+				INSERT_DATE=NOW()
+			WHERE SMART_ID=#smartId#	
+			AND SENSOR_ID=#sensorId#				
+	</update>
+	
+	<update id="girlSafeDAO.updateSmartEmergency">
+			UPDATE girl_safe_smart
+			SET 
+				EMERGENCY=#emergency#,
+				INSERT_DATE=NOW()
+			WHERE SMART_ID = #smartId# 
+			AND SENSOR_ID=#sensorId#
+	</update>
+	
+	<select id="girlSafeDAO.selectSensor" parameterClass="GirlSafeSearchVO" resultClass="egovMap">
+		SELECT 
+			a.NO as num,
+			a.NAME as name,
+			a.AGE as age,
+			a.PHONE_NUMBER as phoneNumber,
+			a.PHONE_NUMBER2 as phoneNumber2,
+			a.ADDRESS as address,
+			a.SENSOR_ID as sensorId,
+			b.STATUS as status,
+			b.BAT as bat,
+			b.EMERGENCY as emergency,
+			b.POINT_X as pointX,
+			b.POINT_Y as pointY,
+			b.POINT_Z as pointZ
+		FROM girl_safe_user a, girl_safe_sensor b
+		where a.USER_ID=b.USER_ID
+		AND b.SENSOR_ID=#sensorId#
+	</select>
+	
+	<select id="girlSafeDAO.selectSmart" parameterClass="GirlSafeSearchVO" resultClass="egovMap">
+		SELECT 
+			a.NO as num,
+			a.NAME as name,
+			a.AGE as age,
+			a.PHONE_NUMBER as phoneNumber,
+			a.PHONE_NUMBER2 as phoneNumber2,
+			a.ADDRESS as address,
+			a.SENSOR_ID as sensorId,
+			b.STATUS as status,
+			b.BAT as bat,
+			b.EMERGENCY as emergency,
+			b.POINT_X as pointX,
+			b.POINT_Y as pointY,
+			b.POINT_Z as pointZ
+		FROM girl_safe_user a, girl_safe_smart b
+		where a.USER_ID=b.USER_ID
+		AND b.SENSOR_ID=#sensorId#
+		AND b.SMART_ID=#smartId#
+	</select>
+	
+	<select id="girlSafeDAO.selectUserListTotCnt" parameterClass="GirlSafeSearchVO" resultClass="int">
+		SELECT 
+			COUNT(*)
+		FROM girl_safe_user a, girl_safe_hw b
+		where a.PHONE_NUMBER=b.PHONE_NUMBER
+	</select>
+	
+	
+
+</sqlMap>

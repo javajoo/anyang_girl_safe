@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Admin">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminSerarchVO" type="com.danusys.platform.vo.AdminVo"/>
+		
+	<resultMap id="config" class="com.danusys.platform.login.service.ConfigVO">
+		<result property="mgrIp" column="mgr_ip" columnIndex="1"/>
+		<result property="mgrPort" column="mgr_port" columnIndex="2"/>
+		<result property="mgrId" column="mgr_id" columnIndex="3"/>
+		<result property="mgrPw" column="mgr_pw" columnIndex="4"/>
+		<result property="gisDfmsUrl" column="gis_dfms_url" columnIndex="5"/>
+		<result property="gisDfmswfsUrl" column="gis_dfmswfs_url" columnIndex="6"/>
+	</resultMap>
+		
+	<select id="loginDAO.selectAdminForLogin" parameterClass="adminSerarchVO" resultClass="adminSerarchVO">
+		<![CDATA[
+			SELECT
+				ID id
+				, PWD pwd
+				, NAME name
+				, BIRTHDAY birthday
+				, PHONE_NO phoneNo
+				, EMAIL email
+				, AUTHORITY authority
+				, ADDRESS address
+				, JOIN_DATE  joinDate
+				, LEAVE_DATE leaveDate
+				, CREATE_DATE createDate
+				, LOGIN_FAIL_COUNT loginFailCount
+				, LAST_PWD_UPDATE_DATE lastPwdUpdateDate
+				, DELETED deleted
+				, DELETE_ID deleteId
+				, DELETE_DATE deleteDate
+				, USER_NM_KO
+				, USER_NM_EN
+				, USE_TY_CD
+			FROM admin
+			WHERE deleted = 'N'
+			AND	id = #id#
+			AND pwd = #pwd#
+		]]>
+	</select>
+	
+	<select id="loginDAO.selectLogin" parameterClass="adminSerarchVO" resultClass="adminSerarchVO">
+		<![CDATA[
+			SELECT
+				ID id
+				, PWD pwd
+				, NAME name
+				, BIRTHDAY birthday
+				, PHONE_NO phoneNo
+				, EMAIL email
+				, ADDRESS address
+				, JOIN_DATE  joinDate
+				, LEAVE_DATE leaveDate
+				, CREATE_DATE createDate
+				, LOGIN_FAIL_COUNT loginFailCount
+				, LAST_PWD_UPDATE_DATE lastPwdUpdateDate
+				, DELETED deleted
+				, DELETE_ID deleteId
+				, DELETE_DATE deleteDate
+				, USER_NM_KO
+				, USER_NM_EN
+				, USE_TY_CD
+				, A.USE_TY_CD 
+				, GU.GRP_ID authority
+				, GU.GRP_NM_KO
+				, GU.AUTH_LVL_NM
+				, MIN(GU.AUTH_LVL) AUTH_LVL
+			FROM admin A
+			LEFT JOIN (
+			SELECT A.USER_ID, A.GRP_ID, B.GRP_NM_KO , C.AUTH_LVL_NM , C.AUTH_LVL 
+			FROM CM_GRP_USER A INNER JOIN CM_GROUP B ON 
+			A.GRP_ID = B.GRP_ID INNER JOIN CM_GRP_AUTH_LVL C ON A.GRP_ID = C.GRP_ID AND A.AUTH_LVL = C.AUTH_LVL
+			) GU
+			ON A.id = GU.USER_ID
+			WHERE  USE_TY_CD = 'Y'
+			AND	id = #id#
+			AND pwd = #pwd#
+			GROUP BY id, pwd, NAME, birthday, PHONE_NO, EMAIL, ADDRESS, JOIN_DATE, LEAVE_DATE
+			, CREATE_DATE, LOGIN_FAIL_COUNT, LAST_PWD_UPDATE_DATE, DELETED, DELETE_ID, DELETE_DATE
+      		, USER_NM_KO, USER_NM_EN, USE_TY_CD, GU.GRP_ID, GU.GRP_NM_KO, GU.AUTH_LVL_NM
+		]]>
+	</select>	
+	<select id="loginDAO.adminList" parameterClass="adminSerarchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT m.seq_no
+				, m.id
+				, m.pwd
+				, TO_CHAR(CRYPTO_AES128.AES_DECRYPT(m.name,#key#)) name
+				, m.birthday
+				, TO_CHAR(CRYPTO_AES128.AES_DECRYPT(m.phone_no,#key#)) phone_no
+				, TO_CHAR(CRYPTO_AES128.AES_DECRYPT(m.email,#key#)) email
+				, CASE WHEN m.authority='S' THEN '안전지키미' ELSE '치매서비스' END authority
+				, TO_CHAR(CRYPTO_AES128.AES_DECRYPT(m.address,#key#)) address
+				, TO_CHAR(m.join_date, 'yyyy-mm-dd hh24-mi-ss') join_date
+				, m.leave_date
+				, m.create_date
+				, m.login_fail_count
+				, m.last_pwd_update_date
+				, m.deleted
+				, m.delete_id
+				, m.delete_date
+				, m.deptmnt
+				, m.rank
+				, m.USER_NM_KO
+				, m.USER_NM_EN
+				, m.USE_TY_CD
+			FROM admin m
+			WHERE m.deleted = 'N'
+		]]>
+	</select>
+	
+	<insert id="loginDAO.insertAdminList">
+		<![CDATA[
+			INSERT INTO admin 
+				(   seq_no
+				  , id
+				  , pwd
+				  , name
+				  , birthday
+				  , phone_no
+				  , email
+				  , authority
+				  , address
+				  , join_date
+				  , create_date
+				  , login_fail_count
+				  , last_pwd_update_date
+				  , deleted
+				  , deptmnt
+				  , rank )
+			VALUES ( admin_seq.NEXTVAL
+				  , #id#
+				  , #pwd#
+				  , CRYPTO_AES128.AES_DECRYPT(#name#, #key#)
+				  , #birthday#
+				  , CRYPTO_AES128.AES_DECRYPT(#phoneNo#, #key#)
+				  , CRYPTO_AES128.AES_DECRYPT(#address#, #key#)
+				  , CASE WHEN #authority#='안전지키미' THEN 'S' ELSE 'D' END
+				  , CRYPTO_AES128.AES_DECRYPT(#address#, #key#)
+				  , CURRENT_TIMESTAMP
+				  , CURRENT_TIMESTAMP
+				  , '0'
+				  , CURRENT_TIMESTAMP
+				  , 'N'
+				  , #deptmnt#
+				  , #rank# )
+		]]>
+	</insert>
+	
+	<select id="loginDAO.chkAdminPwd" parameterClass="adminSerarchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT m.seq_no
+				, m.id
+				, m.pwd
+			FROM admin m
+			WHERE m.deleted = 'N'
+			AND m.id = #id#
+		]]>
+	</select>
+	
+	<update id="loginDAO.updateAdminList">
+		<![CDATA[
+			UPDATE admin
+			SET name = CRYPTO_AES128.AES_DECRYPT(#name#, #key#)
+			  , birthday = #birthday#
+			  , phone_no = CRYPTO_AES128.AES_DECRYPT(#phoneNo#, #key#)
+			  , email = CRYPTO_AES128.AES_DECRYPT(#email#, #key#)
+			  , authority = CASE WHEN #authority#='안전지키미' THEN 'S' ELSE 'D' END
+			  , address = CRYPTO_AES128.AES_DECRYPT(#address#, #key#)
+			  , login_fail_count = '0'
+			  , last_pwd_update_date = CURRENT_TIMESTAMP
+			  , deptmnt = #deptmnt#
+			  , rank = #rank#
+			 ]]>
+			 <isNotEmpty property = "pwd">
+			 <![CDATA[
+			  , pwd = #pwd#
+			 ]]>			
+			</isNotEmpty>
+			WHERE id = #id#
+	</update>
+	
+	<delete id="loginDAO.deleteAdminList">
+		<![CDATA[
+			DELETE FROM admin WHERE seq_no in ]]>
+		<iterate property="seqNoList" open="(" close=")" conjunction=",">
+			#seqNoList[]#
+		</iterate>
+	</delete>
+	
+	<select id="configDAO.selectConfig_S" resultMap="config">
+		<![CDATA[
+			SELECT
+				mgr_ip
+				, mgr_port
+				, mgr_id
+				, mgr_pw
+				, gis_dfms_url
+				, gis_dfmswfs_url
+			FROM config
+			]]>
+	</select>
+</sqlMap>

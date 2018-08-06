@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AdminSetting">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="AdminSettingSerarchVO" type="com.danusys.platform.west.service.AdminSettingVO"/>
+	
+	<select id="adminSettingDAO.selectAdminSettingUserList" parameterClass="AdminSettingSerarchVO" resultClass="egovMap">
+			SELECT seq_no
+				 , id
+				 , pwd
+				 , name
+				 , birthday
+				 , phone_no
+				 , email
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'AUTH' AND code_cd = authority) authority
+				 , date_format(join_date, '%Y-%m-%d %H:%i:%s') join_date
+				 , IF(user_flag=1,'사용','미사용') user_flag
+				 , user_nm_en, ip_adres, ip_ty_cd, ip_cd, offc_tel_no, rank_nm, dept_nm, instt_nm, rpsb_work, remark, rgs_user_id, rgs_date, upd_user_id, upd_date
+			FROM admin
+			WHERE 1=1
+			<isNotEmpty property = "id">
+			AND id = #id#
+			</isNotEmpty>
+			<isNotEmpty property = "name">
+			AND name = #name#
+			</isNotEmpty>
+			<isNotEmpty property = "userFlag">
+			AND user_flag = #userFlag#
+			</isNotEmpty>
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			LIMIT #firstIndex#, #recordCountPerPage#
+			</isNotEqual>
+	</select>
+	<select id="adminSettingDAO.selectAdminSettingUserListTotCnt" parameterClass="AdminSettingSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM admin
+			WHERE 1=1
+			<isNotEmpty property = "id">
+			AND id = #id#
+			</isNotEmpty>
+			<isNotEmpty property = "name">
+			AND name = #name#
+			</isNotEmpty>
+			<isNotEmpty property = "userFlag">
+			AND user_flag = #userFlag#
+			</isNotEmpty>
+	</select>
+</sqlMap>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AdminGroupAuthLvl">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminGroupAuthLvlSerarchVO" type="com.danusys.platform.user.service.AdminGroupAuthLvlDefaultVO"/>
+	
+	<resultMap id="adminGroupAuthLvl" class="com.danusys.platform.user.service.AdminGroupAuthLvlVO">
+		<result property="seqNo" column="seq_no" columnIndex="1"/>
+		<result property="grpId" column="grp_id" columnIndex="2"/>
+		<result property="authLvl" column="auth_lvl" columnIndex="3"/>
+		<result property="authLvlNm" column="auth_lvl_nm" columnIndex="4"/>
+		<result property="updUserId" column="upd_user_id" columnIndex="5"/>
+		<result property="updDate" column="upd_date" columnIndex="6"/>
+		<result property="rgsUserId" column="rgs_user_id" columnIndex="7"/>
+		<result property="rgsDate" column="rgs_date" columnIndex="8"/>
+	</resultMap>
+	
+	<insert id="adminGroupAuthLvlDAO.insertAdminGroupAuthLvl_S">
+		<![CDATA[
+			INSERT INTO admin_group_auth_lvl 
+				( seq_no
+				  , grp_id
+				  , auth_lvl
+				  , auth_lvl_nm
+				  , upd_user_id
+				  , upd_date
+				  , rgs_user_id
+				  , rgs_date )
+			VALUES ( admin_group_auth_lvl_seq.NEXTVAL
+				  , #grpId#
+				  , #authLvl#
+				  , #authLvlNm#
+				  , #updUserId#
+				  , #updDate#
+				  , #rgsUserId#
+				  , #rgsDate# )
+		]]>
+	</insert>
+	
+	<update id="adminGroupAuthLvlDAO.updateAdminGroupAuthLvl_S">
+		<![CDATA[
+			UPDATE admin_group_auth_lvl
+			SET seq_no=#seqNo#
+				, grp_id=#grpId#
+				, auth_lvl=#authLvl#
+				, auth_lvl_nm=#authLvlNm#
+				, upd_user_id=#updUserId#
+				, upd_date=#updDate#
+				, rgs_user_id=#rgsUserId#
+				, rgs_date=#rgsDate#
+			]]>
+	</update>
+	
+	<delete id="adminGroupAuthLvlDAO.deleteAdminGroupAuthLvl_S">
+		<![CDATA[
+			DELETE FROM admin_group_auth_lvl 
+			]]>
+	</delete>
+	
+	<select id="adminGroupAuthLvlDAO.selectAdminGroupAuthLvl_S" resultMap="adminGroupAuthLvl">
+		<![CDATA[
+			SELECT
+				seq_no
+				, grp_id
+				, auth_lvl
+				, auth_lvl_nm
+				, upd_user_id
+				, upd_date
+				, rgs_user_id
+				, rgs_date
+			FROM admin_group_auth_lvl
+			]]>
+	</select>
+	
+	<select id="adminGroupAuthLvlDAO.selectAdminGroupAuthLvlList_D" parameterClass="adminGroupAuthLvlSerarchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM rnum, seq_no
+						 , grp_id
+						 , auth_lvl
+						 , auth_lvl_nm
+						 , upd_user_id
+						 , upd_date
+						 , rgs_user_id
+						 , rgs_date
+					FROM admin_group_auth_lvl
+					WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+					AND seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+					AND grp_id LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+					ORDER BY grp_id DESC) INNER
+				WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      			AND rnum <= #lastIndex#
+      		]]>
+      		</isNotEqual>
+      		)
+      		WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      		AND rnum > #firstIndex#
+      		]]>
+      		</isNotEqual>
+	</select>	
+	<select id="adminGroupAuthLvlDAO.selectAdminGroupAuthLvlListTotCnt_S" parameterClass="adminGroupAuthLvlSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM admin_group_auth_lvl
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				grp_id LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+	</select>
+
+</sqlMap>

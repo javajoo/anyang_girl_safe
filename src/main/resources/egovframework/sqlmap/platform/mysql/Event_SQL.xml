@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Event">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="EventSearchVO" type="com.danusys.platform.west.service.EventVO"/>
+	
+	<select id="eventDAO.selectEventList" parameterClass="EventSearchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT e.seq_no
+				 , e.event_no
+				 , 'images/icons/EVENT_TYPE__L.png') icon_name
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_cd = e.event_type) event_type
+				 , date_format(e.event_de, '%Y-%m-%d %H:%i:%s') event_de
+				 , date_format(e.end_de, '%Y-%m-%d %H:%i:%s') end_de
+				 , e.event_rating
+				 , e.event_place
+				 , e.event_cont
+				 , e.state
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_STATE' AND code_cd = e.state) state_nm
+				 , e.encrypt_latitude
+				 , e.encrypt_longitude
+				 , IFNULL(CAST(AES_DECRYPT(UNHEX(e.encrypt_latitude),#key#)AS CHAR),0) latitude
+				 , IFNULL(CAST(AES_DECRYPT(UNHEX(e.encrypt_longitude),#key#)AS CHAR),0) longitude
+				 , '0' altitude
+				 , e.accept_type
+				 , e.accept_id
+				 , e.accept_cont
+				 , e.info_nm
+				 , e.zone
+				 , e.facility_id
+				 , e.inst_id
+				 , e.inst_de
+				 , e.upd_id
+				 , e.upd_de
+			FROM event e
+			WHERE e.seq_no = (SELECT max(a.seq_no) FROM event a WHERE a.event_no = e.event_no)
+			]]>
+			<isNotEmpty property = "eventNo">
+			AND	e.event_no = #eventNo#
+			</isNotEmpty>
+			<isNotEqual property="state" compareValue="0"> 
+			AND e.state = #state#
+			</isNotEqual>
+			<isNotEmpty property = "eventType">
+			AND	e.event_type = #eventType#
+			</isNotEmpty>
+			<isNotEmpty property = "comboState">
+			AND	e.state = #comboState#
+			</isNotEmpty>
+			<isNotEmpty property = "eventDeS">
+			AND LEFT(e.event_de,10) >= #eventDeS#
+			</isNotEmpty>
+			<isNotEmpty property = "eventDeE">
+			AND #eventDeE# >= LEFT(e.event_de,10)
+			</isNotEmpty>
+			<isNotEmpty property = "totSearch">
+			AND (CONCAT(IFNULL((SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_cd = e.event_type),''),IFNULL(e.event_cont,'')
+			,IFNULL((SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_STATE' AND code_cd = e.state),''),IFNULL(e.facility_id,''))
+				LIKE CONCAT('%',#totSearch#,'%'))
+			</isNotEmpty>
+			<![CDATA[
+			ORDER BY e.upd_de DESC
+			]]>
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			LIMIT #firstIndex#, #recordCountPerPage#
+			</isNotEqual>
+	</select>	
+	<select id="eventDAO.selectEventListTotCnt" parameterClass="EventSearchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM event e
+			WHERE e.seq_no = (SELECT max(a.seq_no) FROM event a WHERE a.event_no = e.event_no)
+			<isNotEmpty property = "eventNo">
+			AND	e.event_no = #eventNo#
+			</isNotEmpty>
+			<isNotEqual property="state" compareValue="0"> 
+			AND e.state = #state#
+			</isNotEqual>
+			<isNotEmpty property = "eventType">
+			AND	e.event_type = #eventType#
+			</isNotEmpty>
+			<isNotEmpty property = "comboState">
+			AND	e.state = #comboState#
+			</isNotEmpty>
+			<isNotEmpty property = "eventDeS">
+			AND LEFT(e.event_de,10) >= #eventDeS#
+			</isNotEmpty>
+			<isNotEmpty property = "eventDeE">
+			AND #eventDeE# >= LEFT(e.event_de,10)
+			</isNotEmpty>
+			<isNotEmpty property = "totSearch">
+			AND (CONCAT(IFNULL((SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_cd = e.event_type),''),IFNULL(e.event_cont,'')
+			,IFNULL((SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_STATE' AND code_cd = e.state),''),IFNULL(e.facility_id,''))
+				LIKE CONCAT('%',#totSearch#,'%'))
+			</isNotEmpty>
+	</select>
+	
+	<select id="eventDAO.selectEventState" parameterClass="EventSearchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT e.seq_no
+				 , e.event_no
+				 , e.state
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_STATE' AND code_cd = e.state) state_nm
+				 , e.event_cont
+				 , date_format(e.event_de, '%Y-%m-%d %H:%i:%s') event_de
+				 , e.accept_id
+				 , e.inst_id
+				 , e.inst_de
+				 , e.upd_id
+				 , e.upd_de
+			FROM event e
+			WHERE e.event_no = #eventNo#
+			ORDER BY e.seq_no
+			]]>
+	</select>
+	
+	<select id="eventDAO.selectEventConfm" parameterClass="EventSearchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT e.seq_no
+				 , e.event_no
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_cd = e.event_type) event_title
+				 , date_format(e.event_de, '%Y-%m-%d %H:%i:%s') event_de
+				 , e.event_rating
+				 , e.event_place
+				 , e.event_cont
+				 , e.encrypt_latitude
+				 , e.encrypt_longitude
+				 , e.accept_type
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'ACCEPT_TYPE' AND code_cd = e.accept_type) accept_nm
+				 , e.accept_id
+				 , e.info_nm
+				 , e.confm_flag
+			FROM event e
+			WHERE e.seq_no = (SELECT max(a.seq_no) FROM event a WHERE a.event_no = e.event_no)
+			AND e.state = 'EVENT_STATE_1'
+			AND IFNULL(e.confm_flag,'N') != 'Y'
+			ORDER BY e.seq_no DESC
+			]]>
+			
+	</select>
+
+	<insert id="eventDAO.insertEvent">
+		<![CDATA[
+			INSERT INTO event 
+				( event_no
+				  , event_type
+				  , event_de
+				  , event_rating
+				  , event_place
+				  , state
+				  , encrypt_latitude
+				  , encrypt_longitude
+				  , accept_type
+				  , accept_id
+				  , accept_cont
+				  , info_nm
+				  , zone
+				  , facility_id
+				  , inst_de
+				  , inst_id
+				  , upd_id )
+			SELECT #eventNo#
+				  , #eventType#
+				  , #eventDe#
+				  , #eventRating#
+				  , #eventPlace#
+				  , 'EVENT_STATE_1'
+				  , HEX(AES_ENCRYPT(#latitude#, #key#))
+				  , HEX(AES_ENCRYPT(#longitude#, #key#))
+				  , #acceptType#
+				  , #instId#
+				  , #acceptCont#
+				  , #infoNm#
+				  , #zone#
+				  , #facilityId#
+				  , now()
+				  , #instId#
+				  , #instId# FROM dual
+			WHERE NOT EXISTS (
+				SELECT seq_no FROM event 
+				WHERE event_no=#eventNo#
+				AND event_de=#eventDe#)
+		]]>
+	</insert>
+	
+	<insert id="eventDAO.insertEventEnd">
+		<![CDATA[
+			INSERT INTO event 
+				( event_no
+				  , event_type
+				  , event_de
+				  , end_de
+				  , event_rating
+				  , event_place
+				  , state
+				  , encrypt_latitude
+				  , encrypt_longitude
+				  , accept_type
+				  , accept_id
+				  , accept_cont
+				  , info_nm
+				  , zone
+				  , facility_id
+				  , inst_de
+				  , inst_id )
+			VALUES ( #eventNo#
+				  , IFNULL((SELECT code_cd FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_nm = #eventType#),#eventType#)
+				  , #eventDe#
+				  , #endDe#
+				  , #eventRating#
+				  , #eventPlace#
+				  , 'EVENT_STATE_3'
+				  , HEX(AES_ENCRYPT(#latitude#, #key#))
+				  , HEX(AES_ENCRYPT(#longitude#, #key#))
+				  , #acceptType#
+				  , #instId#
+				  , #acceptCont#
+				  , #infoNm#
+				  , #zone#
+				  , #facilityId#
+				  , now()
+				  , #instId# )
+		]]>
+	</insert>
+	<insert id="eventDAO.insertEventUpd">
+		<![CDATA[
+			INSERT INTO event 
+				( event_no
+				  , event_type
+				  , event_de
+				  , event_rating
+				  , event_place
+				  , state
+				  , encrypt_latitude
+				  , encrypt_longitude
+				  , accept_type
+				  , accept_id
+				  , accept_cont
+				  , info_nm
+				  , zone
+				  , facility_id
+				  , inst_de
+				  , inst_id )
+			VALUES ( #eventNo#
+				  , IFNULL((SELECT code_cd FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_nm = #eventType#),#eventType#)
+				  , #eventDe#
+				  , #eventRating#
+				  , #eventPlace#
+				  , 'EVENT_STATE_2'
+				  , HEX(AES_ENCRYPT(#latitude#, #key#))
+				  , HEX(AES_ENCRYPT(#longitude#, #key#))
+				  , #acceptType#
+				  , #instId#
+				  , #acceptCont#
+				  , #infoNm#
+				  , #zone#
+				  , #facilityId#
+				  , now()
+				  , #instId# )
+			ON DUPLICATE KEY UPDATE
+			  seq_no = #seqNo#
+			, event_no=#eventNo#
+			, event_type=IFNULL((SELECT code_cd FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_nm = #eventType#),#eventType#)
+			, event_de=#eventDe#
+			, event_rating=#eventRating#
+			, event_place=#eventPlace#
+			, encrypt_latitude=HEX(AES_ENCRYPT(#latitude#, #key#))
+			, encrypt_longitude=HEX(AES_ENCRYPT(#longitude#, #key#))
+			, accept_type=#acceptType#
+			, accept_id=#instId#
+			, accept_cont=#acceptCont#
+			, info_nm=#infoNm#
+			, zone=#zone#
+			, facility_id=#facilityId#
+			, event_cont=#eventCont#
+			, upd_de=now()
+			, upd_id=#updId#
+		]]>
+	</insert>
+	
+	<update id="eventDAO.updateEventConfm">
+		<![CDATA[
+			UPDATE event
+			SET confm_flag='Y'
+			  , upd_de=now()
+			  , upd_id=#updId#
+		]]>
+		<isNotEmpty property = "seqNo">
+			WHERE seq_no = #seqNo#
+		</isNotEmpty>
+	</update>
+	
+	<delete id="eventDAO.deleteEvent">
+		<![CDATA[
+			DELETE FROM notice WHERE seq_no in ]]>
+		<iterate property="seqNoList" open="(" close=")" conjunction=",">
+			#seqNoList[]#
+		</iterate>
+	</delete>
+	
+	<select id="eventDAO.selectEventFlagConfm" parameterClass="EventSearchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT e.seq_no
+				 , e.event_no
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_cd = e.event_type) event_title
+				 , date_format(e.event_de, '%Y-%m-%d %H:%i:%s') event_de
+				 , e.event_rating
+				 , e.event_place
+				 , e.event_cont
+				 , e.encrypt_latitude
+				 , e.encrypt_longitude
+				 , e.accept_type
+				 , (SELECT code_nm FROM platform_code WHERE code_group = 'ACCEPT_TYPE' AND code_cd = e.accept_type) accept_nm
+				 , e.accept_id
+				 , e.info_nm
+				 , e.confm_flag
+			FROM event e
+			WHERE NOT EXISTS (SELECT 1 FROM event_flag a WHERE a.event_seq_no = e.seq_no AND a.inst_id='eco')
+			AND e.state = 'EVENT_STATE_1'
+			AND e.event_type = 'EVENT_TYPE_6'
+			AND IFNULL(e.confm_flag,'N') != 'Y'
+			ORDER BY e.seq_no DESC
+			]]>
+			
+	</select>	
+	
+	<insert id="eventDAO.insertEventFlagConfm">
+		<![CDATA[
+			INSERT INTO event_flag
+			(event_seq_no, inst_id, inst_de) VALUES 
+			(#seqNo#, #instId#, now());
+		]]>
+	</insert>	
+
+	<select id="eventDAO.selectEventStats" parameterClass="EventSearchVO" resultClass="egovMap">
+		<![CDATA[
+				select * from (
+				select event_type,
+				(SELECT code_nm FROM platform_code WHERE code_group = 'EVENT_TYPE' AND code_cd = event_type) event_title,
+				extract(year from event_de) "year", 
+				SUM(CasE WHEN extract(month from event_de) = 1 THEN 1 ELSE 0 END)as 'm1',
+				SUM(CasE WHEN extract(month from event_de) = 2 THEN 1 ELSE 0 END)as 'm2',
+				SUM(CasE WHEN extract(month from event_de) = 3 THEN 1 ELSE 0 END)as 'm3',
+				SUM(CasE WHEN extract(month from event_de) = 4 THEN 1 ELSE 0 END)as 'm4',
+				SUM(CasE WHEN extract(month from event_de) = 5 THEN 1 ELSE 0 END)as 'm5',
+				SUM(CasE WHEN extract(month from event_de) = 6 THEN 1 ELSE 0 END)as 'm6',
+				SUM(CasE WHEN extract(month from event_de) = 7 THEN 1 ELSE 0 END)as 'm7',
+				SUM(CasE WHEN extract(month from event_de) = 8 THEN 1 ELSE 0 END)as 'm8',
+				SUM(CasE WHEN extract(month from event_de) = 9 THEN 1 ELSE 0 END)as 'm9',
+				SUM(CasE WHEN extract(month from event_de) = 10 THEN 1 ELSE 0 END)as 'm10',
+				SUM(CasE WHEN extract(month from event_de) = 11 THEN 1 ELSE 0 END)as 'm11',
+				SUM(CasE WHEN extract(month from event_de) = 12 THEN 1 ELSE 0 END)as 'm12'
+				from event
+				group by event_title,year
+				)obj
+				where 1=1 
+			]]>
+			<isNotEmpty property = "eventType">
+			AND	event_type = #eventType#
+			</isNotEmpty>
+			<isNotEmpty property = "eventDe">
+			AND year = #eventDe#
+			</isNotEmpty>
+	</select>
+
+</sqlMap>

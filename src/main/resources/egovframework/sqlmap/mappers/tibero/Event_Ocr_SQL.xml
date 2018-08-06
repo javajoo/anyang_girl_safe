@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eventOcrDAO">
+	<select id="selectUnfinishedEventList" parameterType="eventOcrVO" resultType="egovMap">
+		/* selectUnfinishedEventList */
+		SELECT * FROM (
+			SELECT
+				ROWNUM RNUM,
+				INNER.*
+			FROM (
+				SELECT
+					CEO.EVT_OCR_NO
+					, CEO.EVT_ID
+					, ( SELECT EVT_NM FROM CM_EVENT WHERE EVT_ID = CEO.EVT_ID ) AS EVT_NM
+					, CEO.EVT_GRAD_CD
+					, FN_GET_TC_CODE('EVENT_GRAD', CEO.EVT_GRAD_CD) AS EVT_GRAD
+					, CEO.EVT_PRGRS_CD
+					, FN_GET_TC_CODE('T09', CEO.EVT_PRGRS_CD) AS EVT_PRGRS
+					, CEO.EVT_PLACE AS EVT_PLACE
+					, CEO.POINT_X
+					, CEO.POINT_Y
+					, CEO.EVT_DTL
+					, TO_CHAR(TO_DATE(CEO.EVT_OCR_YMD_HMS, 'YYYYMMDDHH24MISS'), 'MM-DD HH24:MI:SS') AS EVT_OCR_YMD_HMS
+					, CEO.OCR_FCLT_ID
+					, CEO.IMG_URL
+				FROM
+					CM_EVT_OCR CEO ,
+					(
+						SELECT DISTINCT
+							CE.EVT_ID
+							, CE.EVT_NM
+						FROM CM_EVENT CE, CM_GRP_EVT_USER_LVL EU
+						WHERE 1=1
+						AND CE.EVT_ID = EU.EVT_ID
+						AND EU.USE_YN = 'Y'
+						AND EU.USER_ID = #{userId}
+						AND CE.USE_TY_CD = 'Y'
+					) EU
+				WHERE 1=1
+				AND CEO.EVT_ID = EU.EVT_ID
+				AND	CEO.EVT_OCR_YMD_HMS IS NOT NULL
+				<![CDATA[
+				AND CEO.EVT_PRGRS_CD < '90'
+				]]>
+				<if test="searchEvtId != '' and searchEvtId != null">
+					AND CEO.EVT_ID = #{searchEvtId}
+				</if>
+				<if test="excludeFcltError == true">
+					AND NOT CEO.EVT_ID = 'FCLFT101'
+					AND NOT CEO.EVT_ID = 'NPOFT101'
+				</if>
+				ORDER BY
+					CEO.EVT_OCR_YMD_HMS DESC 
+			) INNER
+			WHERE 1=1
+		<![CDATA[
+			AND	ROWNUM <= #{lastIndex}
+		)
+		WHERE 1=1
+		AND	RNUM >= #{firstIndex}
+		]]>
+	</select>
+	
+	<select id="selectUnfinishedEventListTotCnt" parameterType="eventOcrVO" resultType="int">
+		/* selectUnfinishedEventList Count */
+		SELECT
+			COUNT(*) AS TOTCNT
+		FROM
+			CM_EVT_OCR CEO ,
+			(
+				SELECT DISTINCT
+					CE.EVT_ID
+					, CE.EVT_NM
+				FROM CM_EVENT CE, CM_GRP_EVT_USER_LVL EU
+				WHERE 1=1
+				AND CE.EVT_ID = EU.EVT_ID
+				AND EU.USE_YN = 'Y'
+				AND EU.USER_ID = #{userId}
+				AND CE.USE_TY_CD = 'Y'
+			) EU
+		WHERE 1=1
+		AND CEO.EVT_ID = EU.EVT_ID
+		AND	CEO.EVT_OCR_YMD_HMS IS NOT NULL
+		<![CDATA[
+		AND CEO.EVT_PRGRS_CD < '90'
+		]]>
+		<if test="searchEvtId != '' and searchEvtId != null">
+			AND CEO.EVT_ID = #{searchEvtId}
+		</if>
+		<if test="excludeFcltError == true">
+			AND NOT CEO.EVT_ID = 'FCLFT101'
+			AND NOT CEO.EVT_ID = 'NPOFT101'
+		</if>
+	</select>
+	
+	<select id="isExistEvent" parameterType="eventOcrVO" resultType="int">
+		SELECT
+			COUNT(*) TOTCNT
+		FROM
+			CM_EVT_OCR
+		WHERE EVT_OCR_NO = #{evtOcrNo}	
+	</select>
+	
+	<select id="hasAuthorityEvent" parameterType="eventOcrVO" resultType="int">
+		SELECT
+			COUNT(*) TOTCNT
+		FROM
+			CM_GRP_EVT_USER_LVL EU
+			, ADMIN A
+		WHERE 1=1
+		AND EU.USER_ID = A.ID
+		AND EU.EVT_ID = #{evtId}
+		AND EU.USER_ID = #{userId}
+	</select>
+	
+	<select id="selectEvent" parameterType="eventOcrVO" resultType="egovMap">
+		SELECT
+			OCR.EVT_OCR_NO AS EVT_OCR_NO
+			, OCR.EVT_ID AS EVT_ID	
+		    , EVT.EVT_NM AS EVT_NM
+			, OCR.EVT_GRAD_CD AS EVT_GRAD_CD
+			, FN_GET_TC_CODE('EVENT_GRAD', OCR.EVT_GRAD_CD) AS EVT_GRAD_NM
+			, OCR.EVT_PRGRS_CD AS EVT_PRGRS_CD
+			, FN_GET_TC_CODE('T09', OCR.EVT_PRGRS_CD) AS EVT_PRGRS_NM
+		    , NVL(OCR.OCR_FCLT_ID,'') AS OCR_FCLT_ID
+		    , OCR.EVT_OCR_YMD_HMS AS EVT_OCR_YMD_HMS
+		    , OCR.EVT_DTL AS EVT_DTL
+			, DECODE(OCR.IMG_URL, NULL, '', REPLACE(SUBSTR(OCR.IMG_URL, 6, 11), '-', '/')||'/'||OCR.IMG_URL) AS IMG_URL
+			, OCR.IMG_URL AS IMG_URL_CMM
+		    , OCR.POINT_X AS POINT_X
+		    , OCR.POINT_Y AS POINT_Y
+		    , EVT.EVT_LC_MOVE_YN
+		FROM
+			CM_EVT_OCR OCR
+			, CM_EVENT EVT
+		WHERE OCR.EVT_OCR_NO = #{evtOcrNo}
+		AND	OCR.EVT_ID = EVT.EVT_ID
+		<if test="evtId != '' and evtId != null">
+			AND OCR.EVT_ID = #{evtId}
+		</if>
+		<if test="evtPrgrsCd != '' and evtPrgrsCd != null">
+			AND OCR.EVT_PRGRS_CD = #{evtPrgrsCd}
+		</if>
+	</select>
+	
+	<select id="selectEventAction" parameterType="eventOcrVO" resultType="egovMap">
+		SELECT
+			CEOA.EVT_OCR_NO
+			, CEOA.SEQ_NO
+			, CEOA.EVT_PRGRS_CD
+			, FN_GET_TC_CODE('T09', CEOA.EVT_PRGRS_CD) AS EVT_PRGRS_NM
+			, CEOA.ACTION_USER_ID
+			, CEOA.ACTION_USER_NM
+			, CEOA.ACTION_YMD_HMS
+		FROM
+			CM_EVT_OCR_ACTION CEOA
+			, CM_EVT_OCR CEO
+		WHERE 1=1
+		AND CEOA.EVT_OCR_NO = #{evtOcrNo}
+		AND CEOA.EVT_OCR_NO = CEO.EVT_OCR_NO
+		ORDER BY SEQ_NO DESC
+	</select>
+	
+	<select id="selectEventItem" parameterType="eventOcrVO" resultType="egovMap">
+	SELECT 
+		EVT_OCR_NO
+		, EVT_ITEM_ID
+		, (SELECT EVT_ITEM_NM FROM CM_EVT_ITEM WHERE EVT_ITEM_ID = CEOI.EVT_ITEM_ID) EVT_ITEM_NM
+		, EVT_OCR_ITEM_DTL 
+	FROM CM_EVT_OCR_ITEM CEOI
+	WHERE EVT_OCR_NO = #{evtOcrNo}
+	</select>
+	
+	<select id="selectEventImage"  parameterType="eventOcrVO" resultType="egovMap">
+	SELECT * 
+	FROM ES_112_MTMDA_RECEPT_ATCH
+	WHERE EVT_OCR_NO = #{evtOcrNo}
+	AND SEQ_NO != '0'
+	</select>
+	
+	<select id="selectEventKindList" parameterType="eventOcrVO" resultType="egovMap">
+		/* selectEventKindList */
+		SELECT DISTINCT
+			CE.EVT_ID
+			, CE.EVT_NM
+			, CE.SORT_ORDR
+		FROM CM_EVENT CE
+			, CM_GRP_EVT_USER_LVL EU
+		WHERE 1=1
+		AND CE.EVT_ID = EU.EVT_ID
+		AND EU.USE_YN = 'Y'
+		AND EU.USER_ID = #{userId}
+		AND CE.USE_TY_CD = 'Y'
+		<if test="uscvGrpCd != '' and uscvGrpCd != null">
+		AND CE.USVC_GRP_CD = #{uscvGrpCd}
+		</if>
+		<if test="sysCd != '' and sysCd != null">
+		AND CE.SYS_CD = #{sysCd}
+		</if>
+		ORDER BY CE.SORT_ORDR, CE.EVT_ID
+	</select>
+	
+	<select id="selectEventGrpList" resultType="egovMap">
+		/* selectEventGrpList */
+		SELECT 
+			DISTINCT
+			CE.SYS_CD
+			, CYC.SYS_NM_KO
+		FROM
+			CM_EVENT CE
+			, CM_SYS_CODE CYC
+		WHERE CE.USE_TY_CD = 'Y'
+		AND	CE.SYS_CD = CYC.SYS_CD
+	</select>
+	
+	<select id="selectUsvcGrpList" parameterType="eventOcrVO" resultType="egovMap">
+		/* selectUsvcGrpList */
+		SELECT
+			DISTINCT USVC_GRP_CD 
+			, FN_GET_TC_CODE('USVC_GRP', USVC_GRP_CD) AS USVC_GRP_NM 
+		FROM 
+			CM_EVENT 
+		WHERE USE_TY_CD = 'Y'
+	</select>
+	
+	
+	<select id="selectVtalkTelNo"  parameterType="eventOcrVO" resultType="egovMap">
+		/* selectUsvcGrpList */
+		SELECT FCLT_ID
+				 , VT_POINT_TEL_NO
+				 , VT_CENTER_TEL_NO 
+				 , POINT_X
+				 , POINT_Y
+		FROM CM_FACILITY
+		WHERE FCLT_ID = #{ocrFcltId}
+	</select>
+
+	<select id="selectCarLcInfoList"  parameterType="eventOcrVO" resultType="egovMap">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT 
+				ROWNUM RNUM
+				,INNER.* FROM (
+					SELECT * FROM (
+						SELECT CLI.* 
+						FROM CM_CAR_LC_INFO CLI 
+						WHERE 1=1 
+						AND EVT_OCR_NO = #{evtOcrNo}
+						ORDER BY POINT_YMD_HMS DESC 
+					)
+				) INNER
+				WHERE 1=1
+				AND	ROWNUM <= #{lastIndex}
+			)
+			WHERE 1=1
+			AND	RNUM >= #{firstIndex}
+			]]>	
+	</select>
+	
+	<select id="selectCarLcInfoListTotCnt"  parameterType="eventOcrVO" resultType="int">
+		SELECT COUNT(*) AS TOTCNT FROM (
+			SELECT ROWNUM RNUM
+				, CLI.* 
+			FROM CM_CAR_LC_INFO CLI 
+			WHERE 1=1 
+			AND EVT_OCR_NO = #{evtOcrNo}
+			ORDER BY POINT_YMD_HMS DESC 
+		)
+		WHERE 1=1
+	</select>
+	
+	<select id="selectCar119LcInfoList"  parameterType="eventOcrVO" resultType="egovMap">
+		SELECT * FROM (
+			SELECT ROWNUM RNUM, INNER.* FROM (
+				SELECT 
+				     B.EVT_OCR_NO
+				   , B.CAR_NUM
+				   , B.POINT_YMD_HMS
+				   , B.TRACE_ID
+				   , B.POINT_X
+				   , B.POINT_Y
+				   , B.ROUTE_ID
+				   , C.CAR_PSITN
+				   , C.CAR_TY
+				   , C.CAR_TEL_NO
+				   , C.RADIO_CALL_NM
+				FROM 
+					CM_CAR_INFO C,
+					CM_CAR_LC_INFO B,
+					(
+						SELECT * 
+						FROM CM_CAR_LC_INFO 
+				   		WHERE ROUTE_ID = ( 
+				   			SELECT MAX(ROUTE_ID) ROUTE_ID 
+				            FROM CM_CAR_LC_INFO
+				       		WHERE POINT_YMD_HMS LIKE TO_CHAR(SYSDATE, 'YYYYMMDD') ||'%' AND TRACE_ID  = 0)
+				     		AND TRACE_ID = 0
+				     	) A
+				WHERE A.EVT_OCR_NO = B.EVT_OCR_NO
+				AND A.CAR_NUM = B.CAR_NUM
+				<![CDATA[
+				AND B.TRACE_ID <= 0         
+				AND B.CAR_NUM = C.CAR_NUM(+)
+				]]>
+				<if test="evtOcrNo != '' and evtOcrNo != null">
+				AND B.EVT_OCR_NO = #{evtOcrNo}
+				</if>
+				<if test="searchKeyword != '' and searchKeyword != null">
+				AND ( B.CAR_NUM LIKE '%${searchKeyword}%' OR C.RADIO_CALL_NM LIKE '%${searchKeyword}%')
+				</if>
+			) INNER
+			WHERE 1=1
+			<![CDATA[
+			AND	ROWNUM <= #{lastIndex}
+		)
+		WHERE 1=1
+		AND	RNUM >= #{firstIndex}
+		]]>
+	</select>
+	
+	<select id="selectCar119LcInfoListTotCnt"  parameterType="eventOcrVO" resultType="int">
+		SELECT COUNT(*) AS TOTCNT 
+		FROM (
+			SELECT 
+			     B.EVT_OCR_NO
+			   , B.CAR_NUM
+			   , B.POINT_YMD_HMS
+			   , B.TRACE_ID
+			   , B.POINT_X
+			   , B.POINT_Y
+			   , B.ROUTE_ID
+			   , C.CAR_PSITN
+			   , C.CAR_TY
+			   , C.CAR_TEL_NO
+			   , C.RADIO_CALL_NM
+			FROM 
+				CM_CAR_INFO C,
+				CM_CAR_LC_INFO B,
+				(
+					SELECT * 
+					FROM CM_CAR_LC_INFO 
+			   		WHERE ROUTE_ID = ( 
+			   			SELECT MAX(ROUTE_ID) ROUTE_ID 
+			            FROM CM_CAR_LC_INFO
+			       		WHERE POINT_YMD_HMS LIKE TO_CHAR(SYSDATE, 'YYYYMMDD') ||'%' AND TRACE_ID  = 0)
+			     		AND TRACE_ID = 0
+			     	) A
+			WHERE A.EVT_OCR_NO = B.EVT_OCR_NO
+			AND A.CAR_NUM = B.CAR_NUM
+			<![CDATA[
+			AND B.TRACE_ID <= 0         
+			AND B.CAR_NUM = C.CAR_NUM(+)
+			]]>
+			<if test="evtOcrNo != '' and evtOcrNo != null">
+			AND B.EVT_OCR_NO = #{evtOcrNo}
+			</if>
+			<if test="searchKeyword != '' and searchKeyword != null">
+			AND ( B.CAR_NUM LIKE '%${searchKeyword}%' OR C.RADIO_CALL_NM LIKE '%${searchKeyword}%')
+			</if>
+		)
+		WHERE 1=1
+	</select>
+	
+	<select id="selectCar119LcDtlList"  parameterType="eventOcrVO" resultType="egovMap">
+		SELECT A.* FROM (
+			SELECT CLI.EVT_OCR_NO
+				, CLI.CAR_NUM
+				, CLI.POINT_YMD_HMS
+				, CLI.TRACE_ID
+				, CLI.POINT_X
+				, CLI.POINT_Y
+				, CLI.ROUTE_ID
+				, CI.CAR_PSITN
+				, CI.CAR_TY
+				, CI.CAR_TEL_NO
+				, CI.RADIO_CALL_NM
+			FROM CM_CAR_LC_INFO  CLI
+				, CM_CAR_INFO CI
+			WHERE 1=1 
+			AND CLI.CAR_NUM = CI.CAR_NUM(+)
+			AND CLI.CAR_NUM = #{searchKeyword}
+			AND CLI.EVT_OCR_NO = #{evtOcrNo}
+			ORDER BY TRACE_ID
+		) A
+		WHERE 1=1
+		<![CDATA[
+		AND ROWNUM <= #{searchRownum}
+		]]>
+	</select>
+	
+	<insert id="insertEvtOcr" parameterType="eventOcrVO">
+		<![CDATA[
+        INSERT INTO CM_EVT_OCR (
+				  EVT_OCR_NO
+				, EVT_ID
+				, EVT_GRAD_CD
+				, EVT_PRGRS_CD
+				, EVT_PLACE
+				, EVT_DTL
+				, EVT_OCR_YMD_HMS
+				, EVT_END_YMD_HMS
+				, POINT_X
+				, POINT_Y
+				, RGS_DATE
+				, UPD_DATE
+				 ,ACTION_USER_ID
+				 ,ACTION_USER_NM
+				 ,ACTION_YMD_HMS
+				 ,ACTION_CONTS
+				 ,RGS_USER_ID
+				 ,UPD_USER_ID
+ 	        ) VALUES (
+			  #{evtOcrNo}
+			, #{evtId}    
+			, #{evtGradCd}  
+			, #{evtPrgrsCd}
+			, #{evtPlace}
+			, #{evtDtl}
+			, #{evtOcrYmdHms}
+			, #{evtEndYmdHms}
+			, #{pointX}
+			, #{pointY}
+			, SYSDATE
+			, SYSDATE
+			, #{actionUserId}	
+			, #{actionUserNm}	
+			, #{actionYmdHms} 
+			, #{actionConts}   
+			, #{rgsUserId}    
+			, #{updUserId}    
+		 )
+    		]]>
+	</insert>
+
+	<update id="updateEvtOcr" parameterType="eventOcrVO">
+        UPDATE CM_EVT_OCR SET
+				  EVT_PRGRS_CD 		= #{evtPrgrsCd}
+				, UPD_DATE = SYSDATE
+			<if test="evtEndYmdHms != null and evtEndYmdHms !=''">,EVT_END_YMD_HMS = #{evtEndYmdHms}</if>
+			<if test="actionUserId != null">,ACTION_USER_ID	 = #{actionUserId}</if>
+			<if test="actionUserNm != null">,ACTION_USER_NM	 = #{actionUserNm}</if>
+			<if test="actionYmdHms != null">,ACTION_YMD_HMS  = #{actionYmdHms}</if>
+			<if test="actionConts != null"> ,ACTION_CONTS    = #{actionConts}</if>
+		WHERE EVT_OCR_NO = #{evtOcrNo}
+	</update>
+	
+	<insert id="insertCmEvtOcrAction"  parameterType="eventOcrVO"  useGeneratedKeys="true"  keyProperty="seqNo" >
+	    <selectKey keyProperty="seqNo" resultType="int" order="BEFORE">
+	  		select nvl(max(to_number(seq_no)),0) + 1 
+			  from cm_evt_ocr_action
+			 where evt_ocr_no = #{evtOcrNo}
+		</selectKey>
+        INSERT INTO CM_EVT_OCR_ACTION (
+				  evt_ocr_no
+				, seq_no
+				, evt_prgrs_cd
+				, action_user_id
+				, action_user_nm
+				, action_conts
+				, action_ymd_hms
+				, upd_user_id
+				, upd_date
+	        ) VALUES (
+			  #{evtOcrNo}
+			, #{seqNo}
+			, #{evtPrgrsCd}
+			, #{actionUserId}
+			, #{actionUserNm}
+			, #{actionConts}
+			, #{actionYmdHms}
+			, #{updUserId}
+			, SYSDATE
+            )
+    </insert>
+    
+    
+    
+    <insert id="insertEvtOcrItem"  parameterType="egovMap">
+		<![CDATA[
+        INSERT INTO CM_EVT_OCR_ITEM (
+				  EVT_OCR_NO
+				, EVT_ITEM_ID
+				, EVT_OCR_ITEM_DTL
+	        ) VALUES (
+			  #{evtOcrNo}
+			, #{evtItemId}
+			, #{evtOcrItemDtl}
+            )
+    		]]>
+    </insert>
+
+	<select id="selectEvtOctCount" parameterType="String" resultType="int">
+		SELECT count(EVT_OCR_NO) 
+		FROM  CM_EVT_OCR
+		WHERE EVT_OCR_NO = #{value}
+	</select>
+
+	<select id="selectFcltPoint" parameterType="String" resultType="egovMap">
+		<![CDATA[
+		SELECT  FCLT_ID 		   as "fcltId"
+				 ,  FCLT_UID 		   as "fcltUid"
+		  		 , NVL(POINT_X,0) as "pointX"
+		         , NVL(POINT_Y,0) as "pointY"
+		         , NVL(POINT_Z,0) as "pointZ"
+		         , FCLT_LBL_NM || ':' || LOTNO_ADRES_NM  || ':' || ROAD_ADRES_NM   as "fcltLblNm"
+		FROM  CM_FACILITY
+		WHERE (FCLT_ID = #{value} or FCLT_UID = #{value})
+		   AND USE_TY_CD = 'Y'
+		   AND ROWNUM = 1
+    		]]>
+	</select>
+	
+   <update id="updateEvtOcrXYZ"  parameterType="egovMap">
+		<![CDATA[
+        UPDATE  CM_EVT_OCR SET
+				   POINT_X  = #{pointX}
+				 , POINT_Y  = #{pointY}
+				 , POINT_Z  = #{pointZ}
+		WHERE EVT_OCR_NO = #{evtOcrNo}
+    		]]>
+    </update>
+   <update id="updateEvtOcrBuga"  parameterType="egovMap">
+		<![CDATA[
+        UPDATE  CM_EVT_OCR SET
+				   POINT_X  = #{pointX}
+				 , POINT_Y  = #{pointY}
+				 , POINT_Z  = #{pointZ}
+				 , EVT_PLACE  = #{evtPlace}
+		WHERE EVT_OCR_NO = #{evtOcrNo}
+    		]]>
+    </update>
+   <update id="updateEvtOcrOther"  parameterType="egovMap">
+        UPDATE  CM_EVT_OCR SET
+				  UPD_DATE = SYSDATE	
+			<if test="imgUrl != null and imgUrl !=''">,IMG_URL = #{imgUrl}</if>
+			<if test="ocrFcltId != null and ocrFcltId !=''">,OCR_FCLT_ID = #{ocrFcltId}</if>
+			<if test="apcNm != null and apcNm !=''">,APC_NM = #{apcNm}</if>
+			<if test="apcTelNo != null and apcTelNo !=''">,APC_TEL_NO = #{apcTelNo}</if>
+		WHERE EVT_OCR_NO = #{evtOcrNo}
+    </update>
+
+   <insert id="insertUcIntrstVhcleOcr"  parameterType="egovMap">
+        INSERT INTO UC_INTRST_VHCLE_OCR (
+				  evt_ocr_no
+				, event_send_dt
+				, event_send_tm
+				, trouble_gb_cd
+				, cctv_no
+				, lpr_seq
+				, event_step_cd
+				, event_step_reson_cd
+				, car_license_no
+				, car_img_file_nm
+				, unpaid_cnt
+				, unpaid_amt
+				, tax_send_yn
+				, fine_send_yn
+				, pol_send_yn
+				, entrust_yn
+				, daepo_yn
+				, regr_id
+				, updr_id
+				, regi_dttm
+				, updt_dttm
+	        ) VALUES (
+			  #{evt_ocr_no}
+			, #{event_send_dt}
+			, #{event_send_tm}
+			, #{trouble_gb_cd}
+			, #{cctv_no}
+			, #{lpr_seq}
+			, #{event_step_cd}
+			, #{event_step_reson_cd}
+			, #{car_license_no}
+			, #{car_img_file_nm}
+			, #{unpaid_cnt}
+			, #{unpaid_amt}
+			, #{tax_send_yn}
+			, #{fine_send_yn}
+			, #{pol_send_yn}
+			, #{entrust_yn}
+			, #{daepo_yn}
+			, #{regr_id}
+			, #{updr_id}
+			, SYSDATE
+			, SYSDATE
+            )
+    </insert>
+    
+   <update id="updateUcIntrstVhcleOcr"  parameterType="egovMap">
+        UPDATE  UC_INTRST_VHCLE_OCR SET
+				EVENT_STEP_CD = 	#{event_step_cd}
+			<if test="event_step_cd != null and  event_step_cd.equalsIgnoreCase('20')">
+				, approve_user_id = #{userId}
+				, approve_dt = SYSDATE
+			</if>
+			<if test="event_step_cd != null and  event_step_cd.equalsIgnoreCase('90')">
+	          , EVENT_STEP_USER_ID = #{userId}
+	          , EVENT_STEP_DT = SYSDATE
+	          , EVENT_STEP_RESON_CD = #{EVENT_STEP_RESON_CD}
+			</if>
+			<if test="event_step_cd != null and  event_step_cd.equalsIgnoreCase('91')">
+	          , EVENT_STEP_USER_ID = #{userId}
+	          , EVENT_STEP_DT = SYSDATE
+	          , EVENT_STEP_RESON_CD = #{EVENT_STEP_RESON_CD}
+	          , ETC_RSN = #{ETC_RSN}
+			</if>
+			  , updr_id = #{userId}
+   			  , updt_dttm = SYSDATE    
+        WHERE EVT_OCR_NO = #{evt_ocr_no}
+    </update>
+
+	<select id="selectEvtOctCount2" parameterType="egovMap" resultType="int">
+		SELECT count(EVT_OCR_NO) 
+		FROM  CM_EVT_OCR
+		WHERE EVT_OCR_NO = #{evtOcrNo}
+			<if test="evtPrgrsCd != null and evtPrgrsCd.equalsIgnoreCase('20')">and EVT_PRGRS_CD IN ('10')</if>
+			<if test="evtPrgrsCd != null and evtPrgrsCd.equalsIgnoreCase('90')">and EVT_PRGRS_CD IN ('10')</if>
+			<if test="evtPrgrsCd != null and evtPrgrsCd.equalsIgnoreCase('91')">and EVT_PRGRS_CD IN ('10','20','30','50')</if>
+			<if test="evtPrgrsCd != null and evtPrgrsCd.equalsIgnoreCase('92')">and EVT_PRGRS_CD IN ('10','20','30','50')</if>
+	</select>
+
+	<select id="selectEvtNm" parameterType="egovMap" resultType="egovMap">
+			<![CDATA[
+		SELECT  EVT_NM as "evtNm" 
+		        , NVL((SELECT CD_NM_KO FROM CM_TC_CODE WHERE CD_GRP_ID = 'T09' and CD_ID = #{cdId} and CD_TY = 'C' ),'no') as "ingNm"
+				, LIGHTBAR_OPER_YN 	as "lightYn"
+				, AUTO_SMS_YN 		as "autoSmsYn"
+				, AUTO_PUSH_YN 		as "autoPushYn"
+				, CALLBACK_NO		as "callbackNo"
+				, END_AUTO_SEND_YN	as "endAutoSendYn"
+				, EVT_AUTO_TRMS_STC as "evtAutoTrmsStc"
+		FROM  CM_EVENT
+		WHERE EVT_ID = #{evtId}
+    		]]>
+	</select>
+    
+   <update id="updateFacilitySttus0" parameterType="String" >
+        UPDATE  CM_FACILITY
+			SET   FCLT_STTUS  = '0'
+		WHERE FCLT_ID = #{value}
+    </update>
+    
+      <update id="updateFacilitySttus1" parameterType="String">
+        UPDATE  CM_FACILITY
+			SET  FCLT_STTUS  = '1'
+		WHERE FCLT_ID = #{value}
+    </update>   
+    
+  	<select id="selectEvtOctFcltId" parameterType="String" resultType="String">
+		SELECT OCR_FCLT_ID 
+		FROM  CM_EVT_OCR
+		WHERE EVT_OCR_NO = #{value}
+	</select>
+ 
+ 	<select id="selectCarNumEvtOcr" parameterType="String" resultType="String">
+		 SELECT B.EVT_OCR_ITEM_DTL as "carNum"
+		  FROM CM_EVT_OCR A, CM_EVT_OCR_ITEM B
+		 WHERE A.EVT_OCR_NO   = B.EVT_OCR_NO
+		   AND B.EVT_ITEM_ID  = 'CAR_NUM'
+		   AND A.EVT_OCR_NO   = #{value}
+	</select>
+   
+ 	<select id="selectPrgrsUpdateList" parameterType="String" resultType="egovMap">
+		<![CDATA[
+		SELECT  A.EVT_OCR_NO as "evtOcrNo"
+		FROM  CM_EVT_OCR A, CM_EVT_OCR_ITEM B
+		WHERE A.EVT_OCR_NO        = B.EVT_OCR_NO
+		   AND B.EVT_ITEM_ID         = 'CAR_NUM'
+		   AND A.EVT_PRGRS_CD      < '90'
+		   AND B.EVT_OCR_ITEM_DTL = #{value}
+    		]]>
+	</select>
+
+	<select id="selectPrgrsUpdateListIdNo" parameterType="String" resultType="egovMap">
+		<![CDATA[
+		SELECT  A.EVT_OCR_NO as "evtOcrNo"
+		FROM  CM_EVT_OCR A, CM_EVT_OCR_ITEM B
+		WHERE A.EVT_OCR_NO        = B.EVT_OCR_NO
+		   AND B.EVT_ITEM_ID         = 'CAR_NUM'
+		   AND A.EVT_PRGRS_CD      < '90'
+		   AND B.EVT_OCR_ITEM_DTL = 
+		   (
+			 SELECT B.EVT_OCR_ITEM_DTL
+			  FROM CM_EVT_OCR A, CM_EVT_OCR_ITEM B
+			 WHERE A.EVT_OCR_NO   = B.EVT_OCR_NO
+			   AND B.EVT_ITEM_ID  = 'ID_NO'
+			   AND A.EVT_OCR_NO   = #{value}
+		   		   )
+    		]]>
+	</select>
+
+	
+    <update id="updatePrgrsEvtOcr" parameterType="String">
+        UPDATE  CM_EVT_OCR
+			SET  EVT_PRGRS_CD  = '92'
+			   ,   UPD_USER_ID    = 'SYSTEM'
+		WHERE EVT_OCR_NO     = #{value}
+    </update>   
+
+    <update id="updateStepCdVhcleOcr" parameterType="String">
+        UPDATE  UC_INTRST_VHCLE_OCR
+			SET  EVENT_STEP_CD  = '92'
+			   ,   UPDR_ID    = 'SYSTEM'
+		WHERE EVT_OCR_NO     = #{value}
+    </update>   
+    
+   <insert id="insertEvtOcrArea"  parameterType="egovMap">
+		<![CDATA[
+        INSERT INTO CM_EVT_OCR_AREA (
+				  EVT_OCR_NO
+				, AREA_CD
+	        ) VALUES (
+			  #{evtOcrNo}
+			, #{areaCd}
+            )
+    		]]>
+    </insert>
+    
+     <insert id="insertUwTodoMng"  parameterType="egovMap">
+		<![CDATA[
+        INSERT INTO UW_TODO_MNG (
+				  WORK_ID
+				, WORK_TITLE
+				, WORK_REQ_YMD_HMS
+				, WORK_REQ_USER_ID
+				, WORK_REQ_USER_NM
+				, WORK_RPSB_USER_ID
+				, WORK_RPSB_USER_NM
+				, WORK_STTUS_TY_CD
+				, WORK_TY_CD
+	        ) VALUES (
+			  #{workId}
+			, #{workTitle}
+			, #{workReqYmdHms}
+			, #{workReqUserId}
+			, #{workReqUserNm}
+			, #{workRpsbUserId}
+			, #{workRpsbUserNm}
+			, #{workSttusTyCd}
+			, #{workTyCd}
+            )
+    		]]>
+    </insert>
+     <update id="updateUwTodoMng"  parameterType="egovMap">
+		<![CDATA[
+	        UPDATE  UW_TODO_MNG
+			SET  WORK_STTUS_TY_CD  = #{workSttusTyCd}
+		WHERE WORK_ID     = #{workId}
+    		]]>
+    </update>
+
+	<select id="select112Event" parameterType="String" resultType="egovMap">
+		<![CDATA[
+			SELECT B.EVT_OCR_NO   	as "evtOcrNo"
+				, B.EVT_PLACE 			as "evtPlace"
+				, B.EVT_DTL 				as "evtDtl"
+				, B.POINT_X 				as "pointX"
+				, B.POINT_Y 				as "pointY"
+				, B.IMG_URL 				as "imgUrl"
+				, A.LK_112_YN 			as "lk112Yn" 
+				, A.EVT_NM 				as "evtNm"
+				, NVL((SELECT EVT_ID_SUB_NM FROM CM_EVENT_SUB WHERE EVT_ID_SUB_CD = B.EVT_ID_SUB_CD AND EVT_ID = B.EVT_ID),'') as "evtSubTit"
+			FROM CM_EVENT A, CM_EVT_OCR B
+			WHERE A.LK_112_YN = 'Y'
+			 AND B.EVT_ID = A.EVT_ID 
+			 AND B.EVT_OCR_NO = #{value}
+    		]]>
+	</select>
+	
+     <insert id="insert112info"  parameterType="egovMap">
+		<![CDATA[
+        INSERT INTO ES_112_MTMDA_RECEPT (
+				  EVT_OCR_NO
+				, TITLE
+				, CONTS
+				, ADRES_NM
+				, POINT_X
+				, POINT_Y
+				, MTMDA_PRCS_STATE
+				, MTMDA_PRCS_TY_CD
+				, PRCS_TY_YMD_HMS
+				, RGS_DATE
+				, RGS_USER_ID
+				, RECEPT_YMD
+	        ) VALUES (
+			  #{evtOcrNo}
+			, #{title}
+			, #{evtDtl}
+			, #{evtPlace}
+			, #{pointX}
+			, #{pointY}
+			, #{mtmdaPrcsState}
+			, #{mtmdaPrcsTyCd}
+			, #{prcsTyYmdHms}
+			, SYSDATE
+			, #{rgsUserId}
+			, #{receptYmd}
+            )
+     		]]>
+    </insert>
+    
+     <insert id="insert112image"  parameterType="egovMap">
+		<![CDATA[
+        INSERT INTO ES_112_MTMDA_RECEPT_ATCH (
+				  EVT_OCR_NO
+				, IMG_TY_CD
+				, IMG_URL
+				, SEQ_NO
+	        ) VALUES (
+			  #{evtOcrNo}
+			, #{imgTyCd}
+			, #{imgUrl}
+			, #{seqNo}
+            )
+    		]]>
+    </insert>
+	
+	<!-- <select id="selectReportList"  parameterType="commonVO" resultType="egovMap">
+		SELECT * FROM (
+			SELECT ROWNUM RNUM, INNER.* FROM (
+				SELECT OCR.EVT_OCR_NO /* 이벤트발생번호 */
+					, OCR.EVT_ID /* 이벤트 아이디 */
+					, OCR.EVT_OCR_YMD_HMS /* 이벤트 발생일시 */
+					, ( SELECT EVT_NM FROM CM_EVENT WHERE EVT_ID = OCR.EVT_ID ) AS EVT_NM /* 이벤트 명 */
+					, RECEPT.RECEPT_YMD /* 접수일자 */
+					, RECEPT.MTMDA_PRCS_TY_CD /* 다매체처리구분 */
+					, FN_GET_TC_CODE('MTMDA_PRCS_TY', RECEPT.MTMDA_PRCS_TY_CD) AS MTMDA_PRCS_TY_NM /* 다매체처리명 */
+					, RECEPT.PRCS_TY_YMD_HMS /* 처리구분일시 */
+					, RECEPT.TITLE /* 제목 */
+					, RECEPT.CONTS /* 내용 */
+					, RECEPT.ADRES_NM /* 위치주소 */
+					, RECEPT.POINT_X /* 경도 */
+					, RECEPT.POINT_Y /* 위도 */
+					, OCR.OCR_FCLT_ID /* 관련시설물ID */
+					, ( SELECT FCLT_LBL_NM FROM CM_FACILITY WHERE FCLT_ID = OCR.OCR_FCLT_ID ) AS OCR_FCLT_LBL_NM /* 관련시설물명 */
+					, RECEPT.IMG_START_YMD_HMS /* 영상플레이시간 시작 */
+					, RECEPT.IMG_END_YMD_HMS /* 영상플레이시간 종료 */
+					, RECEPT.MTMDA_PRCS_STATE /* 다매체처리상태 */
+					, RECEPT.RECEPT_PRCS_YN /* 접수처리여부 */
+					, RECEPT.RECEPT_PRCS_YMD_HMS  /* 접수처리일시 */
+				FROM CM_EVT_OCR OCR
+					, ES_112_MTMDA_RECEPT RECEPT
+					, CM_EVENT EVENT
+				WHERE 1=1
+				AND OCR.EVT_OCR_NO = RECEPT.EVT_OCR_NO
+				AND OCR.EVT_ID = EVENT.EVT_ID
+				AND EVENT.LK_112_YN = 'Y'
+				<if test="searchType != '' and searchType != null">
+				AND RECEPT.MTMDA_PRCS_TY_CD = #{searchType}
+				</if>
+				AND TO_DATE(RECEPT.RECEPT_YMD, 'YYYYMMDD') BETWEEN TO_DATE('${searchFrom}', 'YYYY-MM-DD') AND TO_DATE('${searchTo}', 'YYYY-MM-DD')
+				ORDER BY RECEPT.PRCS_TY_YMD_HMS DESC
+			) INNER	WHERE 1=1
+			<![CDATA[
+			AND	ROWNUM <= #{lastIndex}
+		)
+		WHERE 1=1
+		AND	RNUM >= #{firstIndex}
+		]]>
+	</select>
+	
+	<select id="selectReportListTotCnt"  parameterType="commonVO" resultType="int">
+		SELECT COUNT(*)
+		FROM CM_EVT_OCR OCR
+			, ES_112_MTMDA_RECEPT RECEPT
+			, CM_EVENT EVENT
+		WHERE 1=1
+		AND OCR.EVT_OCR_NO = RECEPT.EVT_OCR_NO
+		AND OCR.EVT_ID = EVENT.EVT_ID
+		AND EVENT.LK_112_YN = 'Y'
+		<if test="searchType != '' and searchType != null">
+		AND RECEPT.MTMDA_PRCS_TY_CD = #{searchType}
+		</if>
+		AND TO_DATE(RECEPT.RECEPT_YMD, 'YYYYMMDD') BETWEEN TO_DATE('${searchFrom}', 'YYYY-MM-DD') AND TO_DATE('${searchTo}', 'YYYY-MM-DD')
+	</select> -->
+</mapper>
+
+

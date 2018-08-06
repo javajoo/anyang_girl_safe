@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>						
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/Facility_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/Event_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/Code_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/Log_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/CctvViewLog_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/IotSensorHistory_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/AdminSetting_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/AdminGroup_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/AdminGroupAuthLvl_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/tibero/AdminGroupUser_SQL.xml"/>
+	
+</sqlMapConfig>

@@ -1,0 +1,220 @@
+@charset "utf-8";
+
+/* 달력 */
+@import "normalize.css";
+@import "datepicker.css";
+
+html, body {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	overflow:hidden;
+}
+#bg{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+.between_bg{
+	margin-top: 78px;
+	width: 100%;
+	background-size: cover;
+}
+.between_area_black {
+	position: absolute;
+    left: 21%;
+    top: 80px;
+    width: 1087px;
+    height: 831px;
+    animation: a_scale 0.5s;
+}
+
+.between_cont_black {
+	width:100%;
+	height:100%;
+	position: absolute;
+	background-color:rgba(244,244,246,0.8);
+}
+
+.between_cont_image1 {
+	position:absolute;
+	width:197px;
+	height:196px;
+	top:auto;
+	margin-top:auto;
+	top:400px;
+	margin-bottom:0;
+	margin-left:41px;
+}
+.between_cont_image2 {
+	position:absolute;
+	width:197px;
+	height:196px;
+	top:auto;
+	margin-top:auto;
+	top:400px;
+	margin-bottom:0;
+	margin-left:243px;
+}
+
+.between_cont_image3 {
+	position:absolute;
+	width:197px;
+	height:196px;
+	top:auto;
+	margin-top:auto;
+	top:400px;
+	margin-bottom:0;
+	margin-left:445px;
+}
+
+.between_cont_image4 {
+	position:absolute;
+	width:197px;
+	height:196px;
+	top:auto;
+	margin-top:auto;
+	top:400px;
+	margin-bottom:0;
+	margin-left:647px;
+}
+
+.between_cont_image5 {
+	position:absolute;
+	width:197px;
+	height:196px;
+	top:auto;
+	margin-top:auto;
+	top:400px;
+	margin-bottom:0;
+	margin-left:849px;
+}
+
+
+.between_cont_calendar_title {
+	position:absolute;
+	width:216px;
+	height:33px;
+	top:50px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:35px;
+	background: url(../images/login/calendar_title.png) no-repeat center center;
+}
+
+.between_cont_calendar {
+	position:absolute;
+	width:216px;
+	height:auto;
+	top:78px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:35px;
+}
+.between_cont_notice_title {
+	position:absolute;
+	width:789px;
+	height:33px;
+	top:50px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:auto;
+	right:35px;
+	background: url(../images/login/notice_title.png) no-repeat center center;
+}
+
+.between_cont_notice {
+	position:absolute;
+	width:789px;
+	height:229px;
+	top:83px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:auto;
+	right:35px;
+	background: url(../images/login/notice_example.png) no-repeat center center;
+}
+
+.between_cont_notice_button_prev {
+	position:absolute;
+	width:55px;
+	height:28px;
+	top:322px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:auto;
+	right:449px;
+	background: url(../images/login/notice_prev.png) no-repeat center center;
+}
+
+.between_cont_notice_button_1 {
+	position:absolute;
+	width:28px;
+	height:28px;
+	top:322px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:auto;
+	right:416px;
+	background: url(../images/login/notice_1.png) no-repeat center center;
+}
+
+.between_cont_notice_button_next {
+	position:absolute;
+	width:55px;
+	height:28px;
+	top:322px;
+	margin-top:0;
+	bottom:auto;
+	margin-bottom:auto;
+	margin-left:auto;
+	right:356px;
+	background: url(../images/login/notice_next.png) no-repeat center center;
+}
+.between_massenger{
+	position:absolute;
+	width:148px;
+	height:46px;
+	top:auto;
+	margin-top:auto;
+	bottom:60px;
+	margin-bottom:0;
+	right:60px;
+	background: url(../images/login/massenger.png) no-repeat center center;
+}
+
+.between_footer{
+	position:absolute;
+	width:100%;
+	height:32px;
+	top:auto;
+	margin-top:auto;
+	bottom:0;
+	margin-bottom:0;
+	background-color:#000;
+}
+.between_footer_text {
+	position:center;
+	color:#fff;
+	margin-top:8px;
+	text-align: center;
+    font-size: 15px;
+    font-family: 'nanum-barun-gothic-regular';
+    font-weight:bold;
+}
+.goto_group{
+	position: absolute;top: 700px;background-color: #fdfdff;width: 100%;padding: 10px 0 10px 0px;
+}
+.goto_title{
+	float: left;width:180px;padding: 7px 20px 7px 30px;font-size: 20px; font-family:'notokr-medium';
+}
+.goto_title img {vertical-align: sub;}
+.goto_btn { width: 175px;padding: 0px; }
+
+

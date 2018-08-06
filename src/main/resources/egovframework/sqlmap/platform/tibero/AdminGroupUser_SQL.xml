@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AdminGroupUser">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminGroupUserSerarchVO" type="com.danusys.platform.user.service.AdminDefaultVO"/>
+	
+	<resultMap id="adminGroupUser" class="com.danusys.platform.user.service.AdminGroupUserVO">
+		<result property="seqNo" column="seq_no" columnIndex="1"/>
+		<result property="grpId" column="grp_id" columnIndex="2"/>
+		<result property="userId" column="user_id" columnIndex="3"/>
+		<result property="useTyCd" column="use_ty_cd" columnIndex="4"/>
+		<result property="authLvl" column="auth_lvl" columnIndex="5"/>
+		<result property="updUserId" column="upd_user_id" columnIndex="6"/>
+		<result property="updDate" column="upd_date" columnIndex="7"/>
+		<result property="rgsUserId" column="rgs_user_id" columnIndex="8"/>
+		<result property="rgsDate" column="rgs_date" columnIndex="9"/>
+	</resultMap>
+	
+	<insert id="adminGroupUserDAO.insertAdminGroupUser_S">
+		<![CDATA[
+			INSERT INTO admin_group_user 
+				( seq_no
+				  , grp_id
+				  , user_id
+				  , use_ty_cd
+				  , auth_lvl
+				  , upd_user_id
+				  , upd_date
+				  , rgs_user_id
+				  , rgs_date )
+			VALUES ( admin_group_user_seq.NEXTVAL
+				  , #grpId#
+				  , #userId#
+				  , #useTyCd#
+				  , #authLvl#
+				  , #updUserId#
+				  , #updDate#
+				  , #rgsUserId#
+				  , #rgsDate# )
+		]]>
+	</insert>
+	
+	<update id="adminGroupUserDAO.updateAdminGroupUser_S">
+		<![CDATA[
+			UPDATE admin_group_user
+			SET seq_no=#seqNo#
+				, grp_id=#grpId#
+				, user_id=#userId#
+				, use_ty_cd=#useTyCd#
+				, auth_lvl=#authLvl#
+				, upd_user_id=#updUserId#
+				, upd_date=#updDate#
+				, rgs_user_id=#rgsUserId#
+				, rgs_date=#rgsDate#
+			]]>
+	</update>
+	
+	<delete id="adminGroupUserDAO.deleteAdminGroupUser_S">
+		<![CDATA[
+			DELETE FROM admin_group_user 
+			]]>
+	</delete>
+	
+	<select id="adminGroupUserDAO.selectAdminGroupUser_S" resultMap="adminGroupUser">
+		<![CDATA[
+			SELECT
+				seq_no
+				, grp_id
+				, user_id
+				, use_ty_cd
+				, auth_lvl
+				, upd_user_id
+				, upd_date
+				, rgs_user_id
+				, rgs_date
+			FROM admin_group_user
+			]]>
+	</select>
+	
+	<select id="adminGroupUserDAO.selectAdminGroupUserList_D" parameterClass="adminGroupUserSerarchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM rnum, seq_no
+						 , grp_id
+						 , user_id
+						 , use_ty_cd
+						 , auth_lvl
+						 , upd_user_id
+						 , upd_date
+						 , rgs_user_id
+						 , rgs_date
+					FROM admin_group_user
+					WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+					seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+					user_id LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+      				ORDER BY user_id DESC) INNER
+        		WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      			AND rnum <= #lastIndex#
+      		]]>
+      		</isNotEqual>
+      		)
+      		WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      		AND rnum > #firstIndex#
+      		]]>
+      		</isNotEqual>
+	</select>	
+	
+	<select id="adminGroupUserDAO.selectAdminGroupUserList_D2" parameterClass="adminGroupUserSerarchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT  ROWNUM rnum,
+			 			agr.seq_no , agr.grp_id , agr.user_id , agr.use_ty_cd , agr.auth_lvl , agr.upd_user_id , agr.upd_date , agr.rgs_user_id 
+						, agr.rgs_date, ag.grp_nm, ag.dstrt_cd, ag.authority 
+						, (select auth_lvl_nm from admin_group_auth_lvl al where al.auth_lvl=agr.auth_lvl and al.grp_id=agr.grp_id  )AS auth_lvl_nm
+						FROM admin_group_user agr
+					inner join admin_group ag
+					ON agr.grp_id=ag.grp_id
+					WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+					AND seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+					AND user_id LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+					ORDER BY user_id) INNER
+				WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      			AND rnum <= #lastIndex#
+      		]]>
+      		</isNotEqual>
+      		)
+      		WHERE 1=1
+      		<isNotEqual property="recordCountPerPage" compareValue="-1">
+      		<![CDATA[
+      		AND rnum > #firstIndex#
+      		]]>
+      		</isNotEqual>
+	</select>
+	
+
+	
+	<select id="adminGroupUserDAO.selectAdminGroupUserListTotCnt_S" parameterClass="adminGroupUserSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM admin_group_user
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				seq_no = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				user_id LIKE ('%' || #searchKeyword# || '%')
+			</isEqual>
+	</select>
+
+</sqlMap>

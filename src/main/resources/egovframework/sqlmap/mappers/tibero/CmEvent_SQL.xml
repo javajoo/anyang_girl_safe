@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="work_event">
+
+	<!-- <select id="list" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT A.*
+			 , (
+				SELECT COUNT(*)
+				  FROM CM_EVENT E
+					   LEFT JOIN ( SELECT SYS_CD, SYS_NM_KO FROM CM_SYS_CODE WHERE USE_TY_CD = 'Y' ) S ON E.SYS_CD = S.SYS_CD
+				 WHERE 1 = 1
+				<if test="sysCd != null and sysCd != '' ">
+				   AND E.SYS_CD = #{sysCd} 
+				</if>
+				<if test="usvcGrpCd != null and usvcGrpCd != '' ">
+				   AND E.USVC_GRP_CD = #{usvcGrpCd} 
+				</if>
+				<if test="useTyCd != null and useTyCd != ''">
+				   AND E.USE_TY_CD = #{useTyCd}
+				</if>
+			   ) ROWCNT
+		FROM (
+				SELECT A.*, ROW_NUMBER() OVER (ORDER BY ${sidx} ${sord}) AS RK
+				  FROM (
+						SELECT E.EVT_ID
+							 , E.SYS_CD
+							 , E.USVC_GRP_CD
+							 , E.SRL_NO
+							 , E.SORT_ORDR
+							 , E.EVT_NM
+							 , E.EVT_DSCRT
+							 , E.URGDG_GRAD_CD
+							 , E.EVT_ICON_DSP_YN
+							 , E.EVT_LC_MOVE_YN
+							 , E.LIGHTBAR_OPER_YN
+							 , E.CMPND_EVT_YN
+							 , E.EVT_AUTO_TRMS_STC
+							 , E.USE_TY_CD
+							 , E.RGS_USER_ID
+							 , TO_CHAR(E.RGS_DATE, 'YYYY-MM-DD') AS RGS_DATE
+							 , E.UPD_USER_ID
+							 , TO_CHAR(E.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE
+							 , DECODE(E.EVT_ICON_DSP_YN, 'Y','표출','표출안함') EVT_ICON_DSP_NM
+							 , DECODE(E.EVT_LC_MOVE_YN, 'Y','이동','이동안함') EVT_LC_MOVE_NM
+							 , DECODE(E.LIGHTBAR_OPER_YN, 'Y','작동','작동안함') LIGHTBAR_OPER_NM
+							 , DECODE(E.CMPND_EVT_YN, 'Y','복합이벤트','단순이벤트') CMPND_EVT_NM
+							 , S.SYS_NM_KO AS SYS_NM
+							 , FN_GET_TC_CODE('USVC_GRP', E.USVC_GRP_CD) AS USVC_GRP_NM
+							 , FN_GET_TC_CODE('URGDG_GRAD', E.USVC_GRP_CD) AS URGDG_GRAD_NM
+							 , FN_GET_TC_CODE('USE_TY', E.USE_TY_CD) AS USE_TY_NM
+							 , E.AUTO_END_TIME
+							 , E.STD_EVT_YN
+							 , #{evtIconPath} || E.EVT_ID || '.png' AS IMG_OCR_PATH
+							 , #{evtIconPath} || E.EVT_ID || '_1.png' AS IMG_RCZ_PATH
+							 , E.EVT_ID || '.png' AS IMG_OCR
+							 , E.EVT_ID || '_1.png' AS IMG_RCZ
+						  FROM CM_EVENT E
+							   LEFT JOIN ( SELECT SYS_CD, SYS_NM_KO FROM CM_SYS_CODE WHERE USE_TY_CD = 'Y' ) S ON E.SYS_CD = S.SYS_CD
+						 WHERE 1 = 1
+						<if test="sysCd != null and sysCd != '' ">
+						   AND E.SYS_CD = #{sysCd} 
+						</if>
+						<if test="usvcGrpCd != null and usvcGrpCd != '' ">
+						   AND E.USVC_GRP_CD = #{usvcGrpCd} 
+						</if>
+						<if test="useTyCd != null and useTyCd != ''">
+						   AND E.USE_TY_CD = #{useTyCd}
+						</if>
+					   ) A
+			   ) A
+		 WHERE 1 = 1
+		<![CDATA[
+		   AND A.RK >= ((TO_NUMBER(#{pageNo}) - 1) * TO_NUMBER(#{rowsPerPage})) + 1
+		   AND A.RK <= (TO_NUMBER(#{pageNo}) * TO_NUMBER(#{rowsPerPage}))
+		]]>
+	</select> -->
+	
+	<select id="list" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT A.*
+			 , (
+				SELECT COUNT(*)
+				  FROM PLATFORM_CODE E
+					   LEFT JOIN ( SELECT SYS_CD, SYS_NM_KO FROM CM_SYS_CODE WHERE USE_TY_CD = 'Y' ) S ON E.SYS_CD = S.SYS_CD
+				 WHERE 1 = 1
+				<if test="sysCd != null and sysCd != '' ">
+				   AND E.SYS_CD = #{sysCd} 
+				</if>
+				<if test="usvcGrpCd != null and usvcGrpCd != '' ">
+				   AND E.CODE_GROUP = #{usvcGrpCd} 
+				</if>
+				<if test="useTyCd != null and useTyCd != ''">
+				   AND E.USE_TY_CD = #{useTyCd}
+				</if>
+				 AND E.CODE_GROUP='EVENT_TYPE' 
+			   ) ROWCNT
+		FROM (
+				SELECT A.*, ROW_NUMBER() OVER (ORDER BY SYS_CD DESC) AS RK
+				  FROM (
+						SELECT E.CODE_ID
+							 , E.SYS_CD
+							 , E.USVC_GRP_CD
+							 , E.SEQ_NO
+							 , '1' AS SORT_ORDR
+							 , E.CODE_NM
+							 , E.CONT
+							 , '10' AS URGDG_GRAD_CD
+							 , 'Y' AS EVT_ICON_DSP_YN
+							 , 'Y' AS EVT_LC_MOVE_YN
+							 , 'Y' AS LIGHTBAR_OPER_YN
+							 , 'N' AS CMPND_EVT_YN
+							 , NULL AS EVT_AUTO_TRMS_STC
+							 , E.USE_TY_CD
+							 , E.INST_ID
+							 , TO_CHAR(E.INST_DE, 'YYYY-MM-DD') AS INST_DE
+							 , E.UPD_ID
+							 , TO_CHAR(E.UPD_DE, 'YYYY-MM-DD') AS UPD_DE
+							 , DECODE('Y', 'Y','표출','표출안함') EVT_ICON_DSP_NM
+							 , DECODE('Y', 'Y','이동','이동안함') EVT_LC_MOVE_NM
+							 , DECODE('Y', 'Y','작동','작동안함') LIGHTBAR_OPER_NM
+							 , DECODE('Y', 'Y','복합이벤트','단순이벤트') CMPND_EVT_NM
+							 , S.SYS_NM_KO AS SYS_NM
+							 , FN_GET_TC_CODE('USVC_GRP', E.USVC_GRP_CD) AS USVC_GRP_NM
+							 , FN_GET_TC_CODE('URGDG_GRAD', E.USVC_GRP_CD) AS URGDG_GRAD_NM
+							 , FN_GET_TC_CODE('USE_TY', E.USE_TY_CD) AS USE_TY_NM
+							 , '300' AS AUTO_END_TIME
+							 , 'Y' AS STD_EVT_YN
+							 , #{evtIconPath} || E.CODE_NM || '.png' AS IMG_OCR_PATH
+							 , #{evtIconPath} || E.CODE_NM || '_1.png' AS IMG_RCZ_PATH
+							 , E.CODE_NM || '.png' AS IMG_OCR
+							 , E.CODE_NM || '_1.png' AS IMG_RCZ
+						  FROM PLATFORM_CODE E
+							   LEFT JOIN ( SELECT SYS_CD, SYS_NM_KO FROM CM_SYS_CODE WHERE USE_TY_CD = 'Y' ) S ON E.SYS_CD = S.SYS_CD
+						 WHERE 1 = 1
+						<if test="sysCd != null and sysCd != '' ">
+						   AND E.CODE_CD = #{sysCd} 
+						</if>
+						<if test="usvcGrpCd != null and usvcGrpCd != '' ">
+						   AND E.USVC_GRP_CD = #{usvcGrpCd} 
+						</if>
+						<if test="useTyCd != null and useTyCd != ''">
+						   AND E.USE_TY_CD = #{useTyCd}
+						</if>
+						 AND E.CODE_GROUP='EVENT_TYPE' 
+					   ) A
+			   ) A
+		 WHERE 1 = 1
+		<![CDATA[
+		   AND A.RK >= ((TO_NUMBER(#{pageNo}) - 1) * TO_NUMBER(#{rowsPerPage})) + 1
+		   AND A.RK <= (TO_NUMBER(#{pageNo}) * TO_NUMBER(#{rowsPerPage}))
+		]]>
+	</select>
+
+	<select id="list_cm_evt_item" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT AA.*
+			 , (
+				SELECT COUNT(*)
+				  FROM CM_EVT_ITEM
+				 WHERE 1 = 1
+				<if test="codeId != null and codeId != '' ">
+				   AND EVT_ITEM_ID NOT IN ( SELECT EVT_ITEM_ID FROM  CM_EVT_ITEM_INFO WHERE EVT_ID = #{codeId} )
+				</if>
+			   ) ROWCNT
+		  FROM (
+			SELECT ROW_NUMBER() OVER(ORDER BY ${sidx} ${sord}) AS RK
+				 , A.*
+			 FROM (
+					SELECT A.EVT_ITEM_ID
+						 , A.EVT_ITEM_NM
+						 , A.CD_GRP_ID
+						 , B.CD_NM_KO AS CD_GRP_NM
+						 , A.SORT_ORDR
+						 , A.ITEM_GRP
+						 , A.RGS_USER_ID
+						 , TO_CHAR(A.RGS_DATE, 'YYYY-MM-DD') AS RGS_DATE
+						 , A.UPD_USER_ID
+						 , TO_CHAR(A.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE
+					  FROM CM_EVT_ITEM A LEFT JOIN (SELECT CD_NM_KO, CD_GRP_ID FROM CM_TC_CODE WHERE USE_TY_CD = 'Y' AND CD_TY = 'G' ) B
+						   ON A.CD_GRP_ID = B.CD_GRP_ID 
+					 WHERE 1 = 1
+					<if test="codeId != null and codeId != '' ">
+					   AND A.EVT_ITEM_ID NOT IN ( SELECT EVT_ITEM_ID FROM  CM_EVT_ITEM_INFO WHERE EVT_ID = #{codeId} )
+					</if>
+				   ) A
+			   ) AA
+		<![CDATA[
+		 WHERE AA.RK >= ((TO_NUMBER(#{pageNo}) - 1) * TO_NUMBER(#{rowsPerPage})) + 1
+		   AND AA.RK <= (TO_NUMBER(#{pageNo}) * TO_NUMBER(#{rowsPerPage}))
+		]]>
+	</select>
+
+	<select id="list_cm_evt_item_info" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT A.*
+			 , (
+				SELECT COUNT(*) FROM CM_EVT_ITEM_INFO WHERE 1 = 1
+				<if test="codeId != null and codeId != '' ">
+				   AND A.EVT_ID = #{codeId} 
+				</if>
+			   ) ROWCNT
+		FROM (
+				SELECT A.*
+					 , DECODE(A.EST_YN, 'Y','필수','필수아님') EST_NM
+					 , B.EVT_ITEM_NM
+					 , C.CD_NM_KO
+					 , ROW_NUMBER() OVER (ORDER BY B.${sidx} ${sord}) AS RK
+				  FROM CM_EVT_ITEM_INFO A
+					   LEFT JOIN CM_EVT_ITEM B ON A.EVT_ITEM_ID = B.EVT_ITEM_ID
+					   LEFT JOIN (SELECT CD_NM_KO, CD_GRP_ID FROM CM_TC_CODE WHERE USE_TY_CD = 'Y' AND CD_TY = 'G') C ON C.CD_GRP_ID = B.CD_GRP_ID 
+				 WHERE 1 = 1
+				<if test="codeId != null and codeId != '' ">
+				   AND A.EVT_ID = #{codeId} 
+				</if>
+	<![CDATA[
+			   ) A
+		 WHERE A.RK >= ((TO_NUMBER(#{pageNo}) - 1) * TO_NUMBER(#{rowsPerPage})) + 1
+		   AND A.RK <= (TO_NUMBER(#{pageNo}) * TO_NUMBER(#{rowsPerPage}))
+	]]>
+	</select>
+
+	<select id="list_cm_event_sub" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT EVT_ID
+			 , EVT_ID_SUB_CD
+			 , EVT_ID_SUB_NM
+			 , WIT_1
+			 , WIT_2
+			 , WIT_3
+		  FROM CM_EVENT_SUB
+		 WHERE USE_TY_CD = 'Y'
+		   AND EVT_ID = #{codeId}
+	</select>
+
+	<select id="select_evt_id" parameterType="java.util.HashMap" resultType="String">
+	<![CDATA[
+		SELECT EVT_ID
+		  FROM CM_EVENT
+		 WHERE EVT_ID = #{codeId}
+	]]>
+	</select>
+	
+	<!-- <insert id="insert_cm_event" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO PLATFORM_CODE (
+			  CODE_ID
+			, CODE_CD
+			, USVC_GRP_CD
+			, SRL_NO
+			, SORT_ORDR
+			, EVT_NM
+			, EVT_DSCRT
+			, URGDG_GRAD_CD
+			, EVT_ICON_DSP_YN
+			, EVT_LC_MOVE_YN
+			, LIGHTBAR_OPER_YN
+			, CMPND_EVT_YN
+			, EVT_AUTO_TRMS_STC
+			, USE_TY_CD
+			, INST_ID
+			, INST_DE
+			, UPD_ID
+			, UPD_DE
+			, AUTO_END_TIME
+			, STD_EVT_YN
+		) VALUES (
+			  #{codeId}
+			, #{codeCd}
+			, #{usvcGrpCd}
+			, #{srlNo}
+			, #{sortOrdr}
+			, #{evtNm}
+			, #{evtDscrt}
+			, #{urgdgGradCd}
+			, #{evtIconDspYn}
+			, #{evtLcMoveYn}
+			, #{lightbarOperYn}
+			, #{cmpndEvtYn}
+			, #{evtAutoTrmsStc}
+			, #{useTyCd}
+			, #{userId}
+			, SYSDATE
+			, #{userId}
+			, SYSDATE
+			, #{autoEndTime}
+			, #{stdEvtYn}
+		)
+	]]>
+	</insert> -->
+
+	<insert id="insert_cm_event" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO PLATFORM_CODE (
+			  SEQ_NO
+			, CODE_ID
+			, CODE_CD
+			, USVC_GRP_CD
+			, CODE_NM
+			, CONT
+			, USE_TY_CD
+			, INST_ID
+			, INST_DE
+			, UPD_ID
+			, UPD_DE
+			, STD_EVT_YN
+			, CODE_GROUP
+			, SYS_CD
+		) VALUES (
+			  PLATFORM_CODE_SEQ.NEXTVAL
+			, #{codeId} || PLATFORM_CODE_SEQ.CURRVAL
+			, 'EVENT_TYPE_' || EVENT_TYPE_SEQ.NEXTVAL
+			, #{usvcGrpCd}
+			, #{codeNm}
+			, #{cont}
+			, #{useTyCd}
+			, #{userId}
+			, SYSDATE
+			, #{userId}
+			, SYSDATE
+			, #{stdEvtYn}
+			, 'EVENT_TYPE'
+			, #{sysCd}
+		)
+	]]>
+	</insert>
+
+	<update id="update_cm_event" parameterType="java.util.HashMap">
+	<![CDATA[
+		UPDATE PLATFORM_CODE
+		   SET CODE_ID = (#{sysCd} || #{usvcGrpCd} || SEQ_NO) 
+		     , USVC_GRP_CD = #{usvcGrpCd}
+			 , CODE_NM = #{codeNm}
+			 , USE_TY_CD = #{useTyCd}
+			 , UPD_ID = #{userId}
+			 , UPD_DE = SYSDATE
+			 , STD_EVT_YN = #{stdEvtYn}
+			 , SYS_CD = #{sysCd}
+		 WHERE CODE_ID = #{codeId}
+	]]>
+	</update>
+	
+	<update id="delete_cm_event" parameterType="java.util.HashMap">
+	<![CDATA[
+		UPDATE PLATFORM_CODE
+		   SET USE_TY_CD = 'D'
+			 , UPD_ID = #{userId}
+			 , UPD_DE = SYSDATE
+		 WHERE CODE_ID = #{codeId}
+	]]>
+	</update>
+
+	<insert id="insert_cm_evt_item_info" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_EVT_ITEM_INFO(
+			  EVT_ID
+			, EVT_ITEM_ID
+			, EST_YN
+			, SORT_ORDR
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+		) VALUES (
+			  #{codeId}
+			, #{evtItemId}
+			, 'N'
+			, (SELECT DECODE((SELECT COUNT(*) FROM CM_EVT_ITEM_INFO WHERE EVT_ID = #{codeId}), 0, 1, (SELECT MAX(SORT_ORDR) + 1 FROM CM_EVT_ITEM_INFO WHERE EVT_ID = #{codeId}))FROM DUAL)
+			, #{userId}
+			, SYSDATE
+			, #{userId}
+			, SYSDATE
+		)
+	]]>
+	</insert>
+
+	<update id="update_cm_evt_item_info" parameterType="java.util.HashMap">
+	<![CDATA[
+		UPDATE CM_EVT_ITEM_INFO
+		   SET EST_YN = #{estYn}
+			 , UPD_USER_ID = #{userId}
+			 , UPD_DATE = SYSDATE
+		 WHERE EVT_ID = #{codeId}
+		   AND EVT_ITEM_ID = #{evtItemId}
+	]]>
+	</update>
+
+	<delete id="delete_cm_evt_item_info" parameterType="java.util.HashMap">
+		DELETE FROM CM_EVT_ITEM_INFO
+		 WHERE EVT_ID = #{codeId}
+		<if test="evtItemId != null and evtItemId != '' ">
+		   AND EVT_ITEM_ID = #{evtItemId}
+		</if>
+	</delete>
+
+	<insert id="insert_cm_event_sub" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_EVENT_SUB (
+			  EVT_ID
+			, EVT_ID_SUB_CD
+			, EVT_ID_SUB_NM
+			, WIT_1
+			, WIT_2
+			, WIT_3
+			, USE_TY_CD
+			, RGS_USER_ID
+			, UPD_USER_ID
+		) VALUES (
+			  #{codeId}
+			, #{evtIdSubCd}
+			, #{evtIdSubNm}
+			, #{wit1}
+			, #{wit2}
+			, #{wit3}
+			, #{useTyCd}
+			, #{userId}
+			, #{userId}
+		)
+	]]>
+	</insert>
+
+	<update id="update_cm_event_sub" parameterType="java.util.HashMap">
+	<![CDATA[
+		UPDATE CM_EVENT_SUB
+		   SET EVT_ID_SUB_NM = #{evtIdSubNm}
+			 , WIT_1 = #{wit1}
+			 , WIT_2 = #{wit2}
+			 , WIT_3 = #{wit3}
+			 , UPD_USER_ID = #{userId}
+			 , UPD_DATE = SYSDATE
+		 WHERE EVT_ID = #{codeId}
+		   AND EVT_ID_SUB_CD = #{evtIdSubCd}
+	]]>
+	</update>
+
+	<update id="delete_cm_event_sub" parameterType="java.util.HashMap">
+		UPDATE CM_EVENT_SUB
+		   SET USE_TY_CD = 'D'
+			 , UPD_USER_ID = #{userId}
+			 , UPD_DATE = SYSDATE
+		 WHERE EVT_ID = #{codeId}
+		<if test="evtIdSubCd != null and evtIdSubCd != '' ">
+		   AND EVT_ID_SUB_CD = #{evtIdSubCd}
+		</if>
+	</update>
+	
+	<select id="event_type_seq_currval" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT LAST_NUMBER FROM USER_SEQUENCES WHERE SEQUENCE_NAME = UPPER('PLATFORM_CODE_SEQ')
+	</select>
+
+</mapper>

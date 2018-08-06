@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CctvTree">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="cctvTreeSerarchVO" type="com.danusys.platform.gis.service.CctvTreeVO"/>
+	
+	<resultMap id="cctvTree" class="com.danusys.platform.gis.service.CctvTreeVO">
+		<result property="id" column="id" columnIndex="1"/>
+		<result property="parentId" column="parent_id" columnIndex="2"/>
+		<result property="name" column="name" columnIndex="3"/>
+		<result property="state" column="state" columnIndex="4"/>
+		<result property="checked" column="checked" columnIndex="5"/>
+		<result property="iconCls" column="icon_cls" columnIndex="6"/>
+		<result property="odr" column="odr" columnIndex="7"/>
+	</resultMap>
+	
+	<select id="cctvTreeDAO.selectCctvTree_S" parameterClass="cctvTreeSerarchVO" resultMap="cctvTree">
+		<![CDATA[
+			SELECT
+				id
+				, parent_id
+				, CASE WHEN id = '1' OR parent_id = '1'
+					   THEN
+          		 	   CASE WHEN parent_id = '1'
+                       		THEN ("NAME" || '(' || (SELECT count(*) FROM facility WHERE purpose = id) || ')')
+                       		ELSE ("NAME" || '(' || (SELECT count(*) FROM facility) || ')')
+                       		END
+					   WHEN id = '2' OR parent_id = '2'
+					   THEN ("NAME" || '(' || (SELECT count(*) FROM sensor) || ')')
+				  	   ELSE "NAME"
+               		   END AS "NAME"
+				, state
+				, checked
+				, icon_cls
+				, odr
+			FROM gis_tree
+			]]>
+			<isEqual property="flag" compareValue="iot">
+			WHERE (id = '2' OR parent_id = '2')
+			</isEqual>
+			<![CDATA[
+			order by odr
+			]]>
+	</select>
+	
+</sqlMap>

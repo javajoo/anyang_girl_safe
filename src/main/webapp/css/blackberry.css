@@ -1,0 +1,217 @@
+/**
+ * 메인 페이지의 상단. 타이틀 영역 
+ */
+.logo-area {
+	background: linear-gradient(to top, #0a0b0c, #292b2e);
+	border-bottom-color: #008cff !important;
+	overflow: hidden;
+	border-width: 3px !important;
+	height: 78px !important;
+	width: 100% !important;
+}
+
+/**
+ * 메인 페이지의 타이틀 
+ */
+.logo_tit {
+	display:inline-block;
+	height:100%;padding-left:55px;
+	background:url(../images/layout/pop_logo.png) no-repeat left center; 
+	color:#fff; 
+	font-family: 'nanum-barun-gothic-regular'; 
+	font-size:26px; 
+	line-height:84px; 
+	letter-spacing: 1px;
+}
+
+.normal-title{
+	position: absolute;
+    background: url(../images/icons/main_top_icon_user.png) no-repeat center center;
+    width: 55px;
+	height: 80px;
+	margin-left: 35px;
+	/* font-family: 'nanum-barun-gothic-regular';
+	font-weight: bold;
+	background-color: #008cff;
+	padding: 3px 10px;
+	border-radius: 10px;
+	margin-left: 30px; */
+}
+
+#status-running {
+	position: relative;
+	top: 5px;
+	color: #00ff00;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 28px;
+}
+
+#status-total {
+	position: relative;
+	top: 5px;
+	color: #008cff;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 28px;
+}
+
+.normal-end-tag{
+	position: relative;
+	top: 4px;
+	color: #008cff;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 20px;
+	margin-left: 7px;
+}
+
+.sos-title{
+	position: absolute;
+    background: url(../images/icons/main_top_icon_sos.png) no-repeat center center;
+    width: 55px;
+	height: 80px;
+	margin-left: 27px;
+    /* font-family: 'nanum-barun-gothic-regular';
+	font-weight: bold;
+	background-color: #ff5a19;
+	padding: 3px 18px;
+	border-radius: 10px;
+	margin-left: 32px; */
+}
+
+#status-emergency{
+	position: relative;
+	top: 5px;
+	color: #ff5a19;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 28px;
+}
+
+.sos-end-tag{
+	position: relative;
+	top: 4px;
+	color: #ff5a19;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 20px;
+	margin-left: 7px;
+}
+
+.normal-title-dimentia {
+	position: absolute;
+    background: url(../images/icons/main_top_icon_user.png) no-repeat center center;
+    width: 55px;
+	height: 80px;
+	margin-left: 1125px;							/* 우측 치매노인 인원 현황 위치 */
+	/* font-family: 'nanum-barun-gothic-regular';
+	font-weight: bold;
+	background-color: #008cff;
+	padding: 3px 10px;
+	border-radius: 10px;
+	margin-left: 30px; */
+}
+
+#status-running-dimentia {
+	position: relative;
+	top: 5px;
+	color: #00ff00;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 28px;
+	margin-left:1089px;							/* 우측 치매노인 인원 현황 위치 */
+}
+
+#status-total-dimentia {
+	position: relative;
+	top: 5px;
+	color: #008cff;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 28px;
+}
+
+.normal-end-tag-dimentia {
+	position: relative;
+	top: 4px;
+	color: #008cff;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 20px;
+	margin-left: 7px;
+}
+
+.sos-title-dimentia {
+	position: absolute;
+    background: url(../images/icons/main_top_icon_sos.png) no-repeat center center;
+    width: 55px;
+	height: 80px;
+	margin-left: 27px;
+    /* font-family: 'nanum-barun-gothic-regular';
+	font-weight: bold;
+	background-color: #ff5a19;
+	padding: 3px 18px;
+	border-radius: 10px;
+	margin-left: 32px; */
+}
+
+#status-emergency-dimentia {
+	position: relative;
+	top: 5px;
+	color: #ff5a19;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 28px;
+}
+
+.sos-end-tag-dimentia{
+	position: relative;
+	top: 4px;
+	color: #ff5a19;
+	font-family: 'nanum-barun-gothic-regular';
+	font-size: 20px;
+	margin-left: 7px;
+}
+
+footer {
+	background-color: #17181b;
+	overflow: hidden;
+	width: 100% !important;
+}
+
+#title-version{
+	position: absolute;
+	right: 34px;
+	top: 10px;
+	font-family: tahoma;
+	color: #fff;
+	text-align: left;
+}
+
+.login-image{
+	position: absolute;
+    background: url(../images/icons/main_top_icon_login_nor.png) no-repeat center center;
+    display: block;
+    width: 32px;
+    height: 32px;
+    left: -51px;
+    top: -8px;
+}
+
+#logout{
+    position: absolute;
+    background: url(../images/icons/main_top_text_btn_nor.png) no-repeat center center;
+    display: block;
+    width: 82px;
+    right: 0px;
+    top: -4px;
+    cursor: pointer;
+    margin-right: 22px;
+    padding: 10px 0;
+    font-size: 10pt;
+}
+
+#settings{
+	position: absolute;
+    background: url(../images/icons/main_top_icon_setting_nor.png) no-repeat center center;
+    display: block;
+    width: 34px;
+    height: 32px;
+    right: -60px;
+    top: -26px;
+    cursor: pointer;
+    margin-right: 28px;
+	margin-top: 25px;
+}

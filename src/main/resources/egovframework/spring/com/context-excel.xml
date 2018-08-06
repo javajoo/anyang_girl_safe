@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="excelCctvService" class="egovframework.rte.fdl.excel.impl.EgovExcelServiceImpl">
+		<property name="mapClass" value="com.danusys.platform.gis.web.EgovExcelCctvMapping" />
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	<bean id="excelCctvDtlService" class="egovframework.rte.fdl.excel.impl.EgovExcelServiceImpl">
+		<property name="mapClass" value="com.danusys.platform.gis.web.EgovExcelCctvDtlMapping" />
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	<bean id="excelEqpmnCvplService" class="egovframework.rte.fdl.excel.impl.EgovExcelServiceImpl">
+		<property name="mapClass" value="com.danusys.platform.gis.web.EgovExcelEqpmnCvplMapping" />
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	<bean id="excelEqpmnTroblService" class="egovframework.rte.fdl.excel.impl.EgovExcelServiceImpl">
+		<property name="mapClass" value="com.danusys.platform.gis.web.EgovExcelEqpmnTroblMapping" />
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,799 @@
+:-ms-input-placeholder {
+    color: #ccc;
+}
+
+/* 레이아웃 */
+.west_area {
+	width: 100%;
+	height: calc(100% - 45px);
+
+}
+
+/* jsp 공간 */
+.west_cont {
+	width: 100%;
+    height: 100%;
+}
+.west_cont .cont_area {
+	width: 100%;
+	height: 100%;
+	background: #fff;
+}
+
+.west_cont .list_condi {
+    margin: 0 10px;
+}
+#eventM_management .list_condi,
+#castingN_management .list_condi,
+#cycleM_management .list_condi,
+#iotM_management .list_condi {
+	height: 42px;
+}
+#eventR_management .list_condi,
+#iotH_management .list_condi {
+	height: 84px;
+}
+#accessR_management .list_condi2,
+#statsR_management .list_condi2 {
+	height: 44px;
+}
+/* #castingN_management .list_condi {
+	height: 126px;
+} */
+
+#selectM_management .list_condi,
+#facilityM_management .list_condi {
+	height: 135px;
+}
+
+#event112M_management .list_condi{
+	height: 90px
+}
+
+#castingN_management .datagrid-body,
+#accessR_management .datagrid-body,
+#accessR_management2 .datagrid-body {
+	overflow: auto;
+}
+
+#eventM_management  .datagrid-body .datagrid-row,
+#event112M_management  .datagrid-body .datagrid-row,
+#castingN_management .datagrid-body .datagrid-row {
+    height: 40px;
+}
+
+#accessR_management .datagrid,
+#accessR_management .datagrid-wrap,
+#accessR_management .datagrid-view,
+#accessR_management .datagrid-view2,
+#accessR_management .datagrid-view2 .datagrid-header,
+#accessR_management .datagrid-view2 .datagrid-body,
+#accessR_management .datagrid-view2 .datagrid-footer {
+	width: 100% !important;
+}
+
+#accessR_management2 .datagrid,
+#accessR_management2 .datagrid-wrap,
+#accessR_management2 .datagrid-view,
+#accessR_management2 .datagrid-view2,
+#accessR_management2 .datagrid-view2 .datagrid-header,
+#accessR_management2 .datagrid-view2 .datagrid-body,
+#accessR_management2 .datagrid-view2 .datagrid-footer {
+	width: 900px !important;
+}
+#accessR_management2 .datagrid-view2 .datagrid-body {
+	height: 660px !important;
+}
+
+/* 요소 */
+.list_condi li,
+.list_condi2 li,
+.list_condi4 li,
+.list_condi5 li {
+	position:relative;
+	min-height:28px;
+	margin-top: 2px;
+	-webkit-margin-before: 3px;
+	float: left;
+	margin-left: 5px;
+	font-family: 'nanum-barun-gothic-regular';
+	border-top : 1px solid #e0e0e0;
+	padding-top : 5px;
+	width: 455px;
+    height: 38px;
+}
+.list_condi3 li,
+.list_condi3_half li {
+	position:relative;
+	float: left;
+	margin-left: 5px;
+	padding-top : 5px;
+}
+.list_condi2 li,
+.list_condi4 li,
+.list_condi5 li {
+	width: 99%;
+}
+.list_condi3 li {
+	margin-left: 760px;
+	/* width: 760px; */
+	width: 45%;
+}
+.list_condi3_half li {
+	/* width: 760px; */
+	width: 49%;
+}
+.list_condi >li:first-child {
+	margin-top: 3px;
+	font-size: 13px;
+}
+#castingN_management .list_condi >li:last-child {
+	/* padding: 12px 0 0 0; */
+}
+#accessR_management .list_condi2 li{
+	border: 0;
+}
+/* .list_condi li em {
+	position: absolute;
+    right: 160px;
+    top: 2px;
+    font-size: 16px;
+    line-height: 24px;
+    font-family: 'nanum-barun-gothic-regular';
+} */
+.list_condi li input {vertical-align:middle;}
+.list_condi li li {
+	margin-left: 0;
+}
+
+.list_em {
+	margin: 0 3px;
+	font-size: 12px;
+	line-height: 27px;
+}
+
+/* 버튼이미지 */
+.eventR_button_list,
+.accessR_button_list,
+.statsR_button_list,
+.castingN_button_list,
+.iotM_button_list,
+.iotH_button_list,
+.cycleN_button_list,
+.selectM_button_list,
+.facilityM_button_list {
+	padding: 0 15px;
+    /* background: url(../images/icons/inquiry_btn.png) no-repeat center center; */
+    top: 6px;
+    /* position: absolute; */
+    background: -moz-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
+    background: -webkit-gradient(linear, 280deg, color-stop(0, 64A2C7), color-stop(66%, 2183B3));
+    background: -webkit-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
+    background: -o-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
+    background: -ms-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1301FE', endColorstr='#F4F60C', GradientType='1');
+    background: linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
+    color: #fff;
+    font-size: 12px;
+    /* margin-top: 4px; */
+    vertical-align: middle;
+    height: 25px;
+    display: inline-block;
+    line-height: 27px;
+    min-width: ;
+    border: 1px solid #2183b3;
+}
+.eventM_button_list {
+	background: url(../images/icons/handling_btn.png) no-repeat center center;
+    top: 2px;
+    position: absolute;
+    width: 85px;
+    height: 35px;
+}
+
+
+.setting_button_list {
+    background: url(../images/icons/admin_search_btn.png) no-repeat center center;
+    top: 1px;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_add {
+    background: url(../images/icons/admin_add_btn.png) no-repeat center center;
+    top: -2px;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_del {
+    background: url(../images/icons/admin_del_btn.png) no-repeat center center;
+    top: -2px;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_save {
+    background: url(../images/icons/admin_save_btn.png) no-repeat center center;
+    top: -2px;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_add2 {
+    background: url(../images/icons/one_add.png) no-repeat center center;
+    position: absolute;
+    width: 84px;
+    height: 36px;
+}
+.setting_button_excel_upd {
+    background: url(../images/icons/excel_upd.png) no-repeat center center;
+    position: absolute;
+    width: 125px;
+    height: 36px;
+}
+.setting_button_excel_down {
+    background: url(../images/icons/excel_down.png) no-repeat center center;
+    position: absolute;
+    width: 100px;
+    height: 36px;
+}
+.setting_button_dtl {
+    background: url(../images/icons/info_detail.png) no-repeat center center;
+    position: absolute;
+    width: 85px;
+    height: 37px;
+}
+.setting_button_modify {
+	background: url(../images/icons/admin_modi_btn.png) no-repeat center center;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_inst {
+	background: url(../images/icons/admin_save_btn.png) no-repeat center center;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_del2 {
+	background: url(../images/icons/admin_del_btn.png) no-repeat center center;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.setting_button_back {
+	background: url(../images/icons/admin_cancel_btn.png) no-repeat center center;
+    position: absolute;
+    width: 65px;
+    height: 36px;
+}
+.eventM_button_list {
+	right: 11px;
+}
+.accessR_button_list {
+	left: 570px;
+}
+.statsR_button_list {
+	left: 350px;
+}
+.castingN_button_list,
+.eventR_button_list {
+    left: 210px;
+}
+.iotM_button_list {
+	left: 310px;
+}
+.iotH_button_list {
+	left: 400px;
+}
+.facilityM_button_list {
+	right: 10px;
+}
+
+.selectM_button_list {
+	right: 10px;
+}
+
+#user1_management .setting_button_list {
+	left: 850px;
+}
+#group1_management .setting_button_list {
+	left: 870px;
+}
+#group2_management .setting_button_list,
+#group3_management .setting_button_list,
+#group4_management .setting_button_list {
+	/* left: 665px; */
+	left: 90%;
+}
+.center_cont .setting_button_add {
+	right: 5px;
+}
+.center_cont .setting_button_del {
+	right: 75px;
+}
+
+.half_cont .setting_button_save {
+	right: 145px;
+}
+.half_cont .setting_button_add {
+	right: 75px;
+}
+.half_cont .setting_button_del {
+	right: 5px;
+}
+.setting_button_add2 {
+	left: 5px;
+}
+.setting_button_excel_upd {
+	left: 100px;
+}
+.setting_button_excel_down {
+	left: 235px;
+}
+.setting_button_dtl {
+	left: 345px;
+}
+.setting_button_modify, .setting_button_inst {
+	left: 5px;
+}
+.setting_button_del2 {
+	left: 75px;
+}
+.setting_button_back {
+	left: 145px;
+}
+
+.accessR_button_excel {
+	position: absolute;
+	left: 780px;
+	bottom: 55px;
+	width: 113px;
+	height: 34px;
+    background: url(../images/icons/excel_btn.png) no-repeat center center;
+}
+
+.accessR_dtl_button_excel {
+	position: absolute;
+	right: 80px;
+	bottom: 55px;
+	width: 113px;
+	height: 34px;
+    background: url(../images/icons/excel_btn.png) no-repeat center center;
+}
+
+/* .eventR_button_list:hover{
+    background: url('../images/icons/search_btn_list_over.png') no-repeat center center;
+} */
+
+/* 총 건수 */
+.list_tot{
+	position: absolute;
+    right: 32px;
+    color: #ffa500;
+}
+.list_tot + label{
+	position: absolute;
+    right: 18px;
+}
+
+/* 테이블 */
+.table_title {
+    font-size: 13px;
+    font-family: 'nanum-barun-gothic-regular';
+    border-top: 1px solid #e0e0e0;
+    padding: 5px 5px 0 5px;
+    margin: 0 10px;
+}
+
+.datagrid {
+	position: relative;
+    /* border-bottom: 1px solid #6b6b6b !important; */
+    margin-top: 5px !important;
+	font-family: 'nanum-barun-gothic-regular';
+	/* height: calc(100% - 30px); */
+}
+#accessR_management .datagrid {
+    border: 0 !important;
+}
+
+#eventM_management .datagrid {
+	height: calc(100% - 30px);
+}
+
+#event112M_management .datagrid {
+	height: calc(100% - 30px);
+}
+
+#castingN_management .datagrid {
+	height: calc(100% - 29px);
+}
+
+#eventR_management .datagrid {
+	height: 100%;
+}
+
+#accessR_management2 .datagrid {
+	margin-left: 10px;
+	border: 0 !important;
+}
+
+.row_handle {
+	display: inline-block;
+    background: url(../images/icons/process_btn.png) no-repeat center center;
+    width: 63px;
+    height: 34px;
+    margin-left: 10px;
+}
+
+/* #eventM_management .datagrid-header td[field=eventType],
+#eventM_management .datagrid-body td[field=eventType] {
+    width: 74.84px;
+} */
+
+.dtl_title2 {
+	margin: 15px 0 10px 15px;
+	background: url(../images/icons/subdivide.png) no-repeat left center;
+	width: 100%;
+}
+.dtl_title2 > em{
+    margin-left: 20px;
+    font-family: 'nanum-barun-gothic-regular';
+}
+
+.accessR_table_dtl {
+	position: relative;
+    z-index: 1;
+    background: #eee;
+    margin: 0 0 20px 10px;
+    border-collapse: collapse;
+    width: 900px;
+    /* -webkit-logical-width: 729px ; */
+}
+.accessR_table_dtl th,
+.accessR_table_dtl td {
+    border: 1px solid #e1e1e1;
+    width: 200px;
+}
+
+.body_title_text {
+    font-size: 13px;
+    font-family: 'nanum-barun-gothic-regular';
+    color: #000;
+    background: #f4f4f6;
+    text-align: center;
+	padding: 1px 0;
+	width: 140px;
+}
+.body_title_value {
+    font-size: 14px;
+    font-family: 'nanum-barun-gothic-regular';
+	background: #fff;
+	padding: 2px;
+}
+.body_title_value > input{
+	border: 0;
+	background: #fff;
+}
+
+
+/* 환경설정 css */
+.west_cont .cont_area_west {
+	width: 20%;
+	height: 100%;
+	background: #f8f8f8;
+}
+.west_cont .cont_area_center {
+	width: 80%;
+	height: 100%;
+	background: #fff;
+	position: absolute;
+	top: 0px;
+	left: 20%;
+}
+#menu_setting {
+	font-size: 20px;
+	font-family: 'nanum-barun-gothic-regular';
+	padding-left: 50px;
+	font-weight: 600;
+	line-height: 85px;
+	height: 85px;
+}
+.setting_image {
+	display: inline-block;
+    background: url(../images/icons/setting.png) no-repeat center center;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    position: relative;
+    top: 14px;
+}
+.menu_area {
+	position: relative;
+	width: 90%;
+	height: 750px;
+	top: 45px;
+	left: 5%;
+	border: solid #000;
+	border-width: 1px 0 0 0;
+}
+
+/* 환경설정 메뉴 css */
+.accordion-menu {
+	width: 100%;
+	max-width: 350px;
+	background: #fff;
+	border-radius: 4px;
+}
+.accordion-menu li.open .dropdownlink {
+	color: #fff;
+	background: #4b4b4b;
+}
+.accordion-menu li.open .dropdownlink .dropdownlink_btn{
+	background: url(../images/icons/dropdown_white.png) no-repeat center center;
+	position: absolute;
+	width: 20px;
+	height: 10px;
+	top: 40%;
+	right: 10px;
+	display: inline-block;
+}
+.accordion-menu li:last-child .dropdownlink {
+  /* border-bottom: 0; */
+}
+.dropdownlink {
+	cursor: pointer;
+	display: block;
+	padding: 15px 15px 15px 45px;
+	font-size: 14px;
+	font-family: 'nanum-barun-gothic-regular';
+	border: solid #ccc;
+	border-width: 1px 0;
+	color: #212121;
+	position: relative;
+	transition: all 0.4s ease-out;
+}
+.dropdownlink_set {
+	background: url(../images/icons/set_black.png) no-repeat left center;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	top: 13px;
+	left: 15px;
+}
+.dropdownlink_btn {
+	background: url(../images/icons/dropdown_blue.png) no-repeat center center;
+	position: absolute;
+	width: 20px;
+	height: 10px;
+	top: 40%;
+	right: 10px;
+	display: inline-block;
+}
+.submenuItems {
+	display: none;
+	background: #fff;
+}
+.submenuItems a {
+	display: block;
+	color: #727272;
+	padding: 12px 12px 12px 45px;
+	transition: all 0.4s ease-out;
+	font-family: 'nanum-barun-gothic-regular';
+}
+.submenuItems a.selected{
+	color: #298ba6;
+}
+
+/* 환경설정내용css */
+.center_cont {
+	width: 100%;
+    height: 100%;
+}
+.center_cont .cont_area {
+	width: 100%;
+	height: 100%;
+	background: #fff;
+}
+.center_cont .list_condi {
+    margin: 0 10px;
+}
+.center_cont h5 {
+	height: 75px;
+	font-size: 20px;
+	margin-left: 20px;
+	line-height: 75px;
+	font-family: nanum-barun-gothic-regular;
+}
+.center_cont .table_title {
+	border: 0;
+}
+.center_cont .list_condi2 li:nth-of-type(1) {
+	border-top: 2px solid #000;
+	height: 32px;
+}
+.center_cont .list_condi2 li:nth-of-type(2){
+	border-width: 1px 0;
+	height: 34px;
+	margin-top: 0px;
+	margin-left: 25px;
+	padding-right: 60px;
+	background: #fafafc;
+	width: 93%;
+	border-bottom: 1px solid #e0e0e0;
+	line-height: 30px;
+}
+.center_cont .list_condi2 li > p {
+	font-size: 15px;
+	font-family: "nanum-barun-gothic-regular";
+	margin: 5px 0 5px 20px;
+}
+.center_cont .list_condi2 li > span {
+	/* margin-left: 10px; */
+	margin: -2px 0 0 10px;
+}
+.center_cont .list_condi3 li{
+	/* border: 0; */
+	height: 30px;
+}
+
+
+.half_cont {
+	width: 100%;
+    height: 100%;
+}
+.half_cont .cont_area {
+	width: 100%;
+	height: 100%;
+	background: #fff;
+}
+/* .half_cont .list_condi {
+    margin: 0 10px;
+} */
+.half_cont h5 {
+	height: 75px;
+	font-size: 20px;
+	margin-left: 20px;
+	line-height: 75px;
+	font-family: nanum-barun-gothic-regular;
+}
+.half_cont .table_title {
+	border: 0;
+}
+.half_cont .list_condi4 li:nth-of-type(1) {
+	border-top: 2px solid #000;
+	height: 32px;
+}
+.half_cont .list_condi4 li:nth-of-type(2),
+.half_cont .list_condi4 li:nth-of-type(3),
+.half_cont .list_condi5 li:nth-of-type(1),
+.half_cont .list_condi5 li:nth-of-type(2) {
+	border-width: 1px 0;
+	height: 34px;
+	margin-top: 0px;
+	margin-left: 25px;
+	padding-right: 60px;
+	background: #fafafc;
+	width: 43%;
+	/* width: 676px; */
+	border-bottom: 1px solid #e0e0e0;
+	line-height: 30px;
+}
+.half_cont .list_condi4 li > p {
+	font-size: 15px;
+	font-family: "nanum-barun-gothic-regular";
+	margin: 5px 0 5px 20px;
+}
+.half_cont .list_condi4 li > span,
+.half_cont .list_condi5 li > span {
+	/* margin-left: 10px; */
+	margin: -2px 0 0 10px;
+}
+.half_cont .list_condi3 li {
+	height: 36px;
+	margin-top: -6px;
+}
+.half_cont .list_condi3_half li {
+	height: 36px;
+	margin-top: -4px;
+}
+
+.half_cont .datagrid {
+	/* width: 737px !important; */
+	width: 47% !important;
+	margin-left: 25px;
+	float: left;
+}
+.half_cont .datagrid-wrap,
+.half_cont .datagrid-view,
+.half_cont .datagrid-view2,
+.half_cont .datagrid-view .datagrid-header,
+.half_cont .datagrid-view2 .datagrid-body,
+.half_cont .datagrid-view2 .datagrid-footer {
+	width: 737px !important;
+}
+
+.list > input[type="text"] {
+	border: 1px solid #ccc;
+    /* margin: 5px 0 4px 3px; */
+    /* padding: 1px; */
+    font-family: nanum-barun-gothic-regular;
+    line-height: 25px;
+    height: 25px;
+    margin: 0;
+}
+
+#accessR_management .datagrid-header td[field=adminNm],
+#accessR_management .datagrid-body td[field=adminNm] {
+    width: 194px;
+}
+#accessR_management .datagrid-header td[field=adminId],
+#accessR_management .datagrid-body td[field=adminId],
+#accessR_management .datagrid-header td[field=login],
+#accessR_management .datagrid-body td[field=login],
+#accessR_management .datagrid-header td[field=logout],
+#accessR_management .datagrid-body td[field=logout] {
+    width: 214px;
+}
+
+/* 상황통계 */
+.west_cont .stat_list_condi {
+    margin: 0 10px;
+}
+#iotStatH_management .stat_list_condi {
+	height: 45px;
+}
+.stat_list_condi li {
+	position:relative;
+	min-height:28px;
+	margin-top: 2px;
+	-webkit-margin-before: 3px;
+	float: left;
+	margin-left: 5px;
+	font-family: 'nanum-barun-gothic-regular';
+	border-top : 1px solid #e0e0e0;
+	padding-top : 5px;
+	width: 100%;
+    height: 32px;
+}
+.iotStatH_button_list {
+	left: 505px;
+	padding: 5px 21px;
+    /* background: url(../images/icons/inquiry_btn.png) no-repeat center center; */
+    top: 6px;
+    position: absolute;
+	background-color: rgba(71, 166, 255, 1);
+	color: #fff;
+}
+#iotStatM_management .stat_list_condi {
+	height: 45px;
+}
+.iotStatM_button_list {
+	left: 505px;
+	padding: 5px 21px;
+    /* background: url(../images/icons/inquiry_btn.png) no-repeat center center; */
+    top: 6px;
+    position: absolute;
+	background-color: rgba(71, 166, 255, 1);
+	color: #fff;
+}
+.facility_dtl {
+	position: relative;
+    z-index: 1;
+    background: #eee;
+    margin-bottom: 2px;
+    border-collapse: collapse;
+    width: 463px;
+}
+.facility_dtl .pop_body_title_text {
+	padding: 7.8px 0;
+}
+.facility_dtl .textbox {
+	margin: 0;
+}
+.facility_dtl th,
+.facility_dtl td {
+    border: 1px solid #e1e1e1;
+}

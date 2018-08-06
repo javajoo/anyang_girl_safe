@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="IotSensorHistory">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="iotSensorHistorySerarchVO" type="com.danusys.platform.west.service.IotSensorHistoryVO"/>
+	
+	<resultMap id="iotSensorHistory" class="com.danusys.platform.west.service.IotSensorHistoryVO">
+		<result property="seqNo" column="seq_no" columnIndex="1"/>
+		<result property="name" column="name" columnIndex="2"/>
+		<result property="type" column="s_type" columnIndex="3"/>
+		<result property="value" column="value" columnIndex="4"/>
+		<result property="thresholdLo" column="threshold_lo" columnIndex="5"/>
+		<result property="thresholdHi" column="threshold_hi" columnIndex="6"/>
+		<result property="date" column="date" columnIndex="7"/>
+		<result property="siteNo" column="site_no" columnIndex="8"/>
+		<result property="latitude" column="latitude" columnIndex="9"/>
+		<result property="longitude" column="longitude" columnIndex="10"/>
+		<result property="unit" column="unit" columnIndex="11"/>
+		<result property="typeNm" column="s_type_nm" columnIndex="12"/>
+		<result property="siteNo" column="site_no" columnIndex="13"/>
+	</resultMap>
+	
+	<insert id="iotSensorHistoryDAO.insertIotSensorHistory_S">
+		<![CDATA[
+			INSERT INTO iot_sensor_history 
+				( name
+				  , s_type
+				  , value
+				  , threshold_lo
+				  , threshold_hi
+				  , date
+				  , site_no
+				  , latitude
+				  , longitude
+				  , unit )
+			VALUES ( #name#
+				  , #type#
+				  , #value#
+				  , #thresholdLo#
+				  , #thresholdHi#
+				  , #date#
+				  , #siteNo#
+				  , #latitude#
+				  , #longitude#
+				  , #unit# )
+		]]>
+	</insert>
+	
+	<select id="iotSensorHistoryDAO.selectIotSensorHistory_S" resultMap="iotSensorHistory">
+		<![CDATA[
+			SELECT
+				i.seq_no
+				, i.name
+				, i.s_type
+				, CONCAT(CASE i.s_type WHEN 'ou' THEN '악취농도'
+						WHEN 'temperature' THEN '온도'
+						WHEN 'humidity' THEN '습도'
+						WHEN 'windspeed' THEN '풍속'
+					ELSE ''
+					END,'<br>','(',i.unit,')') s_type_nm
+				, CASE WHEN i.value<=i.threshold_lo THEN CONCAT(i.value,'(',i.threshold_lo,'<img src="images/icons/iot_down.png"/>',')')
+						WHEN i.value>=i.threshold_hi THEN CONCAT(i.value,'(',i.threshold_hi,'<img src="images/icons/iot_up.png"/>',')')
+					ELSE ''
+				  END value
+				, i.threshold_lo
+				, i.threshold_hi
+				, date_format(i.date, '%Y-%m-%d %H:%i') date
+				, i.site_no
+				, s.latitude
+				, s.longitude
+				, i.unit
+				, i.site_no
+			FROM iot_sensor_history i, sensor s
+			WHERE i.site_no = s.siteno
+			]]>
+			<isGreaterThan property="type" compareValue="0">
+				AND s_type like
+				concat('%',(CASE #type# WHEN '1' THEN 'ou' WHEN '2' THEN 'temperature' WHEN '3' THEN 'humidity' 
+				WHEN '4' THEN 'windspeed' ELSE '' END),'%')
+			</isGreaterThan>
+			<isNotEmpty property="search">
+				AND i.name
+				LIKE CONCAT('%',#search#,'%')
+			</isNotEmpty>
+			
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			LIMIT #firstIndex#, #recordCountPerPage#
+			</isNotEqual>
+	</select>
+	<select id="iotSensorHistoryDAO.selectIotSensorHistoryTotCnt" parameterClass="iotSensorHistorySerarchVO"  resultClass="int">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM iot_sensor_history
+			]]>
+	</select>
+</sqlMap>

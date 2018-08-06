@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>시설물관리시스템</title>
+<link rel="shortcut icon" href="../images/layout/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/jquery.easyui.min.js"></script> 
+</head>
+<body>
+<!-- wrap -->
+<div id="wrap">
+    <!-- header -->
+    <header>
+        <div class="cont">
+            <h1><a href="#">시설물관리시스템</a></h1>
+            <!-- gnb -->
+            <nav class="gnb">
+                <ul>
+                    <li><a href="#">센터장비관리</a></li><!-- 활성화 li class="on" -->
+                    <li><a href="sub01.html" target="_blank">GIS</a></li>
+                    <li><a href="#">현황판</a></li>
+                    <li><a href="sub02.html" target="_blank">통계</a></li>
+                    <li><a href="#">자료실</a></li>
+                    <li><a href="#">비상연락망</a></li>
+                    <li><a href="#">보고서</a></li>
+                    <li><a href="#">관리모드</a></li>
+                </ul>
+            </nav>
+            <!--- //gnb -->
+        </div>
+    </header>
+    <!-- //header -->
+    
+    <!-- container -->
+    <section id="container">
+        <h2 class="blind">Contents</h2>
+        <!-- cont_area -->
+        <div class="cont_area">
+            <!-- easyui-tabs -->
+            <div class="easyui-tabs">
+                <!-- 서버 -->
+                <div title="서버" data-options="tabWidth:166">
+                	<!-- mc_cont -->
+                    <div class="mc_cont">
+						<h2 class="title">서버</h2>
+                        <!-- tb -->
+                        <div id="tb">
+                            <span class="b_line">
+                                <em class="b_tit">도입일</em><input class="easyui-datebox" style="width:150px"> ~ <input class="easyui-datebox" style="width:150px">
+                            </span>
+                            
+                            <em class="b_tit">구분</em>
+                            <select class="easyui-combobox" panelHeight="auto" style="width:150px">
+                                <option value="java">Intel</option>
+                                <option value="c">AMD</option>
+                                <option value="basic">SUN</option>
+                                <option value="perl">HP</option>
+                                <option value="python">IBM</option>
+                            </select>
+                            <a href="#" class="easyui-linkbutton btn_rt" iconCls="icon-search">검색하기</a>
+                        </div>
+                        <!-- //tb -->
+                        <!-- easyui-datagrid -->     
+      
+                        <table class="easyui-datagrid" id="mc01" style="min-height:350px" data-options="rownumbers:true,singleSelect:true,url:'datagrid_data1.json',method:'get',toolbar:'#tb', footer:'#ft', pagination:true">
+                            <thead>
+                                <tr>
+                                    <th data-options="field:'itemid', width:210, align:'center'">아이템 ID</th>
+                                    <th data-options="field:'productid',width:176, align:'center'">CPU</th>
+                                    <th data-options="field:'listprice', width:130, align:'center'">Memory</th>
+                                    <th data-options="field:'unitcost', width:130, align:'center'">HDD</th>
+                                    <th data-options="field:'attr1', width:130, align:'center'">도입단가</th>
+                                    <th data-options="field:'status', width:130, align:'center'">기타</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- //easyui-datagrid -->
+                        
+                        <!-- tf -->
+                        <div id="ft" class="fo_nav">
+                            <p class="br_a"><a href="#" class="easyui-linkbutton" iconCls="pagination-load" plain="true">새로고침</a></p>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">삭제</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true">추가</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true">수정하기</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true">저장하기</a>
+                        </div>
+                        <!-- //tf -->
+                    </div>
+                    <!-- //mc_cont -->
+                </div>
+                <!-- //서버 -->
+                
+                <!-- 스토리지 -->
+                <div title="스토리지" data-options="tabWidth:166">
+                	<!-- mc_cont -->
+                    <div class="mc_cont">
+						<h2 class="title">스토리지</h2>
+                    	스토리지
+                    </div>
+                    <!-- //mc_cont -->
+                </div>
+                <!-- //스토리지 -->
+                
+                <!-- 네트워크 -->
+                <div title="네트워크" data-options="tabWidth:166">
+                	<!-- mc_cont -->
+                    <div class="mc_cont">
+						<h2 class="title">네트워크</h2>
+                    	네트워크
+                    </div>
+                    <!-- //mc_cont -->
+                </div>
+                <!-- //네트워크 -->
+                
+                <!-- PC -->
+                <div title="PC" data-options="tabWidth:166">
+                	<!-- mc_cont -->
+                    <div class="mc_cont">
+						<h2 class="title">PC</h2>
+                    	PC
+                    </div>
+                    <!-- //mc_cont -->
+                </div>
+                <!-- //PC -->
+                
+                <!-- 항온항습기 -->
+                <div title="항온항습기" data-options="tabWidth:166">
+                	<!-- mc_cont -->
+                    <div class="mc_cont">
+						<h2 class="title">항온항습기</h2>
+                    	항온항습기
+                    </div>
+                    <!-- //mc_cont -->
+                </div>
+                <!-- //항온항습기 -->
+                
+                <!-- 모바일단말기 -->
+                <div title="모바일단말기" data-options="tabWidth:166">
+                	<!-- mc_cont -->
+                    <div class="mc_cont">
+						<h2 class="title">모바일단말기</h2>
+                    	모바일단말기
+                    </div>
+                    <!-- //mc_cont -->
+                </div>
+                <!-- //모바일단말기 -->
+            </div>
+            <!-- //easyui-tabs -->
+        </div>
+        <!-- //cont_area -->
+    </section>
+    <!-- //container -->
+    
+    <!-- footer -->
+    <footer>
+        <div class="cont">Copyright All rights Reserved 2016 by Yongin City</div>
+    </footer>
+    <!-- //footer -->
+</div>
+<!-- //wrap -->
+</body>
+</html>

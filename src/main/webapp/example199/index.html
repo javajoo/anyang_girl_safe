@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <meta charset="utf-8" />
+        <title>Pure HTML5 file upload | Script Tutorials</title>
+        <link href="css/image_manage.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="../themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="../themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="../css/demo.css">
+        <script src="js/image_manage.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="upload_form_cont">
+                <form id="upload_form" enctype="multipart/form-data" method="post" action="upload.php">
+                    <div>
+                        <div><label for="image_file">이미지를 선택해 주세요.</label></div>
+                        <div><input type="file" name="image_file" id="image_file" onchange="fileSelected();" /></div>
+                    </div>
+                    <div>
+                        <input id="imgFileButton" name="imgFileButton" type="button" value="Upload" onclick="startUploading()" />
+                    </div>
+                    <div id="fileinfo">
+                        <div id="filename"></div>
+                        <div id="filesize"></div>
+                        <div id="filetype"></div>
+                        <div id="filedim"></div>
+                    </div>
+                    <div id="error">이미지 파일만 선택이 가능합니다.!</div>
+                    <div id="error2">파일 업로드중 에러가 발생했습니다.</div>
+                    <div id="abort">업로드가 사용자에 의해 취소되었거나, 인터넷 연결이 끊어졌습니다.</div>
+                    <div id="warnsize">파일이 너무 큽니다. 10M 이하의 이미지만 올릴 수 있습니다.</div>
+
+                    <div id="progress_info">
+                        <div id="progress"></div>
+                        <div id="progress_percent">&nbsp;</div>
+                        <div class="clear_both"></div>
+                        <div>
+                            <div id="speed">&nbsp;</div>
+                            <div id="remaining">&nbsp;</div>
+                            <div id="b_transfered">&nbsp;</div>
+                            <div class="clear_both"></div>
+                        </div>
+                        <div id="upload_response"></div>
+                    </div>
+                </form>
+
+                <img id="preview" />
+            </div>
+        </div>
+    </body>
+</html>

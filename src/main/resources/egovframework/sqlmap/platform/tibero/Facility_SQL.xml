@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Facility">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="facilitySerarchVO" type="com.danusys.platform.west.service.FacilityVO"/>
+	
+	
+	<select id="facilityDAO.selectFacilityList" parameterClass="facilitySerarchVO" resultClass="egovMap">
+			SELECT * FROM(
+				SELECT * FROM(
+					SELECT ROWNUM rnum, seq_no
+						  , cctv_nm
+						  , node_ip
+						  , node_id
+						  , node_port
+						  , mng_cd
+						  , (SELECT code_nm FROM platform_code WHERE code_group = 'CCTV' AND code_cd = purpose) AS purpose
+						  , PTZ_gbn
+						  , encrypt_latitude AS latitude
+						  , encrypt_longitude AS longitude
+						  , inst_id
+						  , inst_de
+						  , upd_id
+						  , upd_de
+         				  , DISTANCE.DISTNACE_WGS84(#encryptLatitude#, #encryptLongitude#, encrypt_latitude, encrypt_longitude) AS distance
+         		  	FROM facility
+              		WHERE 1=1 
+			<isEmpty property = "flag">
+				<isNotEmpty property = "totSearch">
+				<![CDATA[
+					AND ((NVL(cctv_nm,'') || NVL(mng_cd,'') || NVL(node_ip,'') || NVL((SELECT code_nm FROM platform_code WHERE code_group = 'CCTV' AND code_cd = purpose), ''))
+						LIKE ('%' || #totSearch# || '%'))
+				]]>
+				</isNotEmpty>
+					ORDER BY inst_id desc
+			</isEmpty>
+			<isNotEmpty property = "flag">
+			<![CDATA[
+					AND 1 > = DISTANCE.DISTNACE_WGS84(#encryptLatitude#, #encryptLongitude#, encrypt_latitude, encrypt_longitude)
+					ORDER BY distance
+			]]>
+			</isNotEmpty>
+					) INNER
+				WHERE 1=1
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			<![CDATA[
+				AND rnum <= #lastIndex#
+			]]>
+			</isNotEqual>
+			)
+			WHERE 1=1
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			<![CDATA[
+			AND rnum > #firstIndex#
+			]]>
+			</isNotEqual>
+	</select>
+	<select id="facilityDAO.selectFacilityListTotCnt" parameterClass="facilitySerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM (
+				SELECT *
+				FROM facility
+				WHERE 1=1
+				<isEmpty property = "flag">
+					<isNotEmpty property = "totSearch">
+					AND ((NVL(cctv_nm,'') || NVL(mng_cd,'') || NVL(node_ip,'') 
+					|| NVL((SELECT code_nm FROM platform_code WHERE code_group = 'CCTV' AND code_cd = purpose),''))
+						LIKE ('%' || #totSearch# || '%'))
+					</isNotEmpty>
+				</isEmpty>
+				<isNotEmpty property = "flag">
+				AND 1 >= DISTANCE.DISTNACE_WGS84(#encryptLatitude#, #encryptLongitude#, encrypt_latitude, encrypt_longitude)
+				</isNotEmpty>
+			)
+	</select>
+	
+	<!-- node id로 시설물을 찾는다. -->
+	<select id="facilityDAO.selectFacilityToNodeId" parameterClass="facilitySerarchVO" resultClass="egovMap">
+			SELECT seq_no
+				 , cctv_nm
+				 , node_ip
+				 , node_id
+				 , node_port
+				 , mng_cd
+				 , purpose
+				 , PTZ_gbn
+				 , encrypt_latitude
+				 , encrypt_longitude
+				 , inst_id
+				 , inst_de
+				 , upd_id
+				 , upd_de
+			FROM facility
+			WHERE node_id = #nodeId#
+	</select>
+	
+
+	
+	<!-- 반경 1km 안에 있는 시설물을 찾는다. -->
+	<select id="facilityDAO.selectFacilityRadius" parameterClass="facilitySerarchVO" resultClass="egovMap">
+		<![CDATA[
+    	SELECT * FROM (    SELECT * FROM (   
+    	SELECT seq_no, CCTV_NM, 
+    	NODE_PORT, NODE_ID, NODE_IP, ENCRYPT_LATITUDE, ENCRYPT_LONGITUDE,
+    	DISTANCE.DISTNACE_WGS84(#encryptLatitude#, #encryptLongitude#, encrypt_latitude, encrypt_longitude) AS DISTANCE
+    	FROM facility 
+        )obj WHERE DISTANCE<=1 ORDER BY DISTANCE
+       	) WHERE ROWNUM <=6
+		]]>
+	</select>
+	
+	<insert id="facilityDAO.insertFacility">
+		<![CDATA[
+			INSERT INTO facility 
+				(   seq_no
+        		  , cctv_nm
+				  , node_ip
+				  , node_id
+				  , node_port
+				  , mng_cd
+				  , purpose
+				  , PTZ_gbn
+				  , encrypt_latitude
+				  , encrypt_longitude
+				  , inst_id
+				  , inst_de
+				  , upd_id
+				  , upd_de )
+			VALUES ( facility_seq.NEXTVAL
+      			  , #cctvNm#
+				  , #nodeIp#
+				  , #nodeId#
+				  , #nodePort#
+				  , #mngCd#
+				  , #purpose#
+				  , #PTZGbn#
+				  , #encryptLatitude#
+				  , #encryptLongitude#
+				  , #instId#
+				  , CURRENT_TIMESTAMP
+				  , #instId#
+				  , CURRENT_TIMESTAMP )
+		]]>
+	</insert>
+	
+	<!-- <update id="facilityDAO.updateFacility">
+		<![CDATA[
+			UPDATE facility
+			SET cctv_nm=#cctvNm#
+				, node_ip=#nodeIp#
+				, node_id=#nodeId#
+				, node_port=#nodePort#
+				, mng_cd=#mngCd#
+				, purpose=#purpose#
+				, PTZ_gbn=#PTZGbn#
+				, encrypt_latitude=#encryptLatitude#
+				, encrypt_longitude=#encryptLongitude#
+				, inst_id=#instId#
+				, inst_de=#instDe#
+				, upd_id=#updId#
+				, upd_de=CURRENT_TIMESTAMP
+			]]>
+	</update> -->
+	
+	<!--  -->
+	<insert id="facilityDAO.insertFacilityDuplicateUpdate">
+        <![CDATA[
+            MERGE INTO facility
+			USING DUAL
+			ON (node_id = #nodeId#)
+			WHEN MATCHED THEN
+			UPDATE SET cctv_nm=#cctvNm#
+                    , node_ip=#nodeIp#
+                    , node_port=#nodePort#
+                    , mng_cd=#mngCd#
+                    , upd_id=#instId#
+                    , upd_de=CURRENT_TIMESTAMP
+			WHEN NOT MATCHED THEN
+			INSERT ( seq_no
+                  , cctv_nm
+                  , node_ip
+                  , node_id
+                  , node_port
+                  , mng_cd
+                  , inst_id
+                  , inst_de
+                  , upd_id
+                  , upd_de )
+			VALUES (facility_seq.NEXTVAL
+            	  , #cctvNm#
+                  , #nodeIp#
+                  , #nodeId#
+                  , #nodePort#
+                  , #mngCd#
+                  , #instId#
+                  , CURRENT_TIMESTAMP
+                  , #instId#
+                  , CURRENT_TIMESTAMP )
+        ]]>
+    </insert>
+	<!-- node id가 같은 시설물을 찾아서 port number를 업데이트 한다. -->
+	<update id="facilityDAO.updateFacilityToNodeId">
+		<![CDATA[
+			UPDATE facility
+			SET node_port=#nodePort#
+				, upd_id=#updId#
+				, upd_de=CURRENT_TIMESTAMP
+			WHERE node_id=#nodeId#
+		]]>
+	</update>
+	
+	<delete id="facilityDAO.deleteFacility">
+		<![CDATA[
+			DELETE FROM notice WHERE seq_no in ]]>
+		<iterate property="seqNoList" open="(" close=")" conjunction=",">
+			#seqNoList[]#
+		</iterate>
+	</delete>
+	
+	<select id="facilityDAO.selectFacilityMList" parameterClass="facilitySerarchVO" resultClass="egovMap">
+			SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM rnum, seq_no
+				 		 , facility_type
+				 		 , cctv_nm
+				 		 , node_ip
+				 		 , node_id
+				 		 , node_port
+				 		 , purpose
+				 		 , purpose_nm
+				 		 , latitude
+				 		 , longitude
+				 		 , acpt_ip
+				 	 	 , acpt_port
+				 		 , acpt_id
+				 		 , acpt_pw
+				 		 , rtsp_url
+				 		 , CASE WHEN state=0 THEN '정상' ELSE '비정상' END AS state
+				 	 	 , mng_cd
+				 		 , facility_center_gbn
+				 		 , facility_center_place
+					FROM (
+						SELECT seq_no
+						 	 , 'CCTV' facility_type
+						 	 , cctv_nm
+						 	 , node_ip
+						 	 , node_id
+						 	 , node_port
+						 	 , purpose
+						 	 , (SELECT code_nm FROM platform_code WHERE code_group = 'CCTV' AND code_cd = purpose) AS purpose_nm
+						 	 , encrypt_latitude latitude
+						 	 , encrypt_longitude longitude
+						 	 , acpt_ip
+						 	 , acpt_port
+						 	 , acpt_id
+						 	 , acpt_pw
+						 	 , rtsp_url
+						 	 , state
+						 	 , mng_cd
+						 	 , '' facility_center_gbn
+						 	 , '' facility_center_place
+						FROM facility
+						UNION
+						SELECT seq_no
+						 	 , 'SENSOR'
+						 	 , name
+						 	 , ''
+						 	 , TO_CHAR(node_id)
+						 	 , ''
+						 	 , 'SENSOR'
+						 	 , '환경센서'
+						 	 , latitude
+						 	 , longitude
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , state
+						 	 , TO_CHAR(siteno)
+						 	 , ''
+						 	 , ''
+						FROM sensor
+						UNION
+						SELECT seq_no
+						 	 , 'CENTER'
+						 	 , name
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , purpose
+						 	 , '센터장비'
+						 	 , 0
+						 	 , 0
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , ''
+						 	 , state
+						 	 , ''
+						 	 , gbn
+						 	 , place
+						FROM center_eqpmn
+					) A
+					WHERE 1=1
+			<isNotEmpty property = "facilityType">
+					AND facility_type = #facilityType#
+			</isNotEmpty>
+				) INNER
+				WHERE 1=1
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			<![CDATA[
+				AND rnum <= #lastIndex#
+			]]>
+			</isNotEqual>
+			)
+			WHERE 1=1
+			<isNotEqual property="recordCountPerPage" compareValue="-1">
+			<![CDATA[
+			AND rnum > #firstIndex#
+			]]>
+			</isNotEqual>
+	</select>
+	<select id="facilityDAO.selectFacilityMListTotCnt" parameterClass="facilitySerarchVO" resultClass="int">
+			SELECT COUNT(*)
+			FROM (
+					SELECT seq_no
+						 , 'CCTV' AS facility_gbn
+					FROM facility
+					UNION
+					SELECT seq_no
+						 , 'SENSOR' AS facility_gbn
+					FROM sensor
+					UNION
+					SELECT seq_no
+						 , 'CENTER' AS facility_gbn
+					FROM center_eqpmn
+			) A
+			WHERE 1=1
+			<isNotEmpty property = "facilityGbn">
+			AND facility_gbn = #facilityGbn#
+			</isNotEmpty>
+	</select>
+	
+	<insert id="facilityDAO.insertFacilityCctvList">
+		<![CDATA[
+			INSERT INTO facility
+			(	  seq_no
+				, cctv_nm
+				, node_ip
+				, node_id
+				, node_port
+				, mng_cd
+				, purpose
+				, PTZ_gbn
+				, encrypt_latitude
+				, encrypt_longitude
+				, acpt_ip
+				, acpt_port
+				, acpt_id
+				, acpt_pw
+				, rtsp_url
+				, rtsp_full_url
+				, inst_id
+				, inst_de
+				, upd_id
+				, upd_de
+			)
+			VALUES
+			(	  facility_seq.NEXTVAL
+				, #cctvNm#
+				, #nodeIp#
+				, #nodeId#
+				, #nodePort#
+				, #mngCd#
+				, #purpose#
+				, #PTZGbn#
+				, NVL(#latitude#,null)
+				, NVL(#longitude#,null)
+				, #acptIp#
+				, #acptPort#
+				, #acptId#
+				, #acptPw#
+				, #rtspUrl#
+				, ('rtsp://'|| NVL(#acptId#,'') || ':' || NVL(#acptPw#,'') || '@' || NVL(#acptIp#,'') || ':' 
+				  || NVL(#acptPort#,'') || '/' || NVL(#rtspUrl#,''))
+				, #instId#
+				, CURRENT_TIMESTAMP
+				, #instId#
+				, CURRENT_TIMESTAMP
+			)
+		]]>
+	</insert>
+	<insert id="facilityDAO.insertFacilitySensorList">
+		<![CDATA[
+			INSERT INTO sensor
+			(	  seq_no
+				, name
+				, shape
+				, latitude
+				, longitude
+				, siteno
+				, node_id
+			)
+			VALUES
+			(	  sensor_seq.NEXTVAL
+				, #cctvNm#
+				, ST_GeomFromText(('POINT(' || #longitude# || ' ' || #latitude# || ')'))
+				, #latitude#
+				, #longitude#
+				, #mngCd#
+				, #nodeId#
+			)
+		]]>
+	</insert>
+	<insert id="facilityDAO.insertFacilityCenterList">
+		<![CDATA[
+			INSERT INTO center_eqpmn
+			(	  seq-no
+				, name
+				, inst_id
+				, inst_de
+				, upd_id
+				, upd_de
+			)
+			VALUES
+			(	  sensor_seq.NEXTVAL
+				, #cctvNm#
+				, #instId#
+				, CURRENT_TIMESTAMP
+				, #instId#
+				, CURRENT_TIMESTAMP
+			)
+		]]>
+	</insert>
+	
+	<update id="facilityDAO.updateFacilityCctvList">
+		<![CDATA[
+			UPDATE facility
+			SET cctv_nm=#cctvNm#
+				, node_ip=#nodeIp#
+				, node_id=#nodeId#
+				, node_port=#nodePort#
+				, mng_cd=#mngCd#
+				, purpose=#purpose#
+				, PTZ_gbn=#PTZGbn#
+				, encrypt_latitude=#latitude#
+				, encrypt_longitude=#longitude#
+				, acpt_ip=#acptIp#
+				, acpt_port=#acptPort#
+				, acpt_id=#acptId#
+				, acpt_pw=#acptPw#
+				, rtsp_url=#rtspUrl#
+				, rtsp_full_url=('rtsp://' || NVL(#acptId#,'') || ':' || NVL(#acptPw#,'') || '@' || NVL(#acptIp#,'') || ':' 
+				|| NVL(#acptPort#,'') || '/' || NVL(#rtspUrl#,''))
+				, upd_id=#updId#
+				, upd_de=CURRENT_TIMESTAMP
+			WHERE seq_no=#seqNo#
+		]]>
+	</update>
+	<update id="facilityDAO.updateFacilitySensorList">
+		<![CDATA[
+			UPDATE sensor
+			SET name=#cctvNm#
+				, shape= ST_GeomFromText(('POINT(' || #longitude# || ' ' || #latitude# || ')'))
+				, latitude=#latitude#
+				, longitude=#longitude#
+				, siteno=#mngCd#
+				, node_id=#nodeId#
+			WHERE seq_no=#seqNo#
+		]]>
+	</update>
+	<update id="facilityDAO.updateFacilityCenterList">
+		<![CDATA[
+			UPDATE center_eqpmn
+			SET modl_nm=#cctvNm#
+				
+				, upd_id=#updId#
+				, upd_de=CURRENT_TIMESTAMP
+			WHERE seq_no=#seqNo#
+		]]>
+	</update>
+	
+	<delete id="facilityDAO.deleteFacilityCctvList">
+		<![CDATA[
+			DELETE FROM facility WHERE seq_no=#seqNo#
+		]]>
+	</delete>
+	<delete id="facilityDAO.deleteFacilitySensorList">
+		<![CDATA[
+			DELETE FROM sensor WHERE seq_no=#seqNo#
+		]]>
+	</delete>
+	<delete id="facilityDAO.deleteFacilityCenterList">
+		<![CDATA[
+			DELETE FROM center_eqpmn WHERE seq_no=#seqNo#
+		]]>
+	</delete>
+	
+	<select id="facilityDAO.selectFacilityRTotList" parameterClass="facilitySerarchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT '전체' facility_gbn
+				 , COUNT(*) tot_cnt
+				 , COUNT(CASE WHEN state=0 THEN state ELSE NULL END) normal_cnt
+				 , COUNT(CASE WHEN state<>0 THEN state ELSE NULL END) error_cnt
+				 , 0 un_cnt
+			FROM (
+					SELECT seq_no
+						 , 'CCTV' AS facility_gbn
+						 , cctv_nm
+						 , node_ip
+						 , node_id
+						 , node_port
+						 , (SELECT code_nm FROM platform_code WHERE code_group = 'CCTV' AND code_cd = purpose) AS purpose
+						 , encrypt_latitude AS latitude
+						 , encrypt_longitude AS longitude
+						 , state
+					FROM facility
+					UNION
+					SELECT seq_no
+						 , 'SENSOR' AS facility_gbn
+						 , NAME AS cctv_nm
+						 , '0' AS node_ip
+						 , TO_CHAR(node_id)
+						 , '' AS node_port
+						 , '환경센서' AS purpose
+						 , latitude
+						 , longitude
+						 , state
+					FROM sensor
+					UNION
+					SELECT seq_no
+						 , 'CENTER' AS facility_gbn
+						 , eqpmn_cd AS cctv_nm
+						 , '' AS node_ip
+						 , '' AS node_id
+						 , '' AS node_port
+						 , '센터장비' AS purpose
+						 , 0 AS latitude
+						 , 0 AS longitude
+						 , state
+					FROM center_eqpmn
+			) A
+			WHERE 1=1
+		]]>
+	</select>
+	
+	<select id="facilityDAO.selectFacilityRTypeList" parameterClass="facilitySerarchVO" resultClass="egovMap">
+		<![CDATA[
+			SELECT facility_gbn
+				 , COUNT(*) tot_cnt
+				 , COUNT(CASE WHEN state=0 THEN state ELSE NULL END) normal_cnt
+				 , COUNT(CASE WHEN state<>0 THEN state ELSE NULL END) error_cnt
+				 , 0 un_cnt
+			FROM (
+					SELECT seq_no
+						 , 'CCTV' AS facility_gbn
+						 , cctv_nm
+						 , node_ip
+						 , node_id
+						 , node_port
+						 , (SELECT code_nm FROM platform_code WHERE code_group = 'CCTV' AND code_cd = purpose) AS purpose
+						 , encrypt_latitude AS latitude
+						 , encrypt_longitude AS longitude
+						 , state
+					FROM facility
+					UNION
+					SELECT seq_no
+						 , 'SENSOR' AS facility_gbn
+						 , NAME AS cctv_nm
+						 , '0' AS node_ip
+						 , TO_CHAR(node_id)
+						 , '' AS node_port
+						 , '환경센서' AS purpose
+						 , latitude
+						 , longitude
+						 , state
+					FROM sensor
+					UNION
+					SELECT seq_no
+						 , 'CENTER' AS facility_gbn
+						 , eqpmn_cd AS cctv_nm
+						 , '' AS node_ip
+						 , '' AS node_id
+						 , '' AS node_port
+						 , '센터장비' AS purpose
+						 , 0 AS latitude
+						 , 0 AS longitude
+						 , state
+					FROM center_eqpmn
+			) A
+			WHERE 1=1
+			GROUP BY facility_gbn
+		]]>
+	</select>
+	
+	<select id="facilityDAO.selectFacility" parameterClass="int" resultClass="egovMap">
+		SELECT f.CCTV_NM
+			 , f.NODE_ID
+			 , (SELECT CODE_NM FROM PLATFORM_CODE WHERE CODE_CD = f.PURPOSE) AS PURPOSE
+			 , f.PTZ_GBN
+			 , f.STATE
+			 , f.ENCRYPT_LATITUDE
+			 , f.ENCRYPT_LONGITUDE
+			 , f.NODE_IP
+			 , f.NODE_PORT
+		FROM FACILITY AS f
+		WHERE 1=1
+		AND f.SEQ_NO = #value#
+	</select>
+	
+	<update id="facilityDAO.updateFacilityState" parameterClass="facilitySerarchVO">
+		UPDATE FACILITY 
+		SET STATE = #state#
+		WHERE NODE_ID = #nodeId#
+	</update>
+</sqlMap>

@@ -1,0 +1,1516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    
+<mapper namespace="wrks_sstm_usr_info">
+	
+	<select id="list_cm_group" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT * FROM( SELECT A.*, @rownum := @rownum+1 AS RK , 					
+	    		 (
+					SELECT COUNT(*)
+					FROM CM_GROUP       		
+					WHERE 1 = 1
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND GRP_ID NOT IN ( SELECT GRP_ID FROM CM_GRP_USER WHERE USER_ID = #{USER_ID} )
+					</if>
+		<![CDATA[			
+				) AS ROWCNT
+			FROM
+			(
+				SELECT A.*
+				FROM
+				(
+					SELECT
+						A.GRP_ID
+						, B.DSTRT_CD
+						, A.GRP_NM_KO
+						, A.GRP_NM_EN
+						, A.GRP_DSCRT
+						, A.USE_TY_CD
+						, B.DSTRT_NM
+						, C.CD_NM_KO AS USE_TY_NM
+						, concat('{"ID":"", "ROWS":' , REPLACE(D.AUTH_LVL, '&rec', ',') , '}') AS AUTH_LVL_SELECT
+					FROM 
+						CM_GROUP A
+						LEFT JOIN CM_DSTRT_CD_MNG B
+							ON A.DSTRT_CD = B.DSTRT_CD
+						LEFT JOIN ( SELECT CD_ID, CD_NM_KO FROM CM_TC_CODE WHERE CD_GRP_ID = 'USE_TY' AND CD_TY = 'C' ) C
+							ON A.USE_TY_CD = C.CD_ID
+						,(
+							SELECT GRP_ID, concat('[' , GROUP_CONCAT(VAL SEPARATOR ',') , ']') AS AUTH_LVL
+							FROM
+							(SELECT 
+									 GRP_ID, concat('{"CD_ID":"' , AUTH_LVL , '", "CD_NM":"' , AUTH_LVL_NM , '"}') AS VAL
+								FROM CM_GRP_AUTH_LVL
+								)temp GROUP BY GRP_ID
+						) D
+					WHERE
+						1 = 1
+						AND A.USE_TY_CD = 'Y'
+						AND A.GRP_ID = D.GRP_ID
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND A.GRP_ID NOT IN ( SELECT GRP_ID FROM CM_GRP_USER WHERE USER_ID = #{USER_ID} )
+					</if>		
+
+		<![CDATA[			
+				) A
+			) A, (SELECT @rownum :=0) AS R ) A
+			WHERE A.RK >= (((#{pageNo}) - 1) * (#{rowsPerPage})) + 1
+			  AND A.RK <= ((#{pageNo}) * (#{rowsPerPage})) 
+					
+		]]>	
+	</select>	
+	
+	<select id="list_cm_grp_user" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT 
+				A.*
+			    , (
+					SELECT
+						COUNT(*)
+					FROM
+						CM_GRP_USER
+					WHERE
+						1 = 1
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND USER_ID = #{USER_ID} 
+					</if>
+		<![CDATA[
+			) AS ROWCNT
+			FROM
+			(
+					SELECT
+						A.*
+						, B.GRP_NM_KO
+						, C.CD_NM_KO AS USE_TY_NM
+						, D.DSTRT_CD
+						, D.DSTRT_NM
+						, @rownum := @rownum+1 AS RK
+						, E.AUTH_LVL_NM
+						, concat('{"ID":"", "ROWS":' , REPLACE(F.AUTH_LVL, '&rec', ',') , '}') AS AUTH_LVL_SELECT
+					FROM 
+						CM_GRP_USER A
+						LEFT JOIN CM_GROUP B
+							ON A.GRP_ID = B.GRP_ID
+						LEFT JOIN ( SELECT CD_ID, CD_NM_KO FROM CM_TC_CODE WHERE CD_GRP_ID = 'USE_TY' AND CD_TY = 'C' ) C
+							ON A.USE_TY_CD = C.CD_ID
+						LEFT JOIN CM_DSTRT_CD_MNG D
+							ON B.DSTRT_CD = D.DSTRT_CD
+						, CM_GRP_AUTH_LVL E
+						,(
+							SELECT GRP_ID, concat('[' , GROUP_CONCAT(VAL SEPARATOR ',') , ']') AS AUTH_LVL
+							FROM
+							(
+								SELECT 
+									GRP_ID, concat('{"CD_ID":"' , AUTH_LVL , '", "CD_NM":"' , AUTH_LVL_NM , '"}') AS VAL
+								FROM CM_GRP_AUTH_LVL
+							)temp 
+							GROUP BY GRP_ID
+						) F
+					WHERE
+						1 = 1
+						AND A.GRP_ID = E.GRP_ID
+						AND A.AUTH_LVL = E.AUTH_LVL
+						AND A.GRP_ID = F.GRP_ID
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND A.USER_ID = #{USER_ID}
+					</if>
+		<![CDATA[
+			) A, (SELECT @rownum :=0) AS R 
+			WHERE 
+				1 = 1
+				AND	A.RK >= ((CAST(#{pageNo} AS UNSIGNED) - 1) * CAST(#{rowsPerPage} AS UNSIGNED)) + 1
+				AND A.RK <= (CAST(#{pageNo} AS UNSIGNED) * CAST(#{rowsPerPage} AS UNSIGNED))
+		]]>
+	</select>
+	
+	<select id="list_cm_area_cd_mng" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+
+		<![CDATA[	
+			SELECT
+				A.*
+				,(
+					SELECT
+							COUNT(*)
+					FROM
+						CM_AREA_CD_MNG
+					WHERE 1 = 1
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND AREA_CD NOT IN ( SELECT AREA_CD FROM CM_USER_AREA WHERE USER_ID = #{USER_ID} )
+					</if>
+		<![CDATA[
+				) AS ROWCNT
+			FROM(
+				SELECT
+					ROW_NUMBER() OVER(ORDER BY ${sidx} ${sord}) AS RK
+					, A.*
+				FROM(
+					SELECT
+						A.AREA_CD
+						, A.AREA_NM
+						, A.AREA_DSCRT
+						, A.USE_TY_CD
+						, A.RGS_USER_ID
+						, TO_CHAR(A.RGS_DATE, 'YYYY-MM-DD') AS RGS_DATE
+						, A.UPD_USER_ID
+						, TO_CHAR(A.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE
+						, B.CD_NM_KO AS USE_TY_NM
+					FROM
+						CM_AREA_CD_MNG AS A
+						LEFT JOIN(SELECT CD_ID, CD_NM_KO FROM CM_TC_CODE WHERE CD_TY = 'C' AND CD_GRP_ID = 'USE_TY') AS B
+						ON A.USE_TY_CD = B.CD_ID
+					WHERE	1 = 1
+						AND A.USE_TY_CD = 'Y'
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND A.AREA_CD NOT IN ( SELECT AREA_CD FROM CM_USER_AREA WHERE USER_ID = #{USER_ID} )
+					</if>
+		<![CDATA[
+					) AS A
+				) AS A
+		]]>
+
+	</select>	
+	
+	<select id="list_cm_user_area" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT A.*
+			    , (
+					SELECT COUNT(*)
+					FROM CM_USER_AREA
+					WHERE	1 = 1
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND USER_ID = #{USER_ID} 
+					</if>
+		<![CDATA[
+			) AS ROWCNT
+			FROM
+			(
+					SELECT
+						A.*
+						, B.AREA_NM
+						, C.CD_NM_KO AS USE_TY_NM
+						, @rownum := @rownum+1 AS RK 
+						
+					FROM 
+						CM_USER_AREA A
+						LEFT JOIN CM_AREA_CD_MNG B
+								ON A.AREA_CD = B.AREA_CD
+						LEFT JOIN ( SELECT CD_ID, CD_NM_KO FROM CM_TC_CODE WHERE CD_GRP_ID = 'USE_TY' AND CD_TY = 'C' ) C
+						ON A.USE_TY_CD = C.CD_ID
+					WHERE
+						1 = 1
+		]]>
+					<if test="USER_ID != null and USER_ID != '' ">
+						AND A.USER_ID = #{USER_ID}
+					</if>
+		<![CDATA[
+			) A, (SELECT @rownum :=0) AS R 
+			WHERE 
+				1 = 1
+				AND	A.RK >= ((CAST(#{pageNo} AS UNSIGNED) - 1) * CAST(#{rowsPerPage} AS UNSIGNED)) + 1
+				AND A.RK <= (CAST(#{pageNo} AS UNSIGNED) * CAST(#{rowsPerPage} AS UNSIGNED))
+		]]>
+	</select>		
+
+	<select id="list" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT * FROM(
+			SELECT 
+				A.*, @rownum := @rownum+1 AS RK
+			    , (
+			     	SELECT 
+						COUNT(*)
+					FROM 
+						ADMIN
+					WHERE  ID IN (SELECT USER_ID FROM CM_GRP_USER WHERE USE_TY_CD ='Y' 
+					]]>
+					<if test='!sysId.equals("A") '> 
+					AND GRP_ID =  #{sysId}
+					</if>
+					<![CDATA[
+					)
+		]]>
+		<if test="USER_ID != null and USER_ID != '' ">
+						AND ID LIKE '%' #{USER_ID}  '%'
+		</if>
+		<if test="USER_NM_KO != null and USER_NM_KO != '' ">
+						AND USER_NM_KO LIKE '%'  #{USER_NM_KO}  '%'
+		</if>
+		<if test="USE_TY_CD != null and USE_TY_CD != '' ">
+						AND USE_TY_CD = #{USE_TY_CD}
+		</if>
+		<if test="MOBL_NO != null and MOBL_NO != '' ">
+						AND MOBL_NO LIKE '%'  #{MOBL_NO}  '%'
+		</if>		
+		<![CDATA[
+				) AS ROWCNT
+			FROM(
+				SELECT 
+					A.ID USER_ID
+					, A.PWD PASSWORD
+					, A.USER_NM_KO
+					, A.USER_NM_EN
+					, A.USE_TY_CD
+					, (SELECT B.CD_NM_KO FROM CM_TC_CODE B WHERE  A.USE_TY_CD = B.CD_ID and B.CD_GRP_ID = 'USE_TY' AND B.CD_TY = 'C')  AS USE_NM
+					, A.PHONE_NO MOBL_NO
+					, A.EMAIL
+					, A.OFFC_TEL_NO
+					, A.INSTT_NM
+					, A.DEPT_NM
+					, A.RANK_NM
+					, A.IP_ADRES
+					, A.RPSB_WORK
+					, A.REMARK
+					, A.IP_TY_CD
+					, A.IP_CD
+				FROM 
+					ADMIN A, (SELECT @rownum :=0) AS R
+				WHERE 1=1 AND ID IN (SELECT USER_ID FROM CM_GRP_USER WHERE USE_TY_CD ='Y' 
+				]]>
+					<if test='!sysId.equals("A") '> 
+					AND GRP_ID =  #{sysId}
+					</if>
+					<![CDATA[
+				)
+			]]>
+			<if test="USER_ID != null and USER_ID != '' "> 
+					AND ID LIKE '%'  #{USER_ID}  '%' 
+			</if>
+			<if test="USER_NM_KO != null and USER_NM_KO != '' ">
+					AND USER_NM_KO LIKE '%'  #{USER_NM_KO}  '%'
+			</if>
+			<if test="USE_TY_CD != null and USE_TY_CD != '' ">
+					AND USE_TY_CD = #{USE_TY_CD} 
+			</if>
+			<if test="MOBL_NO != null and MOBL_NO != '' ">
+					AND MOBL_NO LIKE '%'  #{MOBL_NO}  '%'
+			</if>			
+			<![CDATA[
+			) A
+			) B
+			WHERE 
+				B.RK >= (((#{pageNo}) - 1) * (#{rowsPerPage})) + 1
+			  	AND B.RK <= ((#{pageNo}) * (#{rowsPerPage})) 
+		]]>		
+	</select>
+	
+	<select id="grp_tree" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				DSTRT_NM
+		]]>
+				<if test="CHECK_RCV_ID != null">
+					, (CASE WHEN GRP_ID_KEY = #{CHECK_RCV_ID}
+                  		THEN 'true'
+                  		ELSE 'false'
+              		 END) AS TAG
+				</if>
+		<![CDATA[
+				, DSTRT_CD
+				, PRNT_GRP_ID
+				, GRP_ID
+				, GRP_ID_KEY
+				, GRP_NM_KO
+				, GRP_NM_KO_DESC
+				, MOBL_NO				
+				, AUTH_LVL
+				, AUTH_LVL_NM
+				, LEVEL AS LVL
+				, ISLF
+				, 'true' AS EXPD
+			FROM      
+			 (
+				SELECT 
+					DSTRT_NM
+				    , DSTRT_CD
+				    , '' AS PRNT_GRP_ID
+				    , DSTRT_CD AS GRP_ID
+				    , DSTRT_CD AS GRP_ID_KEY
+				    , DSTRT_NM AS GRP_NM_KO
+				    , '' AS GRP_NM_KO_DESC		
+				    , '' AS MOBL_NO		    
+				    , NULL AS AUTH_LVL
+				    , '' AS AUTH_LVL_NM
+				    , (CASE WHEN (SELECT COUNT(*) FROM CM_GROUP  WHERE USE_TY_CD = 'Y' AND A.DSTRT_CD = DSTRT_CD) > 0 
+				       THEN 'false'
+				         ELSE 'true'
+				         END) AS ISLF
+			 	FROM 
+			 		CM_DSTRT_CD_MNG A
+			 	WHERE 
+			 		USE_TY_CD = 'Y'
+			 
+			 UNION ALL   
+			    
+			 SELECT 
+			 	B.DSTRT_NM
+			    , A.DSTRT_CD
+			    , B.DSTRT_CD AS PRNT_GRP_ID
+			    , A.GRP_ID || '_P' AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , A.GRP_NM_KO
+			    , '' AS GRP_NM_KO_DESC	
+			    , '' AS MOBL_NO		    
+			    , NULL AS AUTH_LVL
+			    , '' AS AUTH_LVL_NM
+			    , (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_AUTH_LVL  WHERE A.USE_TY_CD = 'Y' AND A.GRP_ID = GRP_ID) > 0
+			      THEN 'false'
+			      ELSE 'true'
+			      END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_DSTRT_CD_MNG B
+			 WHERE 
+			 	A.USE_TY_CD = 'Y'
+			    AND A.DSTRT_CD = B.DSTRT_CD
+			
+            	
+			 UNION ALL
+			 
+			 SELECT 
+			 	C.DSTRT_NM
+			    , A.DSTRT_CD
+			    , A.GRP_ID || '_P' AS PRNT_GRP_ID
+			    , B.GRP_ID || '_' || B.AUTH_LVL AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , B.AUTH_LVL_NM AS GRP_NM_KO
+			    , ''  AS GRP_NM_KO_DESC
+			    , '' AS MOBL_NO			    
+			    , B.AUTH_LVL
+			    , B.AUTH_LVL_NM 
+			 	, (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_USER AA , ADMIN BB WHERE 1 = 1
+			 					AND BB.USE_TY_CD = 'Y' 
+								AND AA.USER_ID = BB.ID
+			 					AND AA.GRP_ID =  A.GRP_ID 
+			 	            	AND AA.AUTH_LVL = B.AUTH_LVL 
+  					          )> 0 
+			              THEN 'false'
+			              ELSE 'true'
+			              END) AS ISLF
+
+			              
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_GRP_AUTH_LVL B
+			 	, CM_DSTRT_CD_MNG C
+			 WHERE 
+			 	A.GRP_ID = B.GRP_ID
+			    AND A.DSTRT_CD = C.DSTRT_CD
+			    
+			UNION ALL
+   
+	         SELECT 
+	            DISTINCT
+	            F.DSTRT_NM
+	            , F.DSTRT_CD
+	            , A.GRP_ID || '_' ||  A.AUTH_LVL AS PRNT_GRP_ID
+	            , A.USER_ID || '_' || A.GRP_ID || A.AUTH_LVL AS GRP_ID
+	            , A.USER_ID AS GRP_ID_KEY
+	            , B.USER_NM_KO AS GRP_NM_KO
+	            , B.USER_ID || ' / ' || B.DEPT_NM || ' / ' || B.RANK_NM || ' / ' || B.RPSB_WORK AS GRP_NM_KO_DESC
+	            , B.MOBL_NO
+	            , A.AUTH_LVL
+	            , E.AUTH_LVL_NM 
+	            , 'true' AS ISLF
+	   
+	            
+	         FROM CM_GRP_USER A
+	            , ADMIN B
+	            , CM_GROUP C   
+	            , CM_GRP_AUTH_LVL E      
+	            , CM_DSTRT_CD_MNG F   
+	         WHERE 1 = 1
+	            AND A.USER_ID = B.ID
+	            AND A.GRP_ID = C.GRP_ID      
+	            AND A.GRP_ID = E.GRP_ID
+	            AND A.AUTH_LVL = E.AUTH_LVL
+	            AND C.DSTRT_CD = F.DSTRT_CD
+            	AND B.USE_TY_CD = 'Y'
+		]]>
+			<if test="USER_NM_KO != null and USER_NM_KO != '' ">
+			 	AND B.USER_NM_KO LIKE '%' || #{USER_NM_KO} || '%'							
+			</if>
+		<![CDATA[	
+			    
+			 )A
+			 WHERE 1 = 1
+			
+			 START WITH PRNT_GRP_ID  IS NULL
+			 CONNECT BY PRIOR GRP_ID = PRNT_GRP_ID
+			 ORDER SIBLINGS BY AUTH_LVL ASC
+		]]>
+	</select>
+
+	
+	<select id="grp_tree_bak" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				DSTRT_NM
+		]]>
+				<if test="CHECK_RCV_ID != null">
+					, (CASE WHEN GRP_ID_KEY = #{CHECK_RCV_ID}
+                  		THEN 'true'
+                  		ELSE 'false'
+              		 END) AS TAG
+				</if>
+		<![CDATA[
+				, DSTRT_CD
+				, PRNT_GRP_ID
+				, GRP_ID
+				, GRP_ID_KEY
+				, GRP_NM_KO
+				, AUTH_LVL
+				, AUTH_LVL_NM
+				, LEVEL AS LVL
+				, ISLF
+				, 'true' AS EXPD
+			FROM      
+			 (
+				SELECT 
+					DSTRT_NM
+				    , DSTRT_CD
+				    , '' AS PRNT_GRP_ID
+				    , DSTRT_CD AS GRP_ID
+				    , DSTRT_CD AS GRP_ID_KEY
+				    , DSTRT_NM AS GRP_NM_KO
+				    , NULL AS AUTH_LVL
+				    , '' AS AUTH_LVL_NM
+				    , (CASE WHEN (SELECT COUNT(*) FROM CM_GROUP  WHERE USE_TY_CD = 'Y' AND A.DSTRT_CD = DSTRT_CD) > 0 
+				       THEN 'false'
+				         ELSE 'true'
+				         END) AS ISLF
+			 	FROM 
+			 		CM_DSTRT_CD_MNG A
+			 	WHERE 
+			 		USE_TY_CD = 'Y'
+			 
+			 UNION ALL   
+			    
+			 SELECT 
+			 	B.DSTRT_NM
+			    , A.DSTRT_CD
+			    , B.DSTRT_CD AS PRNT_GRP_ID
+			    , A.GRP_ID || '_P' AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , A.GRP_NM_KO
+			    , NULL AS AUTH_LVL
+			    , '' AS AUTH_LVL_NM
+			    , (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_AUTH_LVL  WHERE A.USE_TY_CD = 'Y' AND A.GRP_ID = GRP_ID) > 0
+			      THEN 'false'
+			      ELSE 'true'
+			      END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_DSTRT_CD_MNG B
+			 WHERE 
+			 	A.USE_TY_CD = 'Y'
+			    AND A.DSTRT_CD = B.DSTRT_CD
+			
+			UNION ALL
+   
+	         SELECT 
+	            DISTINCT
+	            F.DSTRT_NM
+	            , F.DSTRT_CD
+	            , A.GRP_ID || '_' ||  A.AUTH_LVL AS PRNT_GRP_ID
+	            , A.USER_ID || '_' || A.GRP_ID || A.AUTH_LVL AS GRP_ID
+	            , A.USER_ID AS GRP_ID_KEY
+	            , B.USER_NM_KO
+	            , A.AUTH_LVL
+	            , E.AUTH_LVL_NM 
+	            , 'true' AS ISLF
+	   
+	            
+	         FROM CM_GRP_USER A
+	            , CM_USER B
+	            , CM_GROUP C   
+	            , CM_GRP_AUTH_LVL E      
+	            , CM_DSTRT_CD_MNG F   
+	         WHERE 1 = 1
+	            AND A.USER_ID = B.USER_ID
+	            AND A.GRP_ID = C.GRP_ID      
+	            AND A.GRP_ID = E.GRP_ID
+	            AND A.AUTH_LVL = E.AUTH_LVL
+	            AND C.DSTRT_CD = F.DSTRT_CD
+            	AND B.USE_TY_CD = 'Y'
+            	AND A.USE_TY_CD = 'Y'
+            	
+			 UNION ALL
+			 
+			 SELECT 
+			 	C.DSTRT_NM
+			    , A.DSTRT_CD
+			    , A.GRP_ID || '_P' AS PRNT_GRP_ID
+			    , B.GRP_ID || '_' || B.AUTH_LVL AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , B.AUTH_LVL_NM AS GRP_NM_KO
+			    , B.AUTH_LVL
+			    , B.AUTH_LVL_NM 
+			 	, (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_USER  WHERE A.USE_TY_CD = 'Y' AND A.GRP_ID = GRP_ID) > 0 
+			              THEN 'false'
+			              ELSE 'true'
+			              END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_GRP_AUTH_LVL B
+			 	, CM_DSTRT_CD_MNG C
+			 WHERE 
+			 	A.GRP_ID = B.GRP_ID
+			    AND A.DSTRT_CD = C.DSTRT_CD
+			 )A
+			 WHERE 1 = 1
+			
+			 START WITH PRNT_GRP_ID  IS NULL
+			 CONNECT BY PRIOR GRP_ID = PRNT_GRP_ID
+			 ORDER SIBLINGS BY AUTH_LVL ASC
+		]]>
+	</select>
+
+	<select id="mng_tree" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+				DSTRT_NM
+				, DSTRT_CD
+				, PRNT_GRP_ID
+				, GRP_ID
+				, GRP_ID_KEY
+				, GRP_NM_KO
+				, GRP_NM_KO_DESC
+				, MOBL_NO
+				, AUTH_LVL
+				, AUTH_LVL_NM
+				, LEVEL AS LVL
+				, ISLF
+				, 'true' AS EXPD
+			FROM      
+			 (
+				SELECT 
+					DSTRT_NM
+				    , DSTRT_CD
+				    , '' AS PRNT_GRP_ID
+				    , DSTRT_CD AS GRP_ID
+				    , DSTRT_CD AS GRP_ID_KEY
+				    , DSTRT_NM AS GRP_NM_KO
+				    , '' AS GRP_NM_KO_DESC
+				    , '' AS MOBL_NO
+				    , NULL AS AUTH_LVL
+				    , '' AS AUTH_LVL_NM
+				    , (CASE WHEN (SELECT COUNT(*) FROM CM_GROUP  WHERE USE_TY_CD = 'Y' AND DSTRT_CD = A.DSTRT_CD) > 0 
+				       THEN 'false'
+				         ELSE 'true'
+				         END) AS ISLF
+			 	FROM 
+			 		CM_DSTRT_CD_MNG A
+			 	WHERE 
+			 		A.USE_TY_CD = 'Y'
+			 
+			 UNION ALL   
+			    
+			 SELECT 
+			 	B.DSTRT_NM
+			    , A.DSTRT_CD
+			    , B.DSTRT_CD AS PRNT_GRP_ID
+			    , A.GRP_ID || '_P' AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , A.GRP_NM_KO
+			    , '' AS GRP_NM_KO_DESC
+			    , '' AS MOBL_NO
+			    , NULL AS AUTH_LVL
+			    , '' AS AUTH_LVL_NM
+			    , (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_AUTH_LVL  WHERE A.USE_TY_CD = 'Y' AND A.GRP_ID = GRP_ID) > 0
+			      THEN 'false'
+			      ELSE 'true'
+			      END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_DSTRT_CD_MNG B
+			 WHERE 
+			 	A.USE_TY_CD = 'Y'
+			    AND A.DSTRT_CD = B.DSTRT_CD
+			
+			 UNION ALL
+			 
+			 SELECT 
+			 	C.DSTRT_NM
+			    , A.DSTRT_CD
+			    , A.GRP_ID || '_P' AS PRNT_GRP_ID
+			    , B.GRP_ID || '_' || B.AUTH_LVL AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , B.AUTH_LVL_NM AS GRP_NM_KO
+			    , ''  AS GRP_NM_KO_DESC
+			    , '' AS MOBL_NO
+			    , B.AUTH_LVL
+			    , B.AUTH_LVL_NM 
+			 	, (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_USER AA , CM_USER BB WHERE 1 = 1
+			 					AND BB.USE_TY_CD = 'Y' 
+								AND AA.USER_ID = BB.USER_ID
+			 					AND AA.GRP_ID =  A.GRP_ID 
+			 	            	AND AA.AUTH_LVL = B.AUTH_LVL 
+			 	            	
+  					          	AND AA.USER_ID NOT IN(SELECT WORK_LOG_R_USER_ID FROM UW_WORK_LOG_RPT_RCVER WHERE WORK_LOG_ID = #{WORK_LOG_ID})
+  					          )> 0 
+			              THEN 'false'
+			              ELSE 'true'
+			              END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_GRP_AUTH_LVL B
+			 	, CM_DSTRT_CD_MNG C
+			 WHERE 
+			 	A.GRP_ID = B.GRP_ID
+			    AND A.DSTRT_CD = C.DSTRT_CD
+			    AND A.USE_TY_CD = 'Y'
+			    
+			UNION ALL
+   
+	         SELECT 
+	            DISTINCT
+	            F.DSTRT_NM
+	            , F.DSTRT_CD
+	            , A.GRP_ID || '_' ||  A.AUTH_LVL AS PRNT_GRP_ID
+	            , A.USER_ID || '_' || A.GRP_ID || A.AUTH_LVL AS GRP_ID
+	            , A.USER_ID AS GRP_ID_KEY
+	            , B.USER_NM_KO AS GRP_NM_KO
+	            , B.USER_ID || ' / ' || B.DEPT_NM || ' / ' || B.RANK_NM || ' / ' || B.RPSB_WORK AS GRP_NM_KO_DESC
+	            , B.MOBL_NO
+	            , A.AUTH_LVL
+	            , E.AUTH_LVL_NM 
+	            , 'true' AS ISLF
+	   
+	            
+	         FROM CM_GRP_USER A
+	            , CM_USER B
+	            , CM_GROUP C   
+	            , CM_GRP_AUTH_LVL E      
+	            , CM_DSTRT_CD_MNG F   
+	         WHERE 1 = 1
+	            AND A.USER_ID = B.USER_ID
+	            AND A.GRP_ID = C.GRP_ID      
+	            AND A.GRP_ID = E.GRP_ID
+	            AND A.AUTH_LVL = E.AUTH_LVL
+	            AND C.DSTRT_CD = F.DSTRT_CD
+            	AND B.USE_TY_CD = 'Y'
+            	
+            	AND B.USER_ID NOT IN(SELECT WORK_LOG_R_USER_ID FROM UW_WORK_LOG_RPT_RCVER WHERE WORK_LOG_ID = #{WORK_LOG_ID})
+            				    
+			    
+			 )A
+			 WHERE 1 = 1
+			
+			 START WITH PRNT_GRP_ID  IS NULL
+			 CONNECT BY PRIOR GRP_ID = PRNT_GRP_ID
+			 ORDER SIBLINGS BY AUTH_LVL ASC
+		]]>
+	</select>	
+	
+	<select id="mng_tree_bak" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				DSTRT_NM
+				, DSTRT_CD
+				, PRNT_GRP_ID
+				, GRP_ID
+				, GRP_ID_KEY
+				, GRP_NM_KO
+				, AUTH_LVL
+				, AUTH_LVL_NM
+				, LEVEL AS LVL
+				, ISLF
+				, 'true' AS EXPD
+			FROM      
+			 (
+				SELECT 
+					DSTRT_NM
+				    , DSTRT_CD
+				    , '' AS PRNT_GRP_ID
+				    , DSTRT_CD AS GRP_ID
+				    , DSTRT_CD AS GRP_ID_KEY
+				    , DSTRT_NM AS GRP_NM_KO
+				    , NULL AS AUTH_LVL
+				    , '' AS AUTH_LVL_NM
+				    , (CASE WHEN (SELECT COUNT(*) FROM CM_GROUP  WHERE USE_TY_CD = 'Y' AND A.DSTRT_CD = DSTRT_CD) > 0 
+				       THEN 'false'
+				         ELSE 'true'
+				         END) AS ISLF
+			 	FROM 
+			 		CM_DSTRT_CD_MNG A
+			 	WHERE 
+			 		USE_TY_CD = 'Y'
+			 
+			 UNION ALL   
+			    
+			 SELECT 
+			 	B.DSTRT_NM
+			    , A.DSTRT_CD
+			    , B.DSTRT_CD AS PRNT_GRP_ID
+			    , A.GRP_ID || '_P' AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , A.GRP_NM_KO
+			    , NULL AS AUTH_LVL
+			    , '' AS AUTH_LVL_NM
+			    , (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_AUTH_LVL  WHERE A.USE_TY_CD = 'Y' AND A.GRP_ID = GRP_ID) > 0
+			      THEN 'false'
+			      ELSE 'true'
+			      END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_DSTRT_CD_MNG B
+			 WHERE 
+			 	A.USE_TY_CD = 'Y'
+			    AND A.DSTRT_CD = B.DSTRT_CD
+			
+			UNION ALL
+   
+	         SELECT 
+	            DISTINCT
+	            F.DSTRT_NM
+	            , F.DSTRT_CD
+	            , A.GRP_ID || '_' ||  A.AUTH_LVL AS PRNT_GRP_ID
+	            , A.USER_ID || '_' || A.GRP_ID || A.AUTH_LVL AS GRP_ID
+	            , A.USER_ID AS GRP_ID_KEY
+	            , B.USER_NM_KO
+	            , A.AUTH_LVL
+	            , E.AUTH_LVL_NM 
+	            , 'true' AS ISLF
+	   
+	            
+	         FROM CM_GRP_USER A
+	            , CM_USER B
+	            , CM_GROUP C   
+	            , CM_GRP_AUTH_LVL E      
+	            , CM_DSTRT_CD_MNG F   
+	         WHERE 1 = 1
+	            AND A.USER_ID = B.USER_ID
+	            AND A.GRP_ID = C.GRP_ID      
+	            AND A.GRP_ID = E.GRP_ID
+	            AND A.AUTH_LVL = E.AUTH_LVL
+	            AND C.DSTRT_CD = F.DSTRT_CD
+            	AND B.USE_TY_CD = 'Y'
+            	AND B.USER_ID NOT IN(SELECT WORK_LOG_R_USER_ID FROM UW_WORK_LOG_RPT_LINE WHERE WORK_LOG_W_USER_ID = #{CHECK_RCV_ID})
+            	AND B.USER_ID NOT IN(SELECT WORK_LOG_R_USER_ID FROM UW_WORK_LOG_RPT_RCVER WHERE WORK_LOG_ID = #{WORK_LOG_ID})
+            	
+			 UNION ALL
+			 
+			 SELECT 
+			 	C.DSTRT_NM
+			    , A.DSTRT_CD
+			    , A.GRP_ID || '_P' AS PRNT_GRP_ID
+			    , B.GRP_ID || '_' || B.AUTH_LVL AS GRP_ID
+			    , A.GRP_ID AS GRP_ID_KEY
+			    , B.AUTH_LVL_NM AS GRP_NM_KO
+			    , B.AUTH_LVL
+			    , B.AUTH_LVL_NM 
+			 	, (CASE WHEN (SELECT COUNT(*) FROM CM_GRP_USER  WHERE A.USE_TY_CD = 'Y' AND A.GRP_ID = GRP_ID) > 0 
+			              THEN 'false'
+			              ELSE 'true'
+			              END) AS ISLF
+			 FROM 
+			 	CM_GROUP A
+			 	, CM_GRP_AUTH_LVL B
+			 	, CM_DSTRT_CD_MNG C
+			 WHERE 
+			 	A.GRP_ID = B.GRP_ID
+			    AND A.DSTRT_CD = C.DSTRT_CD
+			 )A
+			 WHERE 1 = 1
+			
+			 START WITH PRNT_GRP_ID  IS NULL
+			 CONNECT BY PRIOR GRP_ID = PRNT_GRP_ID
+			 ORDER SIBLINGS BY AUTH_LVL ASC
+		]]>
+	</select>
+	
+	<select id="list_tag" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT 
+				A.*
+			    , (
+			     	SELECT 
+						COUNT(*)
+					FROM 
+						CM_USER A
+						LEFT JOIN (SELECT CD_ID, CD_NM_KO FROM CM_TC_CODE WHERE CD_GRP_ID = 'USE_TY' AND CD_TY = 'C') B
+						ON A.USE_TY_CD = B.CD_ID
+					WHERE
+						USE_TY_CD = 'Y'
+				) AS ROWCNT
+			FROM(
+				SELECT
+	               A.USER_ID
+		]]>
+					<if test="CHECK_RCV_ID != null">
+						, (CASE WHEN USER_ID = #{CHECK_RCV_ID}
+	                  		THEN 'true'
+	                  		ELSE 'false'
+	              		 END) AS TAG
+					</if>
+		<![CDATA[
+	               , A.PASSWORD
+	               , A.USER_NM_KO
+	               , A.USER_NM_EN
+	               , A.USE_TY_CD
+	               , B.CD_NM_KO AS USE_NM
+	               , A.MOBL_NO
+	               , A.EMAIL
+	               , A.OFFC_TEL_NO
+	               , A.INSTT_NM
+	               , A.DEPT_NM
+	               , A.RANK_NM
+	               , A.IP_ADRES
+	               , A.RPSB_WORK
+	               , A.REMARK
+	               , A.IP_TY_CD
+	               , A.IP_CD
+	               , ROW_NUMBER() OVER (ORDER BY  ${sidx} ${sord}) AS RK
+	            FROM 
+	               CM_USER A
+	               LEFT JOIN (SELECT CD_ID, CD_NM_KO FROM CM_TC_CODE WHERE CD_GRP_ID = 'USE_TY' AND CD_TY = 'C') B
+	               ON A.USE_TY_CD = B.CD_ID
+	            WHERE
+					USE_TY_CD = 'Y'
+			) A
+		]]>		
+	</select>
+	
+	<insert id="insert_cm_grp_user" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_GRP_USER (
+			  GRP_ID
+			, USER_ID
+			, USE_TY_CD
+			, AUTH_LVL
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+		) VALUES (
+			  #{GRP_ID}
+			, #{USER_ID}
+			, #{USE_TY_CD}
+			, #{AUTH_LVL}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{UPD_USER_ID}
+			, NOW()
+		)
+	]]>
+	</insert>
+	
+	<update id="update_cm_grp_user" parameterType="java.util.HashMap">
+	<![CDATA[
+		UPDATE CM_GRP_USER
+		   SET AUTH_LVL = #{AUTH_LVL}
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+		 WHERE GRP_ID = #{GRP_ID}
+		   AND USER_ID = #{USER_ID}
+	]]>
+	</update>
+	
+	<insert id="insert_cm_user_area" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_USER_AREA
+		(
+			  AREA_CD
+			, USER_ID
+			, USE_TY_CD
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+		) VALUES (
+			  #{AREA_CD}  
+			, #{USER_ID}
+			, #{USE_TY_CD}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{UPD_USER_ID}
+			, NOW()
+		)
+	]]>
+	</insert>
+	
+	<delete id="delete" parameterType="java.util.HashMap">
+	<![CDATA[
+		UPDATE ADMIN
+		   SET USE_TY_CD = 'D'
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+		 WHERE ID = #{USER_ID}
+	]]>
+	</delete>
+	<delete id="delete_bak" parameterType="java.util.HashMap">
+	<![CDATA[
+		DELETE FROM CM_USER
+		 WHERE USER_ID = #{USER_ID}
+	]]>
+	</delete>
+
+	<delete id="delete_cm_grp_user" parameterType="java.util.HashMap">
+		DELETE FROM CM_GRP_USER
+		 WHERE USER_ID = #{USER_ID}
+		<if test="GRP_ID_BAK != null and GRP_ID_BAK != '' ">
+		   AND GRP_ID = #{GRP_ID_BAK}
+		</if>
+	</delete>
+
+	<delete id="delete_cm_user_area" parameterType="java.util.HashMap">
+		DELETE FROM CM_USER_AREA
+		 WHERE USER_ID = #{USER_ID}
+		<if test="AREA_CD_BAK != null and AREA_CD_BAK != '' ">
+		   AND AREA_CD = #{AREA_CD_BAK}
+		</if>
+	</delete>
+	
+	<insert id="insertUserDstrt" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_USER_DSTRT(
+			  DSTRT_CD
+			, USER_ID
+			, RPRSTV_YN
+			, USE_TY_CD
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+		)VALUES(
+			  #{DSTRT_CD}
+			, #{USER_ID}
+			, 'Y'
+			, 'Y'
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+		)
+	]]>
+	</insert>
+	
+	<insert id="deleteUserDstrt" parameterType="java.util.HashMap">
+		DELETE FROM CM_USER_DSTRT
+		 WHERE USER_ID = #{USER_ID}
+		<if test="DSTRT_CD != null and DSTRT_CD != '' ">
+		   AND DSTRT_CD = #{DSTRT_CD}
+		</if>
+	</insert>
+	
+	<select id="getDstrtCd" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT DISTINCT B.DSTRT_CD
+		  FROM CM_GRP_USER AS A
+			   LEFT JOIN CM_GROUP AS B 
+			   ON A.GRP_ID = B.GRP_ID
+		 WHERE USER_ID = #{USER_ID}
+	]]>
+	</select>
+	
+	<select id="getGrpId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT GRP_ID
+		  FROM CM_GRP_USER
+		 WHERE USER_ID = #{USER_ID}
+	]]>
+	</select>
+	
+	<select id="getDstrtCdList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT DSTRT_CD
+		  FROM CM_GROUP
+		 WHERE GRP_ID = #{GRP_ID}
+	</select>
+	
+	<insert id="insert" parameterType="java.util.HashMap">
+		INSERT INTO ADMIN(
+			  ID
+			, PWD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, PHONE_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, #{PASSWORD}
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	</insert>
+	
+	<insert id="insert_cm_user" parameterType="java.util.HashMap">
+		INSERT INTO CM_USER(
+			  USER_ID
+			, PASSWORD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, MOBL_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, #{PASSWORD}
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	</insert>
+	
+	
+	<update id="update" parameterType="java.util.HashMap">
+		UPDATE CM_USER
+		   SET USER_NM_KO = #{USER_NM_KO}
+			<if test="PASSWORD != null and PASSWORD != '' ">
+			, PASSWORD = #{PASSWORD}
+			</if>
+			, USER_NM_EN = #{USER_NM_EN}
+			, USE_TY_CD = #{USE_TY_CD}
+			, MOBL_NO = #{MOBL_NO}
+			, EMAIL = #{EMAIL}
+			, OFFC_TEL_NO = #{OFFC_TEL_NO}
+			, INSTT_NM = #{INSTT_NM}
+			, DEPT_NM = #{DEPT_NM}
+			, RANK_NM = #{RANK_NM}
+			, IP_ADRES = #{IP_ADRES}
+			, RPSB_WORK = #{RPSB_WORK}
+			, REMARK = #{REMARK}
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+			, IP_TY_CD = #{IP_TY_CD}
+			, IP_CD = #{IP_CD}
+		 WHERE  USER_ID = #{USER_ID}
+	</update>
+
+	<insert id="insertUserInfoUCP" parameterType="java.util.HashMap">
+		INSERT INTO ADMIN(
+			  ID
+			, PWD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, PHONE_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, #{PASSWORD}
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	</insert>
+
+	<insert id="insertUserInfoUCP_cm_user" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_USER(
+			  USER_ID
+			, PASSWORD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, MOBL_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, #{PASSWORD}
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	]]>
+	</insert>
+	<insert id="insertUserInfoDJD" parameterType="java.util.HashMap">
+		INSERT INTO ADMIN(
+			  ID
+			, PWD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, PHONE_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, #{PASSWORD}
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	</insert>
+	<insert id="insertUserInfoDJD_cm_user" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_USER(
+			  USER_ID
+			, PASSWORD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, MOBL_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, #{PASSWORD}
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	]]>
+	</insert>
+	<insert id="insertUserInfoKSG" parameterType="java.util.HashMap">
+		INSERT INTO ADMIN(
+			  ID
+			, PWD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, PHONE_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			  #{USER_ID}
+			, # SCP.ENC_B64('DAMO', 'SCPS','ARIA_256_FIXED_IV_CBC.SCPS', #{PASSWORD})
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	</insert>
+	<insert id="insertUserInfoKSG_cm_user" parameterType="java.util.HashMap">
+	<![CDATA[
+		INSERT INTO CM_USER(
+			  USER_ID
+			, PASSWORD
+			, USER_NM_KO
+			, USER_NM_EN
+			, USE_TY_CD
+			, MOBL_NO
+			, EMAIL
+			, OFFC_TEL_NO
+			, INSTT_NM
+			, DEPT_NM
+			, RANK_NM
+			, RPSB_WORK
+			, IP_ADRES
+			, REMARK
+			, RGS_USER_ID
+			, RGS_DATE
+			, UPD_USER_ID
+			, UPD_DATE
+			, IP_TY_CD
+			, IP_CD
+		)VALUES( 
+			#{USER_ID}
+			, SCP.ENC_B64('DAMO', 'SCPS','ARIA_256_FIXED_IV_CBC.SCPS', #{PASSWORD})
+			, #{USER_NM_KO}
+			, #{USER_NM_EN}
+			, #{USE_TY_CD}
+			, #{MOBL_NO}
+			, #{EMAIL}
+			, #{OFFC_TEL_NO}
+			, #{INSTT_NM}
+			, #{DEPT_NM}
+			, #{RANK_NM}
+			, #{RPSB_WORK}
+			, #{IP_ADRES}
+			, #{REMARK}
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{RGS_USER_ID}
+			, NOW()
+			, #{IP_TY_CD}
+			, #{IP_CD}
+		)
+	]]>
+	</insert>
+	<update id="updateUserInfoUCP" parameterType="java.util.HashMap">
+		UPDATE ADMIN
+		   SET USER_NM_KO = #{USER_NM_KO}
+			<if test="PASSWORD != null and PASSWORD != '' ">
+			, PWD = #{PASSWORD}
+			</if>
+			, USER_NM_EN = #{USER_NM_EN}
+			, USE_TY_CD = #{USE_TY_CD}
+			, PHONE_NO = #{MOBL_NO}
+			, EMAIL = #{EMAIL}
+			, OFFC_TEL_NO = #{OFFC_TEL_NO}
+			, INSTT_NM = #{INSTT_NM}
+			, DEPT_NM = #{DEPT_NM}
+			, RANK_NM = #{RANK_NM}
+			, IP_ADRES = #{IP_ADRES}
+			, RPSB_WORK = #{RPSB_WORK}
+			, REMARK = #{REMARK}
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+			, IP_TY_CD = #{IP_TY_CD}
+			, IP_CD = #{IP_CD}
+		WHERE ID = #{USER_ID}
+	</update>	
+	<update id="updateUserInfoUCP_cm_user" parameterType="java.util.HashMap">
+		UPDATE CM_USER
+		   SET USER_NM_KO = #{USER_NM_KO}
+			<if test="PASSWORD != null and PASSWORD != '' ">
+			, PASSWORD = #{PASSWORD}
+			</if>
+			, USER_NM_EN = #{USER_NM_EN}
+			, USE_TY_CD = #{USE_TY_CD}
+			, MOBL_NO = #{MOBL_NO}
+			, EMAIL = #{EMAIL}
+			, OFFC_TEL_NO = #{OFFC_TEL_NO}
+			, INSTT_NM = #{INSTT_NM}
+			, DEPT_NM = #{DEPT_NM}
+			, RANK_NM = #{RANK_NM}
+			, IP_ADRES = #{IP_ADRES}
+			, RPSB_WORK = #{RPSB_WORK}
+			, REMARK = #{REMARK}
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+			, IP_TY_CD = #{IP_TY_CD}
+			, IP_CD = #{IP_CD}
+		WHERE USER_ID = #{USER_ID}
+	</update>
+	<update id="updateUserInfoDJD" parameterType="java.util.HashMap">
+		UPDATE CM_USER
+		   SET USER_NM_KO = #{USER_NM_KO}
+			<if test="PASSWORD != null and PASSWORD != '' ">
+			, PASSWORD = #{PASSWORD}
+			</if>
+			, USER_NM_EN = #{USER_NM_EN}
+			, USE_TY_CD = #{USE_TY_CD}
+			, MOBL_NO = #{MOBL_NO}
+			, EMAIL = #{EMAIL}
+			, OFFC_TEL_NO = #{OFFC_TEL_NO}
+			, INSTT_NM = #{INSTT_NM}
+			, DEPT_NM = #{DEPT_NM}
+			, RANK_NM = #{RANK_NM}
+			, IP_ADRES = #{IP_ADRES}
+			, RPSB_WORK = #{RPSB_WORK}
+			, REMARK = #{REMARK}
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+			, IP_TY_CD = #{IP_TY_CD}
+			, IP_CD = #{IP_CD}
+		 WHERE USER_ID = #{USER_ID}
+	</update>
+	<update id="updateUserInfoKSG" parameterType="java.util.HashMap">
+		UPDATE CM_USER
+		   SET USER_NM_KO = #{USER_NM_KO}
+			<if test="PASSWORD != null and PASSWORD != '' ">
+			, PASSWORD = SCP.ENC_B64('DAMO', 'SCPS','ARIA_256_FIXED_IV_CBC.SCPS', #{PASSWORD})
+			</if>
+			, USER_NM_EN = #{USER_NM_EN}
+			, USE_TY_CD = #{USE_TY_CD}
+			, MOBL_NO = #{MOBL_NO}
+			, EMAIL = #{EMAIL}
+			, OFFC_TEL_NO = #{OFFC_TEL_NO}
+			, INSTT_NM = #{INSTT_NM}
+			, DEPT_NM = #{DEPT_NM}
+			, RANK_NM = #{RANK_NM}
+			, IP_ADRES = #{IP_ADRES}
+			, RPSB_WORK = #{RPSB_WORK}
+			, REMARK = #{REMARK}
+			, UPD_USER_ID = #{UPD_USER_ID}
+			, UPD_DATE = NOW()
+			, IP_TY_CD = #{IP_TY_CD}
+			, IP_CD = #{IP_CD}
+		 WHERE USER_ID = #{USER_ID}
+	</update>
+
+</mapper>

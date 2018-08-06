@@ -1,0 +1,311 @@
+.icon-blank{
+	background:url('../images/icons/blank.gif') no-repeat center center;
+}
+.icon-add{
+	background:url('../images/icons/edit_add.png') no-repeat center center;
+}
+.icon-edit{
+	background:url('../images/icons/pencil.png') no-repeat center center;
+}
+.icon-clear{
+	background:url('../images/icons/clear.png') no-repeat center center;
+}
+.icon-remove{
+	background:url('../images/icons/edit_remove.png') no-repeat center center;
+}
+.icon-save{
+	background:url('../images/icons/filesave.png') no-repeat center center;
+}
+.icon-cut{
+	background:url('../images/icons/cut.png') no-repeat center center;
+}
+.icon-ok{
+	background:url('../images/icons/ok.png') no-repeat center center;
+}
+.icon-no{
+	background:url('../images/icons/no.png') no-repeat center center;
+}
+.icon-cancel{
+	background:url('../images/icons/cancel.png') no-repeat center center;
+}
+.icon-reload{
+	background:url('../images/icons/reload.png') no-repeat center center;
+}
+.icon-search{
+	background:url('../images/icons/search.png') no-repeat center center;
+}
+
+.icon-help{
+	background:url('../images/icons/help.png') no-repeat center center;
+}
+
+.icon-undo{
+	background:url('../images/icons/undo.png') no-repeat center center;
+}
+.icon-redo{
+	background:url('../images/icons/redo.png') no-repeat center center;
+}
+.icon-zoomin{
+	background:url('../images/icons/zoom-in.png') no-repeat center center;
+}
+.icon-zoomout{
+	background:url('../images/icons/zoom-out.png') no-repeat center center;
+}
+.icon-move{
+	background:url('../images/icons/move.png') no-repeat center center;
+}
+.icon-all{
+	background:url('../images/icons/all.png') no-repeat center center;
+}
+.icon-expand{
+	background:url('../images/icons/expand.png') no-repeat center center;
+}
+.icon-measurelen{
+	background:url('../images/icons/measure_len.png') no-repeat center center;
+}
+.icon-measurearea{
+	background:url('../images/icons/measure_area.png') no-repeat center center;
+}
+.icon-print{
+	background:url('../images/icons/print.png') no-repeat center center;
+}
+.icon-info{
+	background:url('../images/icons/info.png') no-repeat center center;
+}
+.icon-normal{
+	background:url('../images/icons/normal.png') no-repeat center center;
+}
+.icon-satellite{
+	background:url('../images/icons/satellite.png') no-repeat center center;
+}
+
+.icon-back{
+	background:url('../images/icons/back.png') no-repeat center center;
+}
+.icon-sum{
+	background:url('../images/icons/sum.png') no-repeat center center;
+}
+.icon-tip{
+	background:url('../images/icons/tip.png') no-repeat center center;
+}
+.icon-filter{
+	background:url('../images/icons/filter.png') no-repeat center center;
+}
+.icon-man{
+	background:url('../images/icons/man.png') no-repeat center center;
+}
+.icon-lock{
+	background:url('../images/icons/lock.png') no-repeat center center;
+}
+.icon-more{
+	background:url('../images/icons/more.png') no-repeat center center;
+}
+.icon-excel{
+	background:url('../images/icons/page_excel.png') no-repeat center center;
+}
+.icon-excel_u{
+	background:url('../images/icons/page_excel_up.png') no-repeat center center;
+}
+.icon-fullextent{
+	background:url('../images/icons/full_extent.png') no-repeat center center;
+}
+.icon-collapse{
+	background:url('../images/icons/collapse.png') no-repeat center center;
+}
+.icon-stat{
+	background:url('../images/icons/stat.png') no-repeat center center;
+}
+.icon-globe{
+	background:url('../images/icons/globe.png') no-repeat center center;
+}
+.icon-circle{
+	background:url('../images/icons/circle.png') no-repeat center center;
+}
+.icon-rectangle{
+	background:url('../images/icons/rectangle.png') no-repeat center center;
+}
+.icon-polygon{
+	background:url('../images/icons/polygon.png') no-repeat center center;
+}
+.icon-image{
+	background:url('../images/icons/image_m.png') no-repeat center center;
+}
+.icon-map_edit{
+	background:url('../images/icons/map_edit.png') no-repeat center center;
+}
+.icon-cctv_app{
+	background:url('../images/icons/CCTV_APP_M.png') no-repeat center center;
+}
+.icon-cctv_park{
+	background:url('../images/icons/CCTV_PARK_M.png') no-repeat center center;
+}
+.icon-cctv_etc{
+	background:url('../images/icons/CCTV_ETC_M.png') no-repeat center center;
+}
+.icon-cctv_police{
+	background:url('../images/icons/CCTV_PRT_M.png') no-repeat center center;
+}
+.icon-cctv_irrgl{
+	background:url('../images/icons/CCTV_IRR_M.png') no-repeat center center;
+}
+.icon-cctv_its{
+	background:url('../images/icons/CCTV_ITS_M.png') no-repeat center center;
+}
+.icon-lp_pa_cbnd{
+	/* background:url('../images/icons/lp_pa_cbnd.png') no-repeat center center; */
+}
+.icon-tl_scco_emd{
+	/* background:url('../images/icons/tl_scco_emd.png') no-repeat center center; */
+}
+
+.icon-cctv{
+	background:url('../images/icons/main_cctv.png') no-repeat center center;
+}
+
+
+.icon-mini-add{
+	background:url('../images/icons/mini_add.png') no-repeat center center;
+}
+.icon-mini-edit{
+	background:url('../images/icons/mini_edit.png') no-repeat center center;
+}
+.icon-mini-refresh{
+	background:url('../images/icons/mini_refresh.png') no-repeat center center;
+}
+
+.icon-large-picture{
+	background:url('../images/icons/large_picture.png') no-repeat center center;
+}
+.icon-large-clipart{
+	background:url('../images/icons/large_clipart.png') no-repeat center center;
+}
+.icon-large-shapes{
+	background:url('../images/icons/large_shapes.png') no-repeat center center;
+}
+.icon-large-smartart{
+	background:url('../images/icons/large_smartart.png') no-repeat center center;
+}
+.icon-large-chart{
+	background:url('../images/icons/large_chart.png') no-repeat center center;
+}
+.icon-obstacle {
+	background:url(../images/icons/icon-obstacle.png) center no-repeat;
+}
+.icon-cctv_avi{
+	background:url('../images/icons/CCTV_AVI_M.png') no-repeat center center;
+}
+.icon-cctv_park{
+	background:url('../images/icons/CCTV_PARK_M.png') no-repeat center center;
+}
+.icon-cctv_etc{
+	background:url('../images/icons/CCTV_ETC_M.png') no-repeat center center;
+}
+.icon-cctv_police{
+	background:url('../images/icons/CCTV_PRT_M.png') no-repeat center center;
+}
+.icon-cctv_irrgl{
+	background:url('../images/icons/CCTV_IRR_M.png') no-repeat center center;
+}
+.icon-cctv_bit{
+	background:url('../images/icons/CCTV_BIT_M.png') no-repeat center center;
+}
+.icon-cctv_cross{
+	background:url('../images/icons/CCTV_CRS_M.png') no-repeat center center;
+}
+.icon-cctv_vms{
+	background:url('../images/icons/CCTV_VMS_M.png') no-repeat center center;
+}
+.icon-cctv_cvpl{
+	background:url('../images/icons/CCTV_CVPL_M.png') no-repeat center center;
+}
+.icon-cctv_cvpl_d{
+	background:url('../images/icons/CCTV_CVPL_D_M.png') no-repeat center center;
+}
+.icon-cctv_trobl{
+	background:url('../images/icons/CCTV_TROBL_M.png') no-repeat center center;
+}
+.icon-cctv_trobl_d{
+	background:url('../images/icons/CCTV_TROBL_D_M.png') no-repeat center center;
+}
+.icon-lp_pa_cbnd{
+	/* background:white; */
+}
+.icon-tl_scco_emd{
+	/* background:white; */
+}
+.icon-tl_scco_sig{
+	/* background:white; */
+}
+.icon-tl_scco_li{
+	/* background:white; */
+}
+.icon-gismaplonlattbl{
+	/* background:url('../images/icons/cctv.png') no-repeat center center; */
+}
+.icon-reset{
+	background:url('../images/icons/reset.png') no-repeat center center;
+}
+.icon-sound_off{
+	background:url('../images/icons/sound-off.png') no-repeat center center;
+}
+.icon-sound_on{
+	background:url('../images/icons/sound-on.png') no-repeat center center;
+}
+.icon-sound_off:hover{
+	background:url('../images/icons/sound-off_over.png') no-repeat center center;
+}
+.icon-sound_on:hover{
+	background:url('../images/icons/sound-on_over.png') no-repeat center center;
+}
+.icon-sound_off:active{
+	background:url('../images/icons/sound-off_sel.png') no-repeat center center;
+}
+.icon-sound_on:active{
+	background:url('../images/icons/sound-on_sel.png') no-repeat center center;
+}
+
+.icon-chart-off{
+	background:url('../images/icons/fullsize_btn_nor.png') no-repeat center center;
+}
+.icon-chart-on{
+	background:url('../images/icons/reduction_btn_nor.png') no-repeat center center;
+}
+.icon-chart-off:hover{
+	background:url('../images/icons/fullsize_btn_over.png') no-repeat center center;
+}
+.icon-chart-on:hover{
+	background:url('../images/icons/reduction_btn_over.png') no-repeat center center;
+}
+.icon-chart-off:active{
+	background:url('../images/icons/fullsize_btn_sel.png') no-repeat center center;
+}
+.icon-chart-on:active{
+	background:url('../images/icons/reduction_btn_sel.png') no-repeat center center;
+}
+
+.icon-pdf{
+	background:url('../images/icons/pdf_btn_nor.png') no-repeat center center;
+}
+.icon-pdf:hover{
+	background:url('../images/icons/pdf_btn_over.png') no-repeat center center;
+}
+.icon-pdf:active{
+	background:url('../images/icons/pdf_btn_sel.png') no-repeat center center;
+}
+
+.icon-re-search{
+	background: url(../images/icons/refresh_btn_nor.png) no-repeat left center;
+}
+.icon-re-search:hover{
+	background: url(../images/icons/refresh_btn_over.png) no-repeat left center;
+}
+.icon-re-search:active{
+	background: url(../images/icons/refresh_btn_sel.png) no-repeat left center;
+}
+
+.icon-tree-folder {
+	background: url(../images/icons/main_folder.png) no-repeat left center;
+}
+.icon-tree-cctv {
+	background: url(../images/icons/main_cctv.png) no-repeat left center;
+}

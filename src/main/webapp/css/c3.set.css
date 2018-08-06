@@ -1,0 +1,33 @@
+/*-- Chart --*/
+.legend {
+	padding: 50px 40px 50px 40px;
+	border: 1px solid #e1e1e1;
+}
+.legend span {
+    width: 10.0%;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    padding: 10px 0px 10px 0px;
+}
+.legend span .chart_idcolor {
+	position: relative;
+	top: 0px;
+	left: 9px;
+	width: 10px;
+	height: 10px;
+}
+.chart_title {
+	padding:20px 10px 10px 20px;
+}
+
+.containerm {
+	width: 100%;
+}
+#chartm_group {
+	
+}
+#chartm_group tbody > tr > td,#charth_group tbody > tr > td {
+	border: 1px solid #e1e1e1;
+}

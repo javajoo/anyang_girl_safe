@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>						
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/Facility_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/Event_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/GirlSafe_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/Code_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/Log_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/CctvViewLog_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/IotSensorHistory_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/AdminSetting_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/AdminGroup_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/AdminGroupAuthLvl_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/AdminGroupUser_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/CmUserArea_SQL.xml"/>
+	<sqlMap resource="egovframework/sqlmap/platform/mysql/CmUser_SQL.xml"/>
+</sqlMapConfig>
