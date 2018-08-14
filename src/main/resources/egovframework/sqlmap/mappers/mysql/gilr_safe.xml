@@ -43,12 +43,37 @@
 	        WHERE 1=1
 	       
 	     ]]> 
-		<if test="approval == null or approval == '' ">
-			AND a.APPROVAL = 'Y'
+	    <if test="approval != null and approval != ''">
+	    	AND a.APPROVAL = #{approval}
+	    </if>
+	    <if test="batStatus != null and batStatus != ''">
+	    	AND b.BAT = #{batStatus}
+	    </if>
+	    <if test="hwStatus != null and hwStatus != ''">
+	    	AND b.STATUS = #{hwStatus}
+	    </if>
+		<if test="searchType != null and searchType != ''">
+			<choose>
+				<when test="searchType == 'sensor'">
+				AND b.SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'name'">
+				AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'age'">
+				AND a.AGE LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'adres'">
+				AND a.ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'phon'">
+				AND a.PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<otherwise>
+				AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</otherwise>
+			</choose>
 		</if>
-		<if test="totSearch != null and totSearch != '' ">
-			AND a.ENCRYPT_NAME LIKE '%' #{totSearch} '%'
-		</if>	
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if> 
@@ -62,11 +87,29 @@
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        WHERE 1=1
-	        AND a.APPROVAL = 'Y'
 	     ]]> 
-        <if test="totSearch != null and totSearch != '' ">
-        	AND a.ENCRYPT_NAME LIEK '%' #{totSearch} '%'
-        </if>	
+	    <if test="approval != null and approval != ''">
+	    	AND a.APPROVAL = #{approval}
+	    </if>
+		<if test="searchType != null and searchType != ''">
+			<choose>
+				<when test="searchType == 'name'">
+				AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'age'">
+				AND a.AGE LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'adres'">
+				AND a.ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'phon'">
+				AND a.PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<otherwise>
+				AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</otherwise>
+			</choose>
+		</if>
    
 	</select>
 	
@@ -131,8 +174,8 @@
 				SENSOR_ID as sensorId,
 				DIVISION as division,
 				CASE END_YN
-					WHEN '0' THEN '발생'
-					WHEN '1' THEN '종료'
+					WHEN 'N' THEN '발생'
+					WHEN 'Y' THEN '종료'
 				END as endYN,
 				POINT_X as pointX,
 				POINT_Y as pointY,
@@ -144,9 +187,31 @@
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	    ]]> 
-        <if test="totSearch != null and totSearch != '' ">
-        	AND ENCRYPT_NAME LIKE '%' #{totSearch} '%'
-        </if>	
+	    <if test="endYN != null and endYN != ''">
+	    	AND END_YN = #{endYN}
+	    </if>
+		<if test="searchType != null and searchType != ''">
+			<choose>
+				<when test="searchType == 'name'">
+				AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'age'">
+				AND AGE LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'adres'">
+				AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'phon'">
+				AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'sensor'">
+				AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<otherwise>
+				AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</otherwise>
+			</choose>
+		</if>
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -159,9 +224,31 @@
 			FROM girl_safe_event a
 	        WHERE 1=1
 	     ]]> 
-        <if test="totSearch != null and totSearch != '' ">
-        	AND a.ENCRYPT_NAME LIKE '%' #{totSearch} '%'
-        </if>
+	    <if test="endYN != null and endYN != ''">
+	    	AND END_YN = #{endYN}
+	    </if>
+		<if test="searchType != null and searchType != ''">
+			<choose>
+				<when test="searchType == 'name'">
+				AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'age'">
+				AND AGE LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'adres'">
+				AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'phon'">
+				AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'sensor'">
+				AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<otherwise>
+				AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</otherwise>
+			</choose>
+		</if>
    
 	</select>
 	
@@ -200,9 +287,22 @@
 	        FROM girl_safe_board,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	    ]]> 
-        <if test="totSearch != null and totSearch != '' ">
-        	AND TITLE LIKE '%' #{totSearch} '%'
-        </if>	
+	    <if test="pushYN != null and pushYN != ''">
+	    	AND PUSH_YN = #{pushYN}
+	    </if>
+		<if test="searchType != null and searchType != ''">
+			<choose>
+				<when test="searchType == 'title'">
+				AND TITLE LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'cont'">
+				AND CONTENT LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<otherwise>
+				AND TITLE LIKE CONCAT('%', #{totSearch}, '%')
+				</otherwise>
+			</choose>
+		</if>
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -215,11 +315,34 @@
 			FROM girl_safe_board
 	        WHERE 1=1
 	     ]]> 
-        <if test="totSearch != null and totSearch != '' ">
-        	AND TITLE LIKE '%' #{totSearch} '%'
-        </if>	
+	    <if test="pushYN != null and pushYN != ''">
+	    	AND PUSH_YN = #{pushYN}
+	    </if>
+		<if test="searchType != null and searchType != ''">
+			<choose>
+				<when test="searchType == 'title'">
+				AND TITLE LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'cont'">
+				AND CONTENT LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<otherwise>
+				AND TITLE LIKE CONCAT('%', #{totSearch}, '%')
+				</otherwise>
+			</choose>
+		</if>
    
 	</select>
 	
-
+	<update id="insertBoard" parameterType="map">
+		INSERT INTO girl_safe_board
+			(TITLE, CONTENT, PUSH_YN, COUNT, INSERT_DATE, UPDATE_DATE)
+		VALUES
+			(#{title},
+			#{content},
+			'N',
+			0,
+			NOW(),
+			NOW())
+	</update>
 </mapper>

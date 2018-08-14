@@ -44,6 +44,7 @@
 <script type="text/javascript" src="./js/common.js"></script>
 <script type="text/javascript" src="./js/image_manage.js"></script>
 <script type="text/javascript" src="./js/Chart.js"></script>
+<script type="text/javascript" src="./js/custom/main.js"></script>
 <!-- <script type="text/javascript" src="./js/datagrid-bufferview.js"></script> -->
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
