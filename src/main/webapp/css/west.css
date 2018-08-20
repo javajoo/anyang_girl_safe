@@ -174,9 +174,11 @@
 
 .list_ty_full {
 	float: left;
+	width: 100%;
 }
 
 .list_ty_full .btn_list {
+	margin: 10px 0 0 0;
 	float: right;
 }
 
@@ -203,12 +205,69 @@
 	font-size: 14px;
 	font-family: "nanum-barun-gothic-regular";
 	color: #616161;
+	text-align : center;
+	height: 30px;
+	line-height: 30px;
+	float: left;
 }
 
 .list_cont4 {
 	font-size: 14px;
 	font-family: "nanum-barun-gothic-regular";
 	color: #616161;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+}
+
+.list2 {
+	border-bottom: 1px #e0e0e0 solid;
+	width: 100%;
+	float: left;
+	padding: 5px 0;
+	font-size: 14px;
+	font-family: "nanum-barun-gothic-regular";
+	color: #616161;
+}
+
+.list2 .list_cont3:nth-child(odd) {
+	width: calc(5% - 2px);
+	text-align: left;
+}
+
+.list2 .list_cont3:nth-child(even) {
+	width: calc(45% - 2px);
+}
+
+.list2 .list_cont4 {
+	width: calc(95% - 2px);
+}
+
+.list2 .list_cont5 {
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+} 
+
+.list2 .list_cont6 {
+	width: 100%;
+	height: 180px;
+} 
+
+.list2 .list_cont7 {
+	width: 100%;
+	height: 290px;
+}
+
+.border_none {
+	border: none;
+}
+
+.cont_container {
+	height: 99%;
+	width: 90%;
+	padding: 0 5%;
 }
 
 /* 버튼이미지 */
@@ -775,7 +834,8 @@
 
 .list > .list_cont > input[type="text"], 
 .list > .list_cont2 > input[type="text"], 
-.list > .list_cont3 > input[type="text"],
+.list > .list_cont3 > input[type="text"], 
+.list2 > .list_cont4 > input[type="text"],
 .btn_list > .list_cont > input[type="text"],
 .btn_list > .list_cont2 > input[type="text"] {
 	border: 1px solid #ccc;

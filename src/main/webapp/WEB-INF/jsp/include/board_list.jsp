@@ -76,9 +76,38 @@
 	            {
 	            	const path = "include/board_write";
 	                console.log(path);
-	                common.openDialogPopPosition("", "글쓰기", "1024", "470", "true", "/action/page.do", {path: path}, path.split("/")[3]);
+	                common.openDialogPopPosition("", "글쓰기", "1024", "470", "true", "/action/page.do", {path: path}, path.split("/")[1]);
 	            }
 	        });
+	
+	function getBoardOne(row, data) {
+		var url = "/select/girlSafe.getBoardOne/action.do";
+		const path = "include/board_detail";
+		const jsonObj = {};
+		jsonObj.no = data.no;
+		jsonObj.path = path;
+        common.openDialogPopPosition("", "상세보기", "1024", "470", "true", "/action/page.do", jsonObj, path.split("/")[1]);
+	}
+	
+	function updateCount(row, data) {
+		var url = "/update/girlSafe.updateBoard/action.do";
+		const jsonObj = {};
+		jsonObj.no = data.no;
+		jsonObj.count = "count";
+		$.ajax({
+			type : "POST"
+			, url : url
+			, dataType : "json"
+			, data : {"param" : JSON.stringify(jsonObj)}
+			, success:function(data)
+			{
+				console.log(data);
+			}
+			, error:function(e){
+				alert(e.responseText);
+			}
+		});
+	}
 	
 	function reload(){
 		const jsonObj = {};
@@ -100,8 +129,13 @@
 				{field:'title',title:'제목',width:'65%',align:'center'},
 				{field:'insertDate',title:'등록일',width:'20%',align:'center'},
 				{field:'pushYN',title:'푸시',width:'5%',align:'center'},
-				{field:'count',title:'조회수',width:'5%',align:'center'}
+				{field:'count',title:'조회수',width:'5%',align:'center'},
+				{field:'no',title:'번호',hidden:true}
 		    ]],
+		    onDblClickRow: function(row, data) {
+		    	updateCount(row, data);
+		    	getBoardOne(row, data);
+		    },
 		    onLoadSuccess:function(data){
 				if($('#boardList_table').datagrid('getData').rows=='sessionOut'){
 					sCnt++;

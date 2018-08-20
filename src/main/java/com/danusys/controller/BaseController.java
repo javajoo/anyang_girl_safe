@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -296,12 +298,22 @@ public class BaseController
      * Return   : String
     */
     @RequestMapping(value = "/action/page.do", method = RequestMethod.POST)
-    public String baseAction(HttpServletRequest request, Locale locale, Model model)
+    public ModelAndView baseAction(HttpServletRequest request, HttpServletResponse response, Locale locale, Model model)
     {
         System.out.println("----------POST----------");
         System.out.println(request.getParameter("path"));
+        
+        ModelAndView mav = new ModelAndView();
+        
+        Enumeration params = request.getParameterNames();
+        while (params.hasMoreElements()) {
+			String name = (String) params.nextElement();
+			mav.addObject(name, request.getParameter(name));
+		}
+        
+        mav.setViewName(request.getParameter("path"));
 
-		return request.getParameter("path");
+		return mav;
     }
 
 
@@ -454,7 +466,7 @@ public class BaseController
      * Return   : String
     */
     @RequestMapping(value = "/insert/{sqlid}/action.do", method = RequestMethod.POST)
-    public String baseInsert (@PathVariable("sqlid") String sqlid, HttpServletRequest request, HttpServletResponse response, Locale locale, Model model) throws IOException {
+    public @ResponseBody Map<String, Object> baseInsert (@PathVariable("sqlid") String sqlid, HttpServletRequest request, HttpServletResponse response, Locale locale, Model model) throws IOException {
     	
         int	iResult = 0;
 
@@ -482,7 +494,7 @@ public class BaseController
             logger.error(ex.toString());
         }
 
-        return "/views/result/result";
+        return param;
     }
 
 
@@ -493,7 +505,7 @@ public class BaseController
      * Return   : String
     */
     @RequestMapping(value = "/update/{sqlid}/action.do", method = RequestMethod.POST)
-    public String baseUpdate (@PathVariable("sqlid") String sqlid, HttpServletRequest request, Locale locale, Model model) throws IOException {
+    public @ResponseBody Map<String, Object> baseUpdate (@PathVariable("sqlid") String sqlid, HttpServletRequest request, Locale locale, Model model) throws IOException {
     	
         int iResult = 0;
 
@@ -519,7 +531,7 @@ public class BaseController
             logger.error(ex.toString());
         }
 
-        return "/views/result/result";
+        return param;
     }
 
 
@@ -530,7 +542,7 @@ public class BaseController
      * Return   : String
     */
     @RequestMapping(value = "/delete/{sqlid}/action.do", method = RequestMethod.POST)
-    public String baseDelete (@PathVariable("sqlid") String sqlid, HttpServletRequest request, Locale locale, Model model) throws IOException {
+    public @ResponseBody Map<String, Object> baseDelete (@PathVariable("sqlid") String sqlid, HttpServletRequest request, Locale locale, Model model) throws IOException {
 
         int iResult = 0;
 
@@ -558,7 +570,7 @@ public class BaseController
         	logger.error(ex.toString());
         }
 
-        return "/views/result/result";
+        return param;
     }
 
 

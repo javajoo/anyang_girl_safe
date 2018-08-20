@@ -278,6 +278,7 @@
 		<![CDATA[		
 	       SELECT 
 				@ROWNUM := @ROWNUM + 1 AS num,
+				NO as no,
 				TITLE as title,
 				CONTENT as content,
 				PUSH_YN as pushYN,
@@ -303,6 +304,7 @@
 				</otherwise>
 			</choose>
 		</if>
+			ORDER BY UPDATE_DATE DESC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -334,7 +336,23 @@
    
 	</select>
 	
-	<update id="insertBoard" parameterType="map">
+	<select id="getBoardOne" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+	       		NO as no,
+				TITLE as title,
+				CONTENT as content,
+				PUSH_YN as pushYN,
+				COUNT as count,
+				date_format(INSERT_DATE,'%Y-%m-%d') as insertDate,
+				date_format(UPDATE_DATE,'%Y-%m-%d') as updateDate
+	        FROM girl_safe_board 
+	        WHERE 1=1
+	        AND NO = #{no}
+	    ]]> 
+	</select>
+	
+	<insert id="insertBoard" parameterType="map">
 		INSERT INTO girl_safe_board
 			(TITLE, CONTENT, PUSH_YN, COUNT, INSERT_DATE, UPDATE_DATE)
 		VALUES
@@ -344,5 +362,24 @@
 			0,
 			NOW(),
 			NOW())
+	</insert>
+	
+	<update id="updateBoard" parameterType="map">
+		UPDATE girl_safe_board
+		SET 
+		<if test = "title != null and title != ''">
+			TITLE = #{title},
+		</if>
+		<if test = "content != null and content != ''">
+			CONTENT = #{content},
+		</if>
+		<if test = "pushYN != null and pushYN != ''">
+			PUSH_YN = #{pushYN},
+		</if>
+		<if test = "count != null and count != ''">
+			COUNT = COUNT + 1,
+		</if>
+			UPDATE_DATE = NOW()
+		WHERE NO = #{no}
 	</update>
 </mapper>
