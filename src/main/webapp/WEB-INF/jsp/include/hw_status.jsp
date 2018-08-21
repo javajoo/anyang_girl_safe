@@ -5,10 +5,10 @@
 		<ul class="list_condi_full">
 			<li class="list">
 				<div>
-					<em>검색 일자 : </em>
-					<input id="search_eventR_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'" style="width:175px;">
+					<em>최종접속일 : </em>
+					<input id="search_last_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'" style="width:175px;">
 					&nbsp;~ 
-					<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'" style="width:175px;">
+					<input id="search_last_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'" style="width:175px;">
 				</div>
 			</li>
 			<li class="list">
@@ -49,10 +49,10 @@
 </div>
 <script>
 $(document).ready(function(){
-	$('#search_eventR_timeS').datebox({
+	$('#search_last_timeS').datebox({
 		requeired:true
 	});
-	$('#search_eventR_timeE').datebox({
+	$('#search_last_timeE').datebox({
 		requeired:true
 	});
 	
@@ -60,6 +60,10 @@ $(document).ready(function(){
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '단말기번호',
 	    	value: 'sensor'
 	    },
@@ -81,6 +85,10 @@ $(document).ready(function(){
 		valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '정상(대)',
 	    	value: '0'
 	    },
@@ -98,6 +106,10 @@ $(document).ready(function(){
 		valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: 'ON',
 	    	value: '0'
 	    },
@@ -114,8 +126,8 @@ function moveMap(){
 }
 function reload(){
 	const jsonObj = {};
-	jsonObj.eventDeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
-	jsonObj.eventDeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
+	jsonObj.lastTimeS = $("#search_last_timeS").datebox('getValue').replace(/\//g, '');
+	jsonObj.lastTimeE = $("#search_last_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.totSearch = $("#search_eventR_tot").val();
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
 	jsonObj.batStatus = $("#bat_status_box").combobox('getValue');
@@ -123,11 +135,11 @@ function reload(){
 	$('#hwStatus_table').datagrid({
 	    url:'/selectList/girlSafe.getUserList/action.do',
 	    pagination:true,
-	    pageSize:10,
+	    pageSize:12,
 	    pageNumber:1,
 	    queryParams : {
 	    	param : JSON.stringify(jsonObj),
-			pageSize : 10,
+			pageSize : 12,
 			state: '0',
 	    },
 	    columns:[[

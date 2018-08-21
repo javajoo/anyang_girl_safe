@@ -41,7 +41,6 @@
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
-	       
 	     ]]> 
 	    <if test="approval != null and approval != ''">
 	    	AND a.APPROVAL = #{approval}
@@ -51,6 +50,26 @@
 	    </if>
 	    <if test="hwStatus != null and hwStatus != ''">
 	    	AND b.STATUS = #{hwStatus}
+	    </if>
+	    <if test="userTimeS != null and userTimeS != ''">
+	    <![CDATA[
+	    	AND a.INSERT_DATE >= #{userTimeS}
+	    ]]> 
+	    </if>
+	    <if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND a.INSERT_DATE <= #{userTimeE}
+	    ]]> 
+	    </if>
+	    <if test="lastTimeS != null and lastTimeS != ''">
+	    <![CDATA[
+	    	AND a.UPDATE_DATE >= #{lastTimeS}
+	    ]]> 
+	    </if>
+	    <if test="lastTimeE != null and lastTimeE != ''">
+	    <![CDATA[
+	    	AND a.UPDATE_DATE <= #{lastTimeE}
+	    ]]> 
 	    </if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
@@ -90,6 +109,22 @@
 	     ]]> 
 	    <if test="approval != null and approval != ''">
 	    	AND a.APPROVAL = #{approval}
+	    </if>
+	    <if test="batStatus != null and batStatus != ''">
+	    	AND b.BAT = #{batStatus}
+	    </if>
+	    <if test="hwStatus != null and hwStatus != ''">
+	    	AND b.STATUS = #{hwStatus}
+	    </if>
+	    <if test="userTimeS != null and userTimeS != ''">
+	    <![CDATA[
+	    	AND a.INSERT_DATE >= #{userTimeS}
+	    ]]> 
+	    </if>
+	    <if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND a.INSERT_DATE <= #{userTimeE}
+	    ]]> 
 	    </if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
@@ -190,6 +225,16 @@
 	    <if test="endYN != null and endYN != ''">
 	    	AND END_YN = #{endYN}
 	    </if>
+	    <if test="eventTimeS != null and eventTimeS != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE >= #{eventTimeS}
+	    ]]> 
+	    </if>
+	    <if test="eventTimeE != null and eventTimeE != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE <= #{eventTimeE}
+	    ]]> 
+	    </if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
 				<when test="searchType == 'name'">
@@ -212,6 +257,7 @@
 				</otherwise>
 			</choose>
 		</if>
+			ORDER BY INSERT_DATE DESC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -226,6 +272,16 @@
 	     ]]> 
 	    <if test="endYN != null and endYN != ''">
 	    	AND END_YN = #{endYN}
+	    </if>
+	    <if test="eventTimeS != null and eventTimeS != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE >= #{eventTimeS}
+	    ]]> 
+	    </if>
+	    <if test="eventTimeE != null and eventTimeE != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE <= #{eventTimeE}
+	    ]]> 
 	    </if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
@@ -291,6 +347,16 @@
 	    <if test="pushYN != null and pushYN != ''">
 	    	AND PUSH_YN = #{pushYN}
 	    </if>
+	    <if test="boardInsertTimeS != null and boardInsertTimeS != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE >= #{boardInsertTimeS}
+	    ]]> 
+	    </if>
+	    <if test="boardInsertTimeE != null and boardInsertTimeE != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE <= #{boardInsertTimeE}
+	    ]]> 
+	    </if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
 				<when test="searchType == 'title'">
@@ -304,7 +370,7 @@
 				</otherwise>
 			</choose>
 		</if>
-			ORDER BY UPDATE_DATE DESC
+			ORDER BY INSERT_DATE DESC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -319,6 +385,16 @@
 	     ]]> 
 	    <if test="pushYN != null and pushYN != ''">
 	    	AND PUSH_YN = #{pushYN}
+	    </if>
+	    <if test="boardInsertTimeS != null and boardInsertTimeS != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE >= #{boardInsertTimeS}
+	    ]]> 
+	    </if>
+	    <if test="boardInsertTimeE != null and boardInsertTimeE != ''">
+	    <![CDATA[
+	    	AND INSERT_DATE <= #{boardInsertTimeE}
+	    ]]> 
 	    </if>
 		<if test="searchType != null and searchType != ''">
 			<choose>

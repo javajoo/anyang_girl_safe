@@ -53,6 +53,10 @@ $(document).ready(function(){
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '이름',
 	    	value: 'name'
 	    },
@@ -78,6 +82,10 @@ $(document).ready(function(){
 		valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '승인',
 	    	value: 'Y'
 	    },
@@ -135,10 +143,10 @@ function reload(){
 	$('#userApprovalList_table').datagrid({
 	    url:'/selectList/girlSafe.getUserList/action.do',
 	    pagination:true,
-	    pageSize:10,
+	    pageSize:12,
 	    scrollOnSelect:false,
 	    queryParams : {
-	    	pageSize:10,
+	    	pageSize:12,
 			param : JSON.stringify(jsonObj),
 			state: '0',
 	    },

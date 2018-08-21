@@ -6,12 +6,14 @@
 		<ul class="list_condi">
 			<li class="list">
 				<div>
-					<input id="search_eventR_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'">
+					<em>가입일 : </em>
+					<input id="search_user_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'">
 					&nbsp;~ 
-					<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'">
+					<input id="search_user_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'">
 				</div>
 			</li>
 			<li class="list">
+				<em>검색조건 : </em>
 				<select id="user_flag_box" class="easyui-combobox" style="width: 80px; height: 27px;">
 				</select>
 				<div class="list_cont">
@@ -37,10 +39,10 @@
 <script>
 
 $(document).ready(function(){
-	$('#search_eventR_timeS').datebox({
+	$('#search_user_timeS').datebox({
 		requeired:true
 	});
-	$('#search_eventR_timeE').datebox({
+	$('#search_user_timeE').datebox({
 		requeired:true
 	});
 	
@@ -48,6 +50,10 @@ $(document).ready(function(){
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '이름',
 	    	value: 'name'
 	    },
@@ -70,8 +76,8 @@ $(document).ready(function(){
 
 function reload(){	
 	const jsonObj = {};
-	jsonObj.eventDeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
-	jsonObj.eventDeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
+	jsonObj.userTimeS = $("#search_user_timeS").datebox('getValue').replace(/\//g, '');
+	jsonObj.userTimeE = $("#search_user_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.totSearch = $("#search_eventR_tot").val();
 	jsonObj.searchType = $("#user_flag_box").combobox('getValue');
 	$('#userList_table').datagrid({

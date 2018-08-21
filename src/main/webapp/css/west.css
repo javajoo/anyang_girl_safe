@@ -175,6 +175,7 @@
 .list_ty_full {
 	float: left;
 	width: 100%;
+	padding: 1% 0 0 0;
 }
 
 .list_ty_full .btn_list {
@@ -187,7 +188,7 @@
 }
 
 .cont_inner {
-	padding: 0.5% 1.5%;
+	padding: 1% 1.5%;
 }
 
 .list_cont {

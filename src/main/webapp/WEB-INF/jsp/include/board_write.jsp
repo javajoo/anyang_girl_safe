@@ -43,7 +43,7 @@ function closePopup() {
 }
 
 function savePosts() {
-	var url = "/insert/girlSafe.insertBoard/action.do";
+	var url = "/ajax/insert/girlSafe.insertBoard/action.do";
 	const jsonObj = {};
 	jsonObj.title = $("#board_title").val();
 	jsonObj.content = CKEDITOR.instances.board_cont.getData();

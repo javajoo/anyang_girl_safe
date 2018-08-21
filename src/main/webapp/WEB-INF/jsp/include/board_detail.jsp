@@ -9,7 +9,7 @@
 					<em>제목</em>
 				</div>
 				<div class="list_cont4">
-					<p id="board_title"></p>
+					<p id="board_detail_title"></p>
 				</div>
 			</li>
 			<li class="list2">
@@ -17,7 +17,7 @@
 					<em>내용</em>
 				</div>
 				<div class="list_cont6">
-					<div id="board_content">
+					<div id="board_detail_content">
 					</div>
 				</div>
 			</li>
@@ -27,13 +27,13 @@
 						<em>조회수</em>
 					</li>
 					<li class="list_cont3">
-						<span id="board_count"></span>
+						<span id="board_detail_count"></span>
 					</li>
 					<li class="list_cont3">
 						<em>푸시</em>
 					</li>
 					<li class="list_cont3">
-						<span id="board_push"></span>
+						<span id="board_detail_push"></span>
 					</li>
 				</ul>
 			</li>
@@ -42,13 +42,13 @@
 					<em>등록일</em>
 				</div>
 				<div class="list_cont3">
-					<span id="board_insert_date"></span>
+					<span id="board_detail_insert_date"></span>
 				</div>
 				<div class="list_cont3">
 					<em>수정일</em>
 				</div>
 				<div class="list_cont3">
-					<span id="board_update_date"></span>
+					<span id="board_detail_update_date"></span>
 				</div>
 			</li>
 			<li class="btn_list">
@@ -85,7 +85,7 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
-					<a href="#" id="save_button" class="eventR_button_list" onclick="savePosts()">저장</a>
+					<a href="#" id="save_button" class="eventR_button_list" onclick="updatePosts()">저장</a>
 				</div>
 				<div class="list_cont">
 					<a href="#" id="cancel_button" class="eventR_button_list" onclick="closePopup()">취소</a>
@@ -102,7 +102,7 @@
 CKEDITOR.replace('editor2');
 $(document).ready(function(){
 	$("#update_area").hide();
-	reload();
+	reload_detail();
 });
 
 function closePopup() {
@@ -119,8 +119,8 @@ function changeView(flag) {
 	}
 }
 
-function savePosts() {
-	var url = "/update/girlSafe.updateBoard/action.do";
+function updatePosts() {
+	var url = "/ajax/update/girlSafe.updateBoard/action.do";
 	var no = "${no}";
 	const jsonObj = {};
 	jsonObj.title = $("#update_board_title").val();
@@ -144,18 +144,18 @@ function savePosts() {
 }
 
 function setValues(data) {
-	$("#board_title").text(data.title);
-	$("#board_content").html(data.content);
-	$("#board_count").text(data.count);
-	$("#board_push").text(data.pushYN);
-	$("#board_insert_date").text(data.insertDate);
-	$("#board_update_date").text(data.updateDate);
+	$("#board_detail_title").text(data.title);
+	$("#board_detail_content").html(data.content);
+	$("#board_detail_count").text(data.count);
+	$("#board_detail_push").text(data.pushYN);
+	$("#board_detail_insert_date").text(data.insertDate);
+	$("#board_detail_update_date").text(data.updateDate);
 	
 	$("#update_board_title").val(data.title);
 	CKEDITOR.instances.update_board_content.setData(data.content);
 }
 
-function reload(){
+function reload_detail(){
 	var url = "/select/girlSafe.getBoardOne/action.do";
 	var no = "${no}";
 	const jsonObj = {};

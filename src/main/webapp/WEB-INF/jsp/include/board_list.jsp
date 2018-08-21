@@ -4,6 +4,14 @@
 	<div id="board_list" class="cont_inner" title="" style="height:99%; width: 97%;">
 		<ul class="list_condi_full">
 			<li class="list">
+				<div>
+					<em>등록일 : </em>
+					<input id="search_board_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'" style="width:175px;">
+					&nbsp;~ 
+					<input id="search_board_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'" style="width:175px;">
+				</div>
+			</li>
+			<li class="list">
 				<div class="list_cont">
 					<em>검색조건 : </em>
 					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
@@ -14,7 +22,7 @@
 					<select id="push_yn_box" class="easyui-combobox" style="width: 80px; height: 27px;">
 					</select>
 				</div>
-				<div class="list_cont">
+				<div class="list_cont2">
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 				</div>
@@ -42,10 +50,21 @@
 </div>
 <script>
 	$(document).ready(function(){
+		$('#search_board_timeS').datebox({
+			requeired:true
+		});
+		$('#search_board_timeE').datebox({
+			requeired:true
+		});
+		
 		$('#search_type_box').combobox({
 		    valueField:'value',
 		    textField:'label',
 		    data: [{
+		    	label: '전체',
+		    	value: ''
+		    },
+		    {
 		    	label: '제목',
 		    	value: 'title'
 		    },
@@ -59,6 +78,10 @@
 		    valueField:'value',
 		    textField:'label',
 		    data: [{
+		    	label: '전체',
+		    	value: ''
+		    },
+		    {
 		    	label: 'Y',
 		    	value: 'Y'
 		    },
@@ -90,7 +113,7 @@
 	}
 	
 	function updateCount(row, data) {
-		var url = "/update/girlSafe.updateBoard/action.do";
+		var url = "/ajax/update/girlSafe.updateBoard/action.do";
 		const jsonObj = {};
 		jsonObj.no = data.no;
 		jsonObj.count = "count";
@@ -111,17 +134,19 @@
 	
 	function reload(){
 		const jsonObj = {};
+		jsonObj.boardInsertTimeS = $("#search_board_timeS").datebox('getValue').replace(/\//g, '');
+		jsonObj.boardInsertTimeE = $("#search_board_timeE").datebox('getValue').replace(/\//g, '');
 		jsonObj.totSearch = $("#search_eventR_tot").val();
 		jsonObj.searchType = $("#search_type_box").combobox('getValue');
 		jsonObj.pushYN = $("#push_yn_box").combobox('getValue');
 		$('#boardList_table').datagrid({
 		    url:'/selectList/girlSafe.getBoardList/action.do',
 		    pagination:true,
-		    pageSize:10,
+		    pageSize:12,
 		    pageNumber:1,
 		    queryParams : {
 		    	param : JSON.stringify(jsonObj),
-				pageSize : 10,
+				pageSize : 12,
 				state: '0',
 		    },
 		    columns:[[

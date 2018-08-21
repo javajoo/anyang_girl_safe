@@ -5,10 +5,10 @@
 		<ul class="list_condi_full">
 			<li class="list">
 				<div>
-					<em>검색 일자 : </em>
-					<input id="search_eventR_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'" style="width:175px;">
+					<em>발생 일자 : </em>
+					<input id="search_event_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'" style="width:175px;">
 					&nbsp;~ 
-					<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'" style="width:175px;">
+					<input id="search_event_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'" style="width:175px;">
 				</div>
 			</li>
 			<li class="list">
@@ -41,10 +41,10 @@
 </div>
 <script>
 $(document).ready(function(){
-	$('#search_eventR_timeS').datebox({
+	$('#search_event_timeS').datebox({
 		requeired:true
 	});
-	$('#search_eventR_timeE').datebox({
+	$('#search_event_timeE').datebox({
 		requeired:true
 	});
 	
@@ -52,6 +52,10 @@ $(document).ready(function(){
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '이름',
 	    	value: 'name'
 	    },
@@ -77,6 +81,10 @@ $(document).ready(function(){
 		valueField:'value',
 	    textField:'label',
 	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
 	    	label: '발생',
 	    	value: 'N'
 	    },
@@ -91,20 +99,20 @@ $(document).ready(function(){
 
 function reload(){
 	const jsonObj = {};
-	jsonObj.eventDeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
-	jsonObj.eventDeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
+	jsonObj.eventTimeS = $("#search_event_timeS").datebox('getValue').replace(/\//g, '');
+	jsonObj.eventTimeE = $("#search_event_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.totSearch = $("#search_eventR_tot").val();
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
 	jsonObj.endYN = $("#end_yn_box").combobox('getValue');
 	$('#eventList_table').datagrid({
 	    url:'/selectList/girlSafe.getEventList/action.do',
 	    pagination:true,
-	    pageSize:10,
+	    pageSize:12,
 	    pageNumber:1,
 	    fitColumns:true,
 	    queryParams : {
 	    	param : JSON.stringify(jsonObj),
-			pageSize : 10,
+			pageSize : 12,
 			state: '0',
 	    },
 	    columns:[[

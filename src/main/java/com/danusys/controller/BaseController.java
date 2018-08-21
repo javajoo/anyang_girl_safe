@@ -466,7 +466,7 @@ public class BaseController
      * Return   : String
     */
     @RequestMapping(value = "/insert/{sqlid}/action.do", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> baseInsert (@PathVariable("sqlid") String sqlid, HttpServletRequest request, HttpServletResponse response, Locale locale, Model model) throws IOException {
+    public String baseInsert (@PathVariable("sqlid") String sqlid, HttpServletRequest request, HttpServletResponse response, Locale locale, Model model) throws IOException {
     	
         int	iResult = 0;
 
@@ -494,7 +494,7 @@ public class BaseController
             logger.error(ex.toString());
         }
 
-        return param;
+        return "/views/result/result";
     }
 
 
@@ -505,7 +505,7 @@ public class BaseController
      * Return   : String
     */
     @RequestMapping(value = "/update/{sqlid}/action.do", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object> baseUpdate (@PathVariable("sqlid") String sqlid, HttpServletRequest request, Locale locale, Model model) throws IOException {
+    public String baseUpdate (@PathVariable("sqlid") String sqlid, HttpServletRequest request, Locale locale, Model model) throws IOException {
     	
         int iResult = 0;
 
@@ -531,7 +531,7 @@ public class BaseController
             logger.error(ex.toString());
         }
 
-        return param;
+        return "/views/result/result";
     }
 
 
