@@ -311,7 +311,7 @@ function getStatsList(data) {
 	}
 }
 
-function setStatsDatagrid(urlType, year) {
+function setStatsDatagrid(urlType, year, title) {
 	var url = "/selectList" + urlType;
 	const jsonObj = {};
 	jsonObj.year = year;
@@ -326,7 +326,7 @@ function setStatsDatagrid(urlType, year) {
 			pageSize : 3
 	    },
 	    columns: [[
-	        {field: 'label', title: '거주지', width: "50%",align: 'center'},
+	        {field: 'label', title: title, width: "50%",align: 'center'},
 			{field: 'total', title: '총계', width: "50%",align: 'center'}
 	    ]],
 	    onLoadSuccess: function(data){
@@ -350,6 +350,7 @@ function reload(){
 	var type = $("#search_type_box").combobox('getValue');
 	var range = $("#search_range_box").combobox('getValue');
 	var year = $("#search_year_box").combobox('getValue');
+	var title = "거주지(구)별";
 	var urlType = "";
 	var yearBoxUrl = "";
 	config.data.datasets = [];
@@ -359,20 +360,24 @@ function reload(){
 			urlType = "/girlSafe.getEventGuStatsList/action.do";
 		} else if (range == "dong") {
 			urlType = "/girlSafe.getEventDongStatsList/action.do";
+			title = "거주지(동)별";
 		} else if (range == "hw") {
 			urlType = "/girlSafe.getEventHwStatsList/action.do";
+			title = "기기별"
 		}
 	} else if (type == "user") {
 		if (range == "gu") {
 			urlType = "/girlSafe.getUserGuStatsList/action.do";
 		} else if (range == "dong") {
 			urlType = "/girlSafe.getUserDongStatsList/action.do";
+			title = "거주지(동)별";
 		}
 	} else if (type == "log") {
 		urlType = "/girlSafe.getLogStatsList/action.do";
+		title = "WEB ID별";
 	}
 	
-	setStatsDatagrid(urlType, year);
+	setStatsDatagrid(urlType, year, title);
 	
 	lineChart.update();
 }

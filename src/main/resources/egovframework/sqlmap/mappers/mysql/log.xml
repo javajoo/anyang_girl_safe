@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    
+<mapper namespace="log">
+	<insert id="insertLog" parameterType="map">
+		<![CDATA[
+			INSERT INTO log
+			(
+				  log_type
+				, admin_id
+				, admin_nm
+				, content
+				, ip
+				, session_id
+				, create_date
+				, deleted
+			)
+			SELECT #{logType}
+				 , ifnull(#{adminId},'SYSTEM')
+				 , ifnull(#{adminNm},'시스템')
+				 , #{content}
+				 , #{ip}
+				 , #{sessionId}
+				 , NOW()
+				 , 'N'
+		]]>
+	</insert>
+</mapper>

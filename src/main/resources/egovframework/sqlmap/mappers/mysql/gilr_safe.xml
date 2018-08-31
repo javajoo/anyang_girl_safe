@@ -686,27 +686,32 @@
 	
 	<select id="getLogStatsList" parameterType="map" resultType="HashMap">
 			SELECT 
-				admin_id AS label,
-				COUNT(admin_id) AS total,
-				EXTRACT(year FROM create_date) AS year,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 1 THEN 1 ELSE 0 END) AS m1,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 2 THEN 1 ELSE 0 END) AS m2,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 3 THEN 1 ELSE 0 END) AS m3,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 4 THEN 1 ELSE 0 END) AS m4,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 5 THEN 1 ELSE 0 END) AS m5,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 6 THEN 1 ELSE 0 END) AS m6,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 7 THEN 1 ELSE 0 END) AS m7,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 8 THEN 1 ELSE 0 END) AS m8,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 9 THEN 1 ELSE 0 END) AS m9,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 10 THEN 1 ELSE 0 END) AS m10,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 11 THEN 1 ELSE 0 END) AS m11,
-				SUM(CASE WHEN EXTRACT(month FROM create_date) = 12 THEN 1 ELSE 0 END) AS m12
-			FROM log
+				l.CONTENT AS label,
+				COUNT(l.CONTENT) AS total,
+				EXTRACT(year FROM l.CREATE_DATE) AS year,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 2 THEN 1 ELSE 0 END) AS m2,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 3 THEN 1 ELSE 0 END) AS m3,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 4 THEN 1 ELSE 0 END) AS m4,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 5 THEN 1 ELSE 0 END) AS m5,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 6 THEN 1 ELSE 0 END) AS m6,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 8 THEN 1 ELSE 0 END) AS m8,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 9 THEN 1 ELSE 0 END) AS m9,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 10 THEN 1 ELSE 0 END) AS m10,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 11 THEN 1 ELSE 0 END) AS m11,
+				SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 12 THEN 1 ELSE 0 END) AS m12
+			FROM (SELECT 
+					  LOG_TYPE, 
+					  CONTENT, 
+					  CREATE_DATE 
+				  FROM LOG 
+				  WHERE LOG_TYPE = 'ACCESSPAGE') AS l
 		<if test="year != null and year != ''">
-            WHERE EXTRACT(year FROM create_date) = #{year}
+            WHERE EXTRACT(year FROM l.CREATE_DATE) = #{year}
 		</if>
-			GROUP BY admin_id, EXTRACT(year FROM create_date)
-			ORDER BY admin_id ASC
+			GROUP BY l.CONTENT, EXTRACT(year FROM l.CREATE_DATE)
+			ORDER BY l.CONTENT ASC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if> 
@@ -714,10 +719,16 @@
 	
 	<select id="getLogStatsListCnt" parameterType="map" resultType="String">
 			SELECT 
-				COUNT(e.admin_id)
-			FROM (SELECT admin_id, create_date FROM log GROUP BY admin_id) AS e
+				COUNT(e.CONTENT)
+			FROM (SELECT 
+					  LOG_TYPE, 
+					  CONTENT, 
+					  CREATE_DATE 
+				  FROM LOG
+				  WHERE LOG_TYPE = 'ACCESSPAGE'
+				  GROUP BY CONTENT, EXTRACT(year FROM CREATE_DATE)) AS e
 		<if test="year != null and year != ''">
-            WHERE EXTRACT(year FROM e.create_date) = #{year}
+            WHERE EXTRACT(year FROM e.CREATE_DATE) = #{year}
 		</if>
 	</select>
 	
