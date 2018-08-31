@@ -1,19 +1,22 @@
 <!-- 시설물현황조회 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-
 <div class="cont_area">
 	<div id="stats_list" class="cont_inner" title="" style="height:99%; width: 97%;">
 		<ul class="list_condi_full">
 			<li class="list">
 				<div class="list_cont">
 					<em>종류 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
+					<select id="search_type_box" class="easyui-combobox" style="width: 110px; height: 27px;">
 					</select>
 				</div>
-				<div id="end_yn_box_wrap" class="list_cont">
+				<div class="list_cont">
 					<em>범위 : </em>
 					<select id="search_range_box" style="width: 90px; height: 27px; display: none;">
+					</select>
+				</div>
+				<div class="list_cont">
+					<em>연도 : </em>
+					<select id="search_year_box" style="width: 90px; height: 27px; display: none;">
 					</select>
 				</div>
 				<div class="list_cont2">
@@ -22,10 +25,9 @@
 			</li>
 		</ul>
 		<ul class="list_ty_full" style="width:100%;">
-			<li style="padding: 0 15%; text-aligh: center;">
-				<div class="chartwrap" style="width:100%;  height:500px;">
-					<h1 style="width: 100%;">월별 차트</h1>
-					<canvas id="lineChart"></canvas>
+			<li style="padding: 0 15%; text-aligh: center; height: 500px;">
+				<div class="chartwrap" style="width:100%; height:500px;">
+					<canvas id="lineChart" style="width:100%; height:500px;"></canvas>
 				</div>
 			</li>
 			<li class="table_title">
@@ -38,19 +40,40 @@
 		</ul>
 	</div>
 </div>
-
 <script>
-
+var currentData;
 var lineChart;
+var userRangeData = [
+    {
+		label: '거주지(구)',
+		value: 'gu',
+		selected: true
+	},
+   	{
+   		label: '거주지(동)',
+   		value: 'dong'
+   	}];
+var eventRangeData = [
+	{
+		label: '거주지(구)',
+		value: 'gu',
+		selected: true
+	},
+	{
+		label: '거주지(동)',
+		value: 'dong'
+	},
+	{
+		label: '기기별',
+		value: 'hw'
+	}];
+var logRangeData = [
+	{
+		label: 'WEB ID별',
+		value: 'id',
+		selected: true
+	}];
 var colorSet = [
-		{
-			line: '#555E7B',
-			point: '#704054'
-		},
-		{
-			line: '#B7D968',
-			point: '#CECD47'
-		},
 		{
 			line: '#B576AD',
 			point: '#CD5093'
@@ -62,182 +85,71 @@ var colorSet = [
 		{
 			line: '#FDE47F',
 			point: '#FEDB56'
-		},
-		{
-			line: '#7CCCE5',
-			point: '#A4BCDD'
-		},
-		{
-			line: '#C2CDF9',
-			point: '#D6BDF7'
-		},
-		{
-			line: '#B7E5F7',
-			point: '#CEDDF4'
-		},
-		{
-			line: '#CEE840',
-			point: '#DEE12C'
-		},
-		{
-			line: '#F7568C',
-			point: '#FA3A67'
-		},
-		{
-			line: '#88DD73',
-			point: '#AED24E'
-		},
-		{
-			line: '#E54EAD',
-			point: '#ED3593'
-		},
-		{
-			line: '#DB2388',
-			point: '#E71862'
-		},
-		{
-			line: '#BBF4F9',
-			point: '#D1F0F7'
-		},
-		{
-			line: '#F7BBBC',
-			point: '#FAA5A7'
-		},
-		{
-			line: '#F94D72',
-			point: '#FB344E'
-		},
-		{
-			line: '#9286F9',
-			point: '#B55FF7'
-		},
-		{
-			line: '#7D83ED',
-			point: '#A55BE7'
-		},
-		{
-			line: '#ABFCCB',
-			point: '#C6FBBA'
-		},
-		{
-			line: '#C775E5',
-			point: '#D950DD'
-		},
-		{
-			line: '#89F4A2',
-			point: '#AFF084'
-		},
-		{
-			line: '#1F469B',
-			point: '#29307B'
-		},
-		{
-			line: '#73ED68',
-			point: '#98E747'
-		},
-		{
-			line: '#9EF7AB',
-			point: '#BDF490'
-		},
-		{
-			line: '#EA1CD9',
-			point: '#F113CD'
-		},
-		{
-			line: '#71F282',
-			point: '#95EE5A'
-		},
-		{
-			line: '#78DB6F',
-			point: '#9ECF4B'
-		},
-		{
-			line: '#B1DDED',
-			point: '#CAD2E7'
-		},
-		{
-			line: '#E3BDFC',
-			point: '#ECA8FB'
-		},
-		{
-			line: '#EEF42C',
-			point: '#F3F01E'
-		},
-		{
-			line: '#F23AD9',
-			point: '#F627CD'
 		}
 	];
 
 var config = {
-		type: 'line',
-		data: {
-			labels: [
-				'1월', 
-				'2월', 
-				'3월', 
-				'4월', 
-				'5월', 
-				'6월', 
-				'7월', 
-				'8월', 
-				'9월', 
-				'10월', 
-				'11월', 
-				'12월'
-			]
+	type: 'line',
+	data: {
+		labels: [
+			'1월', 
+			'2월', 
+			'3월', 
+			'4월', 
+			'5월', 
+			'6월', 
+			'7월', 
+			'8월', 
+			'9월', 
+			'10월', 
+			'11월', 
+			'12월'
+		]
+	},
+	options: {
+		responsive: true,
+		maintainAspectRatio: true,
+		title: {
+			display: true,
+			text: '월별 차트',
+			fontSize: 25,
+			fontFamily: 'nanum-barun-gothic-regular'
 		},
-		options: {
-			responsive: true,
-			title: {
+		tooltips: {
+			position: 'average',
+			mode: 'index',
+			intersect: false,
+		},
+		hover: {
+			mode: 'nearest',
+			intersect: true
+		},
+		scales: {
+			xAxes: [{
 				display: true,
-				text: '월별 차트'
-			},
-			tooltips: {
-				position: 'nearest',
-				mode: 'nearest',
-				intersect: true,
-			},
-			hover: {
-				mode: 'nearest',
-				intersect: true
-			},
-			scales: {
-				xAxes: [{
+				scaleLabel: {
 					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: '월'
-					}
-				}],
-				yAxes: [{
+					labelString: '월',
+					fontFamily: 'nanum-barun-gothic-regular'
+				}
+			}],
+			yAxes: [{
+				display: true,
+				scaleLabel: {
 					display: true,
-					scaleLabel: {
-						display: true,
-						labelString: '횟수'
-					},
-					ticks: {
-						min: 0
-					}
-				}]
-			}
+					labelString: '횟수',
+					fontFamily: 'nanum-barun-gothic-regular'
+				},
+				ticks: {
+					min: 0
+				}
+			}]
 		}
-	};
+	}
+};
 
 $(document).ready(function(){
-	$('#search_type_box').combobox({
-	    valueField:'value',
-	    textField:'label',
-	    data: [
-	    {
-	    	label: '거주지(구)',
-	    	value: 'gu'
-	    },
-	    {
-	    	label: '거주지(동)',
-	    	value: 'dong'
-	    }]
-	});
+	checkBrower();
 	
 	$('#search_range_box').combobox({
 	    valueField:'value',
@@ -245,26 +157,126 @@ $(document).ready(function(){
 	    data: [
 	    {
 	    	label: '거주지(구)',
-	    	value: 'gu'
+	    	value: 'gu',
+	    	selected: true
 	    },
 	    {
 	    	label: '거주지(동)',
 	    	value: 'dong'
+	    },
+	    {
+	    	label: '기기별',
+	    	value: 'hw'
 	    }]
 	});
 	
-	Chart.defaults.global.legend.display = false;
+	$('#search_type_box').combobox({
+	    valueField:'value',
+	    textField:'label',
+	    data: [
+		{
+			label: '이벤트 횟 수',
+			value: 'event',
+	    	selected: true
+		},
+	    {
+	    	label: 'APP 가입자 수',
+	    	value: 'user'
+	    },
+	    {
+	    	label: 'WEB 접속 수',
+	    	value: 'log'
+	    }],
+	    onSelect: function() {
+	    	setSearchRangeBox();
+	    	setSearchYearBox();
+	    }
+	});
+	
+	$('#search_year_box').combobox({
+	    valueField:'value',
+	    textField:'label',
+	    data: [
+	    {
+	    	label: '2017',
+	    	value: '2017'
+	    },
+	    {
+	    	label: '2018',
+	    	value: '2018',
+	    	selected: true
+	    }]
+	});
+	
+	Chart.defaults.global.legend.display = true;
 	Chart.defaults.global.tooltips.enabled = true;
 	Chart.defaults.global.tooltips.titleFontSize = 15;
-	Chart.defaults.global.maintainAspectRatio = false,
+	Chart.defaults.global.maintainAspectRatio = false;
 
-	pieChartElement = document.getElementById("pieChart");
 	lineChartElement = document.getElementById("lineChart");
-
 	lineChart = new Chart(lineChartElement, config);
 	
+	setSearchYearBox();
 	reload();
 });
+
+function checkBrower() {
+	var agent = navigator.userAgent.toLowerCase();
+	
+	if ((navigator.appName == 'Netscape' 
+			&& navigator.userAgent.search('Trident') != -1) 
+			|| (agent.indexOf("msie") != -1)) {
+		config.options.maintainAspectRatio = false;
+	} else {
+		config.options.maintainAspectRatio = true;
+	}
+	
+	console.log(config.options.maintainAspectRatio);
+}
+
+function setSearchRangeBox() {
+	var type = $("#search_type_box").combobox('getValue');
+	var opts = $("#search_range_box").combobox('options');
+	if (type == "event") {
+		$("#search_range_box").combobox({data: eventRangeData});
+		opts.data = eventRangeData;
+	} else if (type == "user") {
+		$("#search_range_box").combobox({data: userRangeData});
+		opts.data = userRangeData;
+	} else if (type == "log") {
+		$("#search_range_box").combobox({data: logRangeData});
+		opts.data = logRangeData;
+	}
+	$("#search_range_box").combobox('options', opts);
+	$("#search_range_box").combobox('reload');
+}
+
+function setSearchYearBox() {
+	var type = $("#search_type_box").combobox('getValue');
+	var url = "";
+	const jsonObj = {};
+	
+	if (type == "event") {
+		url = "/select/girlSafe.getEventStatsYearList/action.do";
+	} else if (type == "user") {
+		url = "/select/girlSafe.getUserStatsYearList/action.do";
+	} else if (type == "log") {
+		url = "/select/girlSafe.getLogStatsYearList/action.do";
+	}
+	
+	$('#search_year_box').combobox({
+		url: url,
+	    valueField: 'label',
+	    textField: 'label',
+	    queryParams : {
+	    	param : JSON.stringify(jsonObj)
+	    },
+	    onLoadSuccess: function(items) {
+	    	var opts = $(this).combobox('options');
+	    	$(this).combobox('select', items[0][opts.valueField]);
+	    }
+	});
+}
 
 function addDataSet(data, index) {
 	var dataSet = {
@@ -292,131 +304,77 @@ function addDataSet(data, index) {
 	lineChart.update();
 }
 
-function addData(label, type) {
-	var data = {
-		label: label,
-		type: type
-	};
-	
-	datas.push(data);
+function getStatsList(data) {
+	var length = data.length;
+	for (var i = 0; i < length; i++) {
+		addDataSet(data[i], i);
+	}
 }
 
-function getEventDongStatsList() {
-	var url = "/select/girlSafe.getEventDongStatsList/action.do";
+function setStatsDatagrid(urlType, year) {
+	var url = "/selectList" + urlType;
 	const jsonObj = {};
-	$.ajax({
-		type : "POST"
-		, url : url
-		, dataType : "json"
-		, data : {"param" : JSON.stringify(jsonObj)}
-		, success: function(data)
-		{
-			var length = data.length;
-			for (var i = 0; i < length; i++) {
-				addDataSet(data[i], i);
-			}
-		}
-		, error:function(e){
-			alert(e.responseText);
-		}
-	});
-}
-
-function getEventGuStatsList() {
-	var url = "/select/girlSafe.getEventGuStatsList/action.do";
-	const jsonObj = {};
-	$.ajax({
-		type : "POST"
-		, url : url
-		, dataType : "json"
-		, data : {"param" : JSON.stringify(jsonObj)}
-		, success: function(data)
-		{
-			var length = data.length;
-			for (var i = 0; i < length; i++) {
-				addDataSet(data[i], i);
-			}
-		}
-		, error:function(e){
-			alert(e.responseText);
-		}
-	});
-}
-
-function getUserDongStatsList() {
-	var url = "/select/girlSafe.getUserDongStatsList/action.do";
-	const jsonObj = {};
-	$.ajax({
-		type : "POST"
-		, url : url
-		, dataType : "json"
-		, data : {"param" : JSON.stringify(jsonObj)}
-		, success: function(data)
-		{
-			var length = data.length;
-			for (var i = 0; i < length; i++) {
-				addDataSet(data[i], i);
-			}
-		}
-		, error:function(e){
-			alert(e.responseText);
-		}
-	});
-}
-
-function getUserGuStatsList() {
-	var url = "/select/girlSafe.getUserGuStatsList/action.do";
-	const jsonObj = {};
-	$.ajax({
-		type : "POST"
-		, url : url
-		, dataType : "json"
-		, data : {"param" : JSON.stringify(jsonObj)}
-		, success: function(data)
-		{
-			var length = data.length;
-			for (var i = 0; i < length; i++) {
-				addDataSet(data[i], i);
-			}
-		}
-		, error:function(e){
-			alert(e.responseText);
-		}
-	});
-}
-
-function reload(){
-	config.data.datasets = [];
-	getEventDongStatsList();
-	/* $('#eventList_table').datagrid({
-	    url:'/selectList/girlSafe.getEventGuStatsList/action.do',
-	    pagination:true,
-	    pageNumber:1,
-	    fitColumns:true,
+	jsonObj.year = year;
+	$('#statsList_table').datagrid({
+	    url: url,
+	    pagination: true,
+	    pageSize: 3,
+	    pageNumber: 1,
+	    fitColumns: true,
 	    queryParams : {
 	    	param : JSON.stringify(jsonObj),
-			state: '0',
+			pageSize : 3
 	    },
-	    columns:[[
-	        {field:'label',title:'거주지',width:50,align:'center'},
-			{field:'total',title:'총계',width:70,align:'center'}
+	    columns: [[
+	        {field: 'label', title: '거주지', width: "50%",align: 'center'},
+			{field: 'total', title: '총계', width: "50%",align: 'center'}
 	    ]],
-	    onLoadSuccess:function(data){
-	    	console.log(data);
-			if($('#eventList_table').datagrid('getData').rows=='sessionOut'){
+	    onLoadSuccess: function(data){
+			if($('#statsList_table').datagrid('getData').rows == 'sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');
 					//location.href="/";
 					closeWindow();
 				}
-			}			
-			var length = data.length;
-			for (var i = 0; i < length; i++) {
-				addDataSet(data[i]);
+			}
+			if(data && data.total > 0) {
+				config.data.datasets = [];
+				getStatsList(data.rows);
 			}
 		}
-	});	 */
+	});
+}
+
+function reload(){
+	var type = $("#search_type_box").combobox('getValue');
+	var range = $("#search_range_box").combobox('getValue');
+	var year = $("#search_year_box").combobox('getValue');
+	var urlType = "";
+	var yearBoxUrl = "";
+	config.data.datasets = [];
+	
+	if (type == "event") {
+		if (range == "gu") {
+			urlType = "/girlSafe.getEventGuStatsList/action.do";
+		} else if (range == "dong") {
+			urlType = "/girlSafe.getEventDongStatsList/action.do";
+		} else if (range == "hw") {
+			urlType = "/girlSafe.getEventHwStatsList/action.do";
+		}
+	} else if (type == "user") {
+		if (range == "gu") {
+			urlType = "/girlSafe.getUserGuStatsList/action.do";
+		} else if (range == "dong") {
+			urlType = "/girlSafe.getUserDongStatsList/action.do";
+		}
+	} else if (type == "log") {
+		urlType = "/girlSafe.getLogStatsList/action.do";
+	}
+	
+	setStatsDatagrid(urlType, year);
+	
+	lineChart.update();
 }
 </script>
 

@@ -38,7 +38,7 @@
 				c.S_PHONE_NUMBER as sPhoneNumber
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
-	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        LEFT JOIN (select * from girl_safe_user_sub LIMIT 1) c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	     ]]> 
@@ -104,7 +104,7 @@
 				COUNT(*)
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
-	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        LEFT JOIN (select * from girl_safe_user_sub LIMIT 1) c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        WHERE 1=1
 	     ]]> 
 	    <if test="approval != null and approval != ''">
@@ -498,9 +498,35 @@
 				SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN 1 ELSE 0 END) AS m11,
 				SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 12 THEN 1 ELSE 0 END) AS m12
 			FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME) AS dt 
-			LEFT JOIN (SELECT ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM girl_safe_user) a
+			LEFT JOIN (
+				SELECT 
+					u.ENCRYPT_ADRES, 
+					u.PHONE_NUMBER, 
+					u.INSERT_DATE 
+				FROM girl_safe_user u
+       			JOIN girl_safe_hw b
+       			on     u.PHONE_NUMBER = b.PHONE_NUMBER
+       			LEFT JOIN (
+       				select *
+       				from girl_safe_user_sub LIMIT 1) c
+       			ON     u.PHONE_NUMBER   = c.PHONE_NUMBER ,
+              	(SELECT @ROWNUM := 0) R
+            ) a
 			ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_GU_NAME, '%')
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+		</if>
 			GROUP BY dt.ENCRYPT_GU_NAME, EXTRACT(year FROM a.INSERT_DATE)
+			ORDER BY dt.ENCRYPT_GU_NAME ASC
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getUserGuStatsListCnt" parameterType="map" resultType="String">
+			SELECT 
+				COUNT(d.ENCRYPT_GU_NAME)
+			FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME) AS d
 	</select>
 	
 	<select id="getUserDongStatsList" parameterType="map" resultType="HashMap">
@@ -521,9 +547,35 @@
 				SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN 1 ELSE 0 END) AS m11,
 				SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 12 THEN 1 ELSE 0 END) AS m12
 			FROM district AS dt 
-			LEFT JOIN (SELECT ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM girl_safe_user) a
+			LEFT JOIN (
+				SELECT 
+					u.ENCRYPT_ADRES, 
+					u.PHONE_NUMBER, 
+					u.INSERT_DATE 
+				FROM girl_safe_user u
+       			JOIN girl_safe_hw b
+       			on     u.PHONE_NUMBER = b.PHONE_NUMBER
+       			LEFT JOIN (
+       				select *
+       				from girl_safe_user_sub LIMIT 1) c
+       			ON     u.PHONE_NUMBER   = c.PHONE_NUMBER ,
+              	(SELECT @ROWNUM := 0) R
+            ) a
 			ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_DONG_NAME, '%')
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+		</if>
 			GROUP BY dt.ENCRYPT_DONG_NAME, EXTRACT(year FROM a.INSERT_DATE)
+			ORDER BY dt.ENCRYPT_DONG_NAME ASC
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getUserDongStatsListCnt" parameterType="map" resultType="String">
+			SELECT 
+				COUNT(ENCRYPT_DONG_NAME)
+			FROM district
 	</select>
 	
 	<select id="getEventGuStatsList" parameterType="map" resultType="HashMap">
@@ -546,7 +598,20 @@
 			FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME) AS dt 
 			LEFT JOIN (SELECT ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM girl_safe_event) a
 			ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_GU_NAME, '%')
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+		</if>
 			GROUP BY dt.ENCRYPT_GU_NAME, EXTRACT(year FROM a.INSERT_DATE)
+			ORDER BY dt.ENCRYPT_GU_NAME ASC
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getEventGuStatsListCnt" parameterType="map" resultType="String">
+			SELECT 
+				COUNT(d.ENCRYPT_GU_NAME)
+			FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME) AS d
 	</select>
 	
 	<select id="getEventDongStatsList" parameterType="map" resultType="HashMap">
@@ -569,6 +634,105 @@
 			FROM district AS dt 
 			LEFT JOIN (SELECT ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM girl_safe_event) a
 			ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_DONG_NAME, '%')
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+		</if>
 			GROUP BY dt.ENCRYPT_DONG_NAME, EXTRACT(year FROM a.INSERT_DATE)
+			ORDER BY dt.ENCRYPT_DONG_NAME ASC
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getEventDongStatsListCnt" parameterType="map" resultType="String">
+			SELECT 
+				COUNT(ENCRYPT_DONG_NAME)
+			FROM district
+	</select>
+	
+	<select id="getEventHwStatsList" parameterType="map" resultType="HashMap">
+			SELECT 
+				DIVISION AS label,
+				COUNT(PHONE_NUMBER) AS total,
+				EXTRACT(year FROM INSERT_DATE) AS year,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 2 THEN 1 ELSE 0 END) AS m2,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 3 THEN 1 ELSE 0 END) AS m3,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 4 THEN 1 ELSE 0 END) AS m4,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 5 THEN 1 ELSE 0 END) AS m5,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 6 THEN 1 ELSE 0 END) AS m6,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 8 THEN 1 ELSE 0 END) AS m8,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 9 THEN 1 ELSE 0 END) AS m9,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 10 THEN 1 ELSE 0 END) AS m10,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 11 THEN 1 ELSE 0 END) AS m11,
+				SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 12 THEN 1 ELSE 0 END) AS m12
+			FROM girl_safe_event
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM INSERT_DATE) = #{year}
+		</if>
+			GROUP BY DIVISION, EXTRACT(year FROM INSERT_DATE)
+			ORDER BY DIVISION ASC
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getEventHwStatsListCnt" parameterType="map" resultType="String">
+			SELECT 
+				COUNT(e.DIVISION)
+			FROM (SELECT DIVISION FROM girl_safe_event GROUP BY DIVISION) AS e
+	</select>
+	
+	<select id="getLogStatsList" parameterType="map" resultType="HashMap">
+			SELECT 
+				admin_id AS label,
+				COUNT(admin_id) AS total,
+				EXTRACT(year FROM create_date) AS year,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 1 THEN 1 ELSE 0 END) AS m1,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 2 THEN 1 ELSE 0 END) AS m2,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 3 THEN 1 ELSE 0 END) AS m3,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 4 THEN 1 ELSE 0 END) AS m4,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 5 THEN 1 ELSE 0 END) AS m5,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 6 THEN 1 ELSE 0 END) AS m6,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 7 THEN 1 ELSE 0 END) AS m7,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 8 THEN 1 ELSE 0 END) AS m8,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 9 THEN 1 ELSE 0 END) AS m9,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 10 THEN 1 ELSE 0 END) AS m10,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 11 THEN 1 ELSE 0 END) AS m11,
+				SUM(CASE WHEN EXTRACT(month FROM create_date) = 12 THEN 1 ELSE 0 END) AS m12
+			FROM log
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM create_date) = #{year}
+		</if>
+			GROUP BY admin_id, EXTRACT(year FROM create_date)
+			ORDER BY admin_id ASC
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if> 
+	</select>
+	
+	<select id="getLogStatsListCnt" parameterType="map" resultType="String">
+			SELECT 
+				COUNT(e.admin_id)
+			FROM (SELECT admin_id, create_date FROM log GROUP BY admin_id) AS e
+		<if test="year != null and year != ''">
+            WHERE EXTRACT(year FROM e.create_date) = #{year}
+		</if>
+	</select>
+	
+	<select id="getEventStatsYearList" parameterType="map" resultType="HashMap">
+			SELECT EXTRACT(year FROM INSERT_DATE) AS label FROM girl_safe_event
+			GROUP BY EXTRACT(year FROM INSERT_DATE)
+	</select>
+	
+	<select id="getUserStatsYearList" parameterType="map" resultType="HashMap">
+			SELECT EXTRACT(year FROM INSERT_DATE) AS label FROM girl_safe_user
+			GROUP BY EXTRACT(year FROM INSERT_DATE)
+	</select>
+	
+	<select id="getLogStatsYearList" parameterType="map" resultType="HashMap">
+			SELECT EXTRACT(year FROM create_date) AS label FROM log
+			GROUP BY EXTRACT(year FROM create_date)
 	</select>
 </mapper>
