@@ -16,7 +16,6 @@
 						 , max(logout) logout
 						 , session_id
 						 , ip
-						 , (SELECT COUNT(*) FROM cctv_view_log l WHERE l.session_id = A.session_id) dtl_cnt
 					FROM (
 							SELECT log_no
 								 , log_type
