@@ -20,8 +20,8 @@
 	$(function() {
 		try 
 		{
-			/* var socket = io.connect('http://121.140.40.52:10023'); */
-			var socket = io.connect('http://127.0.0.1:10023');
+			var socket = io.connect('http://121.140.40.52:10027'); 
+			//var socket = io.connect('http://127.0.0.1:10027');
 			socket.on('response', function(evt) {
 				console.log('[EVENT] Event Received : ' + JSON.stringify(evt));
 				var sensorId = evt.sensorId; 

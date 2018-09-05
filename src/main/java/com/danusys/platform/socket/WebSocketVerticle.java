@@ -23,7 +23,7 @@ public class WebSocketVerticle extends DefaultEmbeddableVerticle {
 			.getLogger(WebSocketVerticle.class);
 	@Resource(name = "config")
 	private Properties config;
-	private int websocket_port = 10023;
+	private int websocket_port = 10027;
 	private SocketIOServer io;
 
 	public void start(Vertx vertx) {
@@ -36,7 +36,7 @@ public class WebSocketVerticle extends DefaultEmbeddableVerticle {
 					new Object[] {
 							this.config.getProperty("websocket_port").trim(),
 							e.getMessage() });
-			this.websocket_port = 10023;
+			this.websocket_port = 10027;
 		}
 		HttpServer server = vertx.createHttpServer();
 		logger.info(" ==== WebSocket Server Start ==== {}",
@@ -48,6 +48,7 @@ public class WebSocketVerticle extends DefaultEmbeddableVerticle {
 					
 				socket.on("msg", new Handler<JsonObject>() {
 					public void handle(JsonObject msg) {
+						System.out.println("asdfasdfasdfasd"+msg);
 						socket.emit("msg", msg);
 						WebSocketVerticle.logger.info("get message : "
 								+ msg.getString("msg"));

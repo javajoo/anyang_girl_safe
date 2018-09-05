@@ -1,6 +1,7 @@
 package com.danusys.platform.socket;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.SocketException;
@@ -24,6 +25,7 @@ import org.vertx.java.core.net.NetServer;
 import org.vertx.java.core.net.NetSocket;
 
 import com.danusys.cmm.util.CommonUtil;
+import com.danusys.cmm.util.JsonUtil;
 import com.danusys.platform.west.service.GirlSafeService;
 import com.danusys.platform.west.service.GirlSafeVO;
 
@@ -42,14 +44,14 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	private static String fclt_st_update_yn = "N";
 	@Resource(name = "config")
 	private Properties config;
-	private int event_port = 10022;
+	private int event_port = 10026;
 	@Resource(name = "webSocketVerticle")
 	private WebSocketVerticle webSocketVerticle;
 	private NetServer netServer;
 	@Autowired
     private BaseService baseService;
 	private String hostname = "127.0.0.1";//"172.20.14.6";//"211.220.152.67";
-    private int port = 9000;
+    private int port = 10021;
 
 	public void start(Vertx vertx) {
 		try {
@@ -61,7 +63,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 					new Object[] {
 							this.config.getProperty("event_port").trim(),
 							e.getMessage() });
-			this.event_port = 10022;
+			this.event_port = 10026;
 		}
 		logger.info(" ==== NetSocket Server Start ==== {}",
 				new Object[] { Integer.valueOf(this.event_port) });
@@ -77,32 +79,9 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 						
 						byte[] lengthChk = buffer.getBytes();
 						String result;
-						System.out.println(lengthChk.length);
-						if(lengthChk.length==20){
-							byte[] byteArray1 = buffer.getBytes(0,9);
-							byte[] byteArray2 = buffer.getBytes(17,19);
-							String StringMsg = buffer.getString(9,17);
-							String hexString1 = byteArrayToHex(byteArray1);
-							String hexString2 = byteArrayToHex(byteArray2);
-							result = hexString1 + StringMsg + " " + hexString2;
-							System.out.println(result);
-						}
-						else if(lengthChk.length==18){
-							byte[] byteArray1 = buffer.getBytes(0,9);
-							String StringMsg = buffer.getString(9,17);
-							String hexString1 = byteArrayToHex(byteArray1);
-							result = hexString1 + StringMsg;
-						}
-						else{
-							result = buffer.toString("UTF-8");
-						}
-						
-						//String msg = buffer.toString("UTF-8");
-						//String msg2 = buffer.toString();
-
-						// msg = msgParse(msg).toString();
+						result = buffer.toString("UTF-8");
+						System.out.println(result);
 						checkEvent(result, netSocket);
-						
 					}
 				});
 				netSocket.closeHandler(new Handler<Void>() {
@@ -128,14 +107,14 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	public String checkEvent(String msg, NetSocket netSocket) {
 		String result = "";		
 		msg = msg.replaceAll("\\r|\\n", "");
-		String checkMsg = msg.substring(0, 5);
-		if ("SAFE,".equals(checkMsg)) {
-			result = msg;
-			safeEvent(result, netSocket);
-		} 
-		else if("fe ef".equals(checkMsg)){
+		
+		if (msg.contains("SMART")) {
 			result = msg;
 			smartEvent(result, netSocket);
+		}
+		else if(msg.contains("SENSOR")){
+			result = msg;
+			sensorEvent(result, netSocket);
 		}
 		/*else {
 			System.out.println("2");
@@ -150,37 +129,25 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		netSocket.write(msg);
 	}
 	
-	public void safeEvent(String msg, NetSocket netSocket) {
+	
+	
+	public void smartEvent(String msg, NetSocket netSocket) {
 		msg.replaceAll("\\r|\\n", "");
 		String[] msgArray = msg
 				.split(",");
 		Map<String,Object> map = new HashMap<String,Object>();
-		if (msgArray.length == 6) {
+		if (msgArray.length == 3) {
 			String sensorId = msgArray[1];
-			String status = msgArray[2];
-			String bat = msgArray[3];
-			String pointY = msgArray[4];
-			String pointX = msgArray[5];
-			String[] statusArray = status.split(":");
-			String[] batArray = bat.split(":");
 			
 			map.put("sensorId", sensorId);
-			map.put("status", statusArray[1]);
-			map.put("bat", batArray[1]);
-			map.put("pointY", pointY);
-			map.put("pointX", pointX);
-			map.put("time",NowToJson());
+			map.put("division", "samrt");
+			map.put("egergency", "1");
 
 			try {
 				
-				NetSocketVerticle.this.baseService
-						.baseUpdate("girlSafe.updateSensorStat", map);
-				List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
-						.baseSelectList("girlSafe.getHwInfo",map);
-				Map<String,Object> event = CommonUtil.ListToMap(eventList);
-				event.put("time",NowToJson());
-				send(event);
-				JsonObject obj = new JsonObject(event);
+				
+				JsonObject obj = new JsonObject(map);
+				//send(obj);
 				NetSocketVerticle.logger.info(obj
 						.toString());
 
@@ -192,25 +159,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //				netSocket.write("\n");
 				NetSocketVerticle.logger
 						.info("received socket message 4: OK");
-			} catch (SocketException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 61: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (SocketTimeoutException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 62: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketTimeoutException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (Exception e) {
+			}  catch (Exception e) {
 //				netSocket.write("11111");
 //				netSocket.write("\n");
 				NetSocketVerticle.logger
@@ -288,29 +237,21 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		}
 	}
 	
-	public void smartEvent(String msg, NetSocket netSocket) {
+	public void sensorEvent(String msg, NetSocket netSocket) {
 		msg.replaceAll("\\r|\\n", "");
-		String checkMsg = UnitoStr(msg);
-		String[] msgArray = checkMsg.split(" ");
+		String[] msgArray = msg.split(",");
 		Map<String,Object> map = new HashMap<String,Object>();
 		
-		if (msgArray.length == 7) {
+		if (msgArray.length == 5) {
 			String sensorId = "";
-			String smartId = "";
 			
 			
 			try {
-				sensorId = msgArray[6];
-				smartId = msgArray[4];
+				sensorId = msgArray[1];
 				
 				map.put("sensorId", sensorId);
-				map.put("smartId", smartId);
 				map.put("emergency", "1");
 				
-				NetSocketVerticle.this.baseService
-					.baseUpdate("girlSafe.updateEmergency", map);
-				NetSocketVerticle.this.baseService
-					.baseInsert("girlSafe.insertEvent", map);
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
@@ -326,25 +267,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //				netSocket.write("\n");
 				NetSocketVerticle.logger
 						.info("received socket message 4: OK");
-			} catch (SocketException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (SocketTimeoutException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketTimeoutException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (Exception e) {
+			}  catch (Exception e) {
 //				netSocket.write("11111");
 //				netSocket.write("\n");
 				NetSocketVerticle.logger
