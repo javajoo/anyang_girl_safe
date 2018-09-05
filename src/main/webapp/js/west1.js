@@ -97,7 +97,7 @@ function createFeature(data){
 	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
 	            	bat: data.bat, emergency: data.emergency
 	            } ,
-	            {externalGraphic: iconcls, graphicHeight: 70, graphicWidth: 40, graphicXOffset:-35, graphicYOffset:-20}
+	            {externalGraphic: iconcls, graphicHeight: 30, graphicWidth: 30, graphicXOffset:-15, graphicYOffset:-15}
 	            );
 		eventLayer.addFeatures(feature);
 		//eventLayer.removeFeatures(feature);
