@@ -5,7 +5,7 @@
 <mapper namespace="log">
 	<insert id="insertLog" parameterType="map">
 		<![CDATA[
-			INSERT INTO log
+			INSERT INTO girl_safe_log
 			(
 				  log_type
 				, admin_id

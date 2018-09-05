@@ -705,7 +705,7 @@
 					  LOG_TYPE, 
 					  CONTENT, 
 					  CREATE_DATE 
-				  FROM LOG 
+				  FROM girl_safe_log 
 				  WHERE LOG_TYPE = 'ACCESSPAGE') AS l
 		<if test="year != null and year != ''">
             WHERE EXTRACT(year FROM l.CREATE_DATE) = #{year}
@@ -724,7 +724,7 @@
 					  LOG_TYPE, 
 					  CONTENT, 
 					  CREATE_DATE 
-				  FROM LOG
+				  FROM girl_safe_log
 				  WHERE LOG_TYPE = 'ACCESSPAGE'
 				  GROUP BY CONTENT, EXTRACT(year FROM CREATE_DATE)) AS e
 		<if test="year != null and year != ''">
@@ -743,7 +743,7 @@
 	</select>
 	
 	<select id="getLogStatsYearList" parameterType="map" resultType="HashMap">
-			SELECT EXTRACT(year FROM create_date) AS label FROM log
+			SELECT EXTRACT(year FROM create_date) AS label FROM girl_safe_log
 			GROUP BY EXTRACT(year FROM create_date)
 	</select>
 </mapper>

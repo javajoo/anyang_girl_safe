@@ -25,7 +25,7 @@
 								 , IF(log_type='LOGIN',date_format(create_date, '%Y-%m-%d %H:%i:%s'),'') login
 								 , IF(log_type IN ('LOGOUT','SESSIONOUT'),date_format(create_date, '%Y-%m-%d %H:%i:%s'),'') logout
 								 , ip
-							FROM log
+							FROM girl_safe_log
 							WHERE 1=1
 						 ) A
 					WHERE 1=1
@@ -68,7 +68,7 @@
 								 , session_id
 								 , IF(log_type='LOGIN',date_format(create_date, '%Y-%m-%d %H:%i:%s'),'') login
 								 , IF(log_type='LOGOUT',date_format(create_date, '%Y-%m-%d %H:%i:%s'),'') logout
-							FROM log
+							FROM girl_safe_log
 							WHERE 1=1
 						 ) A
 					WHERE 1=1
@@ -91,7 +91,7 @@
 	<!-- 로그 기록 -->
 	<insert id="logDAO.insertLog">
 		<![CDATA[
-			INSERT INTO log
+			INSERT INTO girl_safe_log
 			(
 				  log_type
 				, admin_id
