@@ -203,6 +203,7 @@
 	var facilityPopup;
 	var selectedFeature;
 	var facilitySelectControl;
+	var eventSelectControl;
 	
 	var eventPopup;
 	
@@ -294,6 +295,7 @@
 			$("#west-panel").hide();
 			changeWidth("start");
 			search_home();
+			mapInfo();
 		}
 		else if(flag == 'menu_userList') {
 			
@@ -613,6 +615,8 @@
 		map.addLayer(facilityLayer);
 		map.addLayer(selectedImageLayer);
 		
+		setEventLayerControl();
+		
 		menuDisplay('menu_home');
 		
 		$('#event_message').css('display','none');
@@ -631,40 +635,13 @@
 			"total" : 0,
 			"rows" : []
 		}); //상황처리 리스트 초기화
-		
-		setEventLayerControl();
 	}
 	
 	function setEventLayerControl() {
-		var eventSelectControl = new OpenLayers.Control.SelectFeature([eventLayer],{
-			
+		eventSelectControl = new OpenLayers.Control.SelectFeature([eventLayer],{
 		    // 벡터 아이콘 선택시, 선택된 feature를 인자로 받음
-		    onSelect: function(feature) {		
-		    	console.log(feature);
-		        var data = feature.data;
-		        var geoX = data.gpsX;
-		        var geoY= data.gpsY;
-		        
-		        if(selectedFeature != undefined) {
-		            if(selectedFeature.popup != null) {
-		                map.removePopup(selectedFeature.popup);
-		                selectedFeature.popup = null;
-		           }
-		        }
-		        
-		        divId = 'eventPopup'+Math.floor(Math.random() * 100000);
-		        // 팝업생성
-		        eventPopup = new OpenLayers.Popup.FramedCloud("chicken", 
-		            feature.geometry.getBounds().getCenterLonLat(),
-		            new OpenLayers.Size(405,330), setEventPopupUi(data),
-		            null, true, onPopupClose);
-		        eventPopup.autoSize=true;
-		        feature.popup = eventPopup;
-		        // 맵에 팝업 추가
-		        map.addPopup(eventPopup);
-		        
-		        selectedFeature = feature;
-		        
+		    onSelect: function(feature) {
+		        onEventPopup(feature);
 		        return true;
 		    },
 		    // 선택해제시
@@ -672,32 +649,26 @@
 		        if(eventPopup != undefined) {
 		            map.removePopup(eventPopup);
 		        }
-		        _selectedCtvIdn=null;
 		        return true;
-		    },
+		    }
 		 
 		});
-		 
-		// 닫기 버튼 클릭시
-		function onPopupClose(evt) {
-		    eventSelectControl.unselectAll();
-		    if(eventPopup != undefined) {
-		        map.removePopup(eventPopup);
-		    }
-		    _selectedCtvIdn=null;
-		}
-		 
+		
 		// 맵에 컨트롤 추가
 		map.addControl(eventSelectControl);
 		// 컨트롤 활성화
 		eventSelectControl.activate();
 	}
 	
-	function setEventPopupUi(data) {
-	/* 	var eventNo = data.eventNo;
-		var seqNo = data.seqNo;
-		var state = data.state;
-		var eventCont = (data.eventCont == null) ? "" : data.eventCont; */
+	function setEventPopupUi(features) {
+		var length = features.length;
+		var data = null;
+		
+		if(typeof length == "undefined") {
+			data = features.data;
+		} else {
+			data = features[0].data;
+		}
 		
 		var name = data.name;
 		var age = data.age;
@@ -705,16 +676,29 @@
 		var address = data.address;
 		var sPhoneNumber = data.sPhoneNumber;
 		
-/* 		var latitude = (typeof(data.gpsX) == "undefined") ? "0" : data.gpsX;
-		var longitude = (typeof(data.gpsY) == "undefined") ? "0" : data.gpsY;
-		var eventDe = data.eventDe; */
-		var info = ""; 
+		var info = "";
 		
-		info += "<div class='event_popup'>";
-	/* 	info += "<div class=\"event_popup_title\"><span id=\"event_popup_event_No\">" + eventNo + "</span>";
-		info += "<div id=\"event_popup_seq_no\" style=\"display:none;\">" + seqNo +"</div>";
-		info += "<div id=\"event_popup_state\" style=\"display:none;\">" + state +"</div>";
-		info += "</div>"; */
+		if (typeof length != "undefined") {
+			info += "<div class='event_popup_big'>";
+			info += "<div id=\"popup_left_area\" class=\"popup_left_area\">";
+			info += "<ul id=\"popup_list_area\" class=\"popup_list_area\">";
+				for ( var i in features) {
+					var listName = features[i].data.name;
+					if (i == 0) {
+						info += "<li><a href=\"#\" class=\"active\" onclick=\"setEventPopupValues(this)\">" + listName + "</a></li>";
+					} else {
+						info += "<li><a href=\"#\" onclick=\"setEventPopupValues(this)\">" + listName + "</a></li>";
+					}
+				}
+			info += "</ul>";
+		    info += "<div class=\"popup_bottom_area\">";
+		    info += "<p>total : " + length + "</p>";
+		    info += "</div>";
+			info += "</div>";
+		} else {
+			info += "<div class='event_popup'>";
+		}
+		info += "<div id=\"popup_right_area\" class=\"popup_right_area\">";
 		info += "<table class=\"event_popup_table\">";
 		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
 		info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
@@ -726,15 +710,11 @@
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_address\">" + address + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_sPhoneNumber\">" + sPhoneNumber + "</div></td></tr>";
-	    /* info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">발생시간</div></td>";
-	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_de\">" + eventDe + "</div></td></tr>"; */
-	    info += "</table>";
-		info += "</div>"
+	    info += "</table></div>";
+	    info += "</div>";
 		
 		return info;
 	}
-	
-	
 	
 	function buildInfoControlTextAndVectors(){
 	    var info = "<div class=\"info\">";

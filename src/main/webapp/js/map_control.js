@@ -1,3 +1,5 @@
+var nearFeatures = [];
+
 /*마우스초기화*/
 function initMouseControl(){
 	controlGroup = {
@@ -32,13 +34,197 @@ function deactivateControls() {
 	}
 }
 
-function handleSelection(event) {
-	var lonlat = map.getLonLatFromViewPortPx(event.xy);
-	console.log(lonlat);
+var onPopupClose = function() {
+	eventSelectControl.unselectAll();
+	if(eventPopup != undefined) {
+		map.removePopup(eventPopup);
+	}
+}
+
+function sortEmergengy(features) {
+	var tempFeatures = features;
+	var listArray = [];
+	
+	for (var i in tempFeatures) {
+		var data = tempFeatures[i].data;
+		var emergency = data.emergency;
+		if (emergency == 1) {
+			listArray.push(tempFeatures[i]);
+			tempFeatures.splice(i, 1);
+			continue;
+		}
+	}
+	
+	for (var i in tempFeatures) {
+		var data = tempFeatures[i].data;
+		var emergency = data.emergency;
+		listArray.push(tempFeatures[i]);
+	}
+	
+	return listArray;
+}
+
+function popupListActiveClear() {
+	var popupList = $('#popup_list_area li a');
+	popupList.each(function(index) {
+		$(this).removeClass('active');
+	});
+}
+
+function setEventPopupValues(obj) {
+	popupListActiveClear();
+	$(obj).addClass('active');
+	
+	var name = $(obj).text();
+	for ( var i in nearFeatures) {
+		var data = nearFeatures[i].data;
+		var featureName = data.name;
+		if (featureName == name) {
+			$('#event_popup_event_name').text(data.name);
+			$('#event_popup_event_age').text(data.age);
+			$('#event_popup_event_phoneNumber').text(data.phoneNumber);
+			$('#event_popup_event_address').text(data.address);
+			$('#event_popup_event_sPhoneNumber').text(data.sPhoneNumber);
+		}
+	}
+}
+
+function openFeaturePopup(feature) {
+    var data = feature.data;
+    var geoX = data.gpsX;
+    var geoY= data.gpsY;
+    
+    if(selectedFeature != undefined) {
+        if(selectedFeature.popup != null) {
+            map.removePopup(selectedFeature.popup);
+            selectedFeature.popup = null;
+       }
+    }
+    
+    eventPopup = new OpenLayers.Popup.FramedCloud("chicken", 
+        feature.geometry.getBounds().getCenterLonLat(),
+        new OpenLayers.Size(405,350), setEventPopupUi(feature),
+        null, true, onPopupClose);
+    
+    eventPopup.autoSize=true;
+    feature.popup = eventPopup;
+    
+    map.addPopup(eventPopup);
+    
+    selectedFeature = feature;
+}
+
+function openFeaturesListPopup(features) {
+	var data = features[0].data;
+    
+    if(selectedFeature != undefined) {
+        if(selectedFeature.popup != null) {
+            map.removePopup(selectedFeature.popup);
+            selectedFeature.popup = null;
+       }
+    }
+	
+    eventPopup = new OpenLayers.Popup.FramedCloud("chicken", 
+            features[0].geometry.getBounds().getCenterLonLat(),
+            new OpenLayers.Size(400,330), setEventPopupUi(features),
+            null, true, onPopupClose);
+    eventPopup.autoSize=true;
+    features[0].popup = eventPopup;
+    
+    selectedFeature = features[0];
+
+    map.addPopup(eventPopup);
+}
+
+function getSearchRange() {
+	var zoom = map.getZoom();
+	var searchRange = 0;
+	
+	switch(zoom) {
+		case 14 :
+			searchRange = 0.002;
+			break;
+		case 15 :
+			searchRange = 0.001;
+			break;
+		case 16 :
+			searchRange = 0.0005;
+			break;
+		case 17 :
+			searchRange = 0.0003;
+			break;
+		case 18 :
+			searchRange = 0.0002;
+			break;
+		case 19 :
+			searchRange = 0.00007;
+			break;
+		case 20 :
+			searchRange = 0.00005;
+			break;
+		default :
+			searchRange = 0;
+			break;
+	}
+		
+	return searchRange;
+}
+
+function getNearFeatures(point, features) {
+	var searchRange = getSearchRange();
+	var selectedFeatures = [];
+	
+	if (searchRange == 0) {
+		alert("지도를 확대하고 시도해 주시기 바랍니다.");
+		return selectedFeatures;
+	}
+	
+	var range = {
+		top: point.lat + searchRange,
+		bottom: point.lat - searchRange,
+		left: point.lon - searchRange,
+		right: point.lon + searchRange
+	}
+	
+	for (var i in features) {
+		var lat = parseFloat(features[i].data.gpsX);
+		var lon = parseFloat(features[i].data.gpsY);
+		
+		if ((range.left <= lat && range.right >= lat) &&
+				(range.bottom <= lon && range.top >= lon)) {
+			selectedFeatures.push(features[i]);
+		}
+	}
+	
+	return selectedFeatures;
+}
+
+function onEventPopup(feature) {
+	var data = feature.data;
+	var pos = {
+		lon: parseFloat(data.gpsX),
+		lat: parseFloat(data.gpsY)
+	}
+    
+    nearFeatures = getNearFeatures(pos, eventLayer.features);
+    nearFeatures = sortEmergengy(nearFeatures);
+    var length = nearFeatures.length;
+    
+    if (length == 0) {
+    	eventSelectControl.onUnselect(selectedFeature);
+    } else if (length == 1) {
+    	openFeaturePopup(nearFeatures[0]);
+    } else if (length > 1) {
+    	openFeaturesListPopup(nearFeatures);
+    }
+}
+
+function handleSelection(e) {
+	/*var lonlat = map.getLonLatFromViewPortPx(e.xy);
 	
 	var newPoint = lonlat.transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection("EPSG:4326"));
 	
-	search_castingN('map',newPoint.lat,newPoint.lon);
+	search_castingN('map',newPoint.lat,newPoint.lon);*/
 }
 
 /*이전*/
@@ -69,9 +255,10 @@ function mapZoomOut() {
 
 /*이동*/
 function mapMoveControl(){
-	deactivateControls();
+	/*deactivateControls();
 	
-	$('#map').css('cursor', 'move');
+	$('#map').css('cursor', 'move');*/
+	mapInfo();
 }
 
 /*전체영역*/
