@@ -27,6 +27,8 @@
 					WHEN '1' THEN '정상(중)'
 					WHEN '2' THEN '교체필요'
 				END as bat,
+				b.SENSOR_CONN as sensorConn,
+				b.SMART_CONN as smartConn,
 				b.BAT as chkBat,
 				b.EMERGENCY as emergency,
 				b.POINT_X as pointX,
@@ -154,6 +156,8 @@
 				b.SMART_ID as smartId,
 				b.SENSOR_ID as sensorId,
 				b.EMERGENCY as emergency,
+				b.SENSOR_CONN as sensorConn,
+				b.SMART_CONN as smartConn,
 				b.POINT_X as pointX,
 				b.POINT_Y as pointY,
 				b.M_POINT_X as mPointX,

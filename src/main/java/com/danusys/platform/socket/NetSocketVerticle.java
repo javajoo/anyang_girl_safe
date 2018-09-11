@@ -116,6 +116,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			result = msg;
 			sensorEvent(result, netSocket);
 		}
+		else if(msg.contains("CLEAR")){
+			result = msg;
+			eventClear(result, netSocket);
+		}
 		/*else {
 			System.out.println("2");
 			result = msgParseDuc(msg);
@@ -336,6 +340,56 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 						new Object[] { e.getMessage() });
 			}
 			}		
+		else {
+//			netSocket.write("11111");
+//			netSocket.write("\n");
+			NetSocketVerticle.logger
+					.info("received socket message 7: ERROR");
+		}
+	}
+	
+	
+	public void eventClear(String msg, NetSocket netSocket) {
+		msg.replaceAll("\\r|\\n", "");
+		String[] msgArray = msg.split(",");
+		Map<String,Object> map = new HashMap<String,Object>();
+		
+		if (msgArray.length == 3) {
+			String sensorId = "";
+			
+			
+			try {
+				sensorId = msgArray[0];
+				
+				map.put("sensorId", sensorId);
+				map.put("emergency", "0");
+				
+				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+						.baseSelectList("girlSafe.getHwInfo",map);
+				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
+				JsonObject obj = new JsonObject(map);
+				NetSocketVerticle.logger.info(obj
+						.toString());
+
+				NetSocketVerticle.this.webSocketVerticle
+						.getIo().sockets()
+						.emit("response", obj);
+
+//				netSocket.write("00000");
+//				netSocket.write("\n");
+				NetSocketVerticle.logger
+						.info("received socket message 4: OK");
+			}  catch (Exception e) {
+//				netSocket.write("11111");
+//				netSocket.write("\n");
+				NetSocketVerticle.logger
+						.info("received socket message 6: ERROR"
+								+ e.getMessage());
+				NetSocketVerticle.logger.error(
+						"handle Exception : {} ",
+						new Object[] { e.getMessage() });
+			}
+		}
 		else {
 //			netSocket.write("11111");
 //			netSocket.write("\n");

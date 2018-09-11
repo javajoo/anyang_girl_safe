@@ -642,6 +642,7 @@
 		    // 벡터 아이콘 선택시, 선택된 feature를 인자로 받음
 		    onSelect: function(feature) {
 		        onEventPopup(feature);
+		        
 		        return true;
 		    },
 		    // 선택해제시

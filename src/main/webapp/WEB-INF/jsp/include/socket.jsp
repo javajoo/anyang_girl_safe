@@ -20,8 +20,9 @@
 	$(function() {
 		try 
 		{
-			var socket = io.connect('http://121.140.40.52:10027'); 
-			//var socket = io.connect('http://127.0.0.1:10027');
+			//var socket = io.connect('http://121.140.40.52:10027');
+			//var socket = io.connect('http://172.20.20.107:10027');
+			var socket = io.connect('http://127.0.0.1:10027');
 			socket.on('response', function(evt) {
 				console.log('[EVENT] Event Received : ' + JSON.stringify(evt));
 				var sensorId = evt.sensorId; 
@@ -47,10 +48,22 @@
 					}
 				}).done(function (result) {
 					var audio = new Audio(contextRoot + '/sound/siren.mp3');
-					audio.play();
+					var pointX;
+					var pointY;
+					if(emergency == 1){
+						audio.play();
+					}
 					layerClean(eventLayer);
 					search_home();
-					map.setCenter(new OpenLayers.LonLat(result[0].pointX, result[0].pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+					if(result[0].sensorConn > 0){
+						pointX = result[0].pointX;
+						pointY = result[0].pointY;
+					}
+					else{
+						pointX = result[0].mPointX;
+						pointY = result[0].mPointY;
+					}
+					map.setCenter(new OpenLayers.LonLat(pointX, pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
 				}).fail(function (xhr) {
 					alert("실패");
 				}).always(function() {

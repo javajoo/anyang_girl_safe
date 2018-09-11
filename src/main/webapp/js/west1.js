@@ -80,20 +80,44 @@ function createIcon(flag){
 /*이벤트 리스트 기준 지도 표출*/
 function createFeature(data){
 	var iconcls;
+	var pointX;
+	var pointY;
 	if(eventLayer == null){
 		return;;
 	}
+	 
 	
-	if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
-		iconcls = 'images/icons/woman_nor.png';
+	if(data.sensorConn > 0){
+		pointX = data.pointX;
+		pointY = data.pointY;
+		if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
+			iconcls = 'images/icons/woman_nor.png';
+		}
+		else{
+			iconcls = 'images/icons/woman_emr.png';
+		}
 	}
 	else{
-		iconcls = 'images/icons/woman_emr.png';
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		if(data.smartConn > 0){
+			if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
+				iconcls = 'images/icons/woman_nor.png';
+			}
+			else{
+				iconcls = 'images/icons/woman_emr.png';
+			}
+		} 
+		else{
+			iconcls = 'images/icons/woman_nor.png';
+		}
 	}
-	if(data.pointY > 0){
+
+	
+	if(pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
-	            new OpenLayers.Geometry.Point(data.pointX,data.pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-	            {sensorId:data.sensorId, name:data.name, age:data.age, gpsX:data.pointX, gpsY:data.pointY, 
+	            new OpenLayers.Geometry.Point(pointX,pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
+	            {sensorId:data.sensorId, name:data.name, age:data.age, gpsX:pointX, gpsY:pointY, 
 	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
 	            	bat: data.bat, emergency: data.emergency
 	            } ,
@@ -128,16 +152,26 @@ function removeFeature(data){
 
 /*리스트 클릭 시-= 지도아이콘 표출*/
 function selectEeventMGIS(row, data){
+	var pointX;
+	var pointY;
 	layerClean(selectedImageLayer);
-	if(data.pointY > 0){
+	if(data.sensorConn > 0){
+		pointX = data.pointX;
+		pointY = data.pointY;
+	}
+	else{
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+	}
+	if(pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
-		        new OpenLayers.Geometry.Point(data.pointX,data.pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
+		        new OpenLayers.Geometry.Point(pointX,pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
 		        {} ,
 		        {externalGraphic: 'images/icons/selected.png', graphicHeight: 32, graphicWidth: 32, graphicXOffset:-16, graphicYOffset:-16  }
 		    );
 		selectedImageLayer.addFeatures(feature);
 		
-		map.setCenter(new OpenLayers.LonLat(data.pointX,data.pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+		map.setCenter(new OpenLayers.LonLat(pointX,pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
 	}
 	//else $.messager.alert("경고", "좌표값이 없습니다.",'warning');
 }
