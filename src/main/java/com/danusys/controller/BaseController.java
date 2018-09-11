@@ -10,6 +10,8 @@ import com.my.space.util.EncryptUtil;
 */
 import com.danusys.exception.BaseException;
 import com.danusys.cmm.util.CommonUtil;
+import com.danusys.sms.api.ApiClass;
+import com.danusys.sms.api.ApiResult;
 import com.danusys.cmm.util.JsonUtil;
 import com.danusys.platform.vo.AdminVo;
 import com.danusys.platform.west.service.GirlSafeVO;
@@ -25,8 +27,10 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,6 +56,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.danusys.sms.service.SmsInfoService;
+
 /*
 //  클래스  명 : BaseController
 //  클래스설명 : BaseController 클래스
@@ -66,7 +72,8 @@ public class BaseController
     /** EgovPropertyService */
     @Resource(name = "propertiesService")
     protected EgovPropertyService propertiesService;
-
+    @Resource(name="smsInfoService")
+    private SmsInfoService smsInfoService;
     /**
      * FuncName : index()
      * FuncDesc : 페이지 Action
@@ -1190,6 +1197,9 @@ public class BaseController
         	logger.error(ex.toString());
         }
     }
+    
+    
+    
 
 
 }

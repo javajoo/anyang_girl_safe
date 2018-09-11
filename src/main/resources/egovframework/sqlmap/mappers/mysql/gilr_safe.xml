@@ -40,7 +40,7 @@
 				c.S_PHONE_NUMBER as sPhoneNumber
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
-	        LEFT JOIN (select * from girl_safe_user_sub LIMIT 1) c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	     ]]> 
@@ -749,5 +749,19 @@
 	<select id="getLogStatsYearList" parameterType="map" resultType="HashMap">
 			SELECT EXTRACT(year FROM create_date) AS label FROM girl_safe_log
 			GROUP BY EXTRACT(year FROM create_date)
+	</select>
+	
+	
+	<select id="smsUser" parameterType="map" resultType="HashMap">
+		SELECT 
+			a.ENCRYPT_NAME as name,
+			c.S_ENCRYPT_NAME as sName,
+			c.S_PHONE_NUMBER sPhoneNumber,
+			b.SENSOR_CONN as sensorConn,
+			b.SMART_CONN as smartConn
+		 FROM girl_safe_user a
+		JOIN girl_safe_hw b ON a.PHONE_NUMBER = b.PHONE_NUMBER
+		JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+		WHERE b.SENSOR_ID = #{sensorId}  
 	</select>
 </mapper>

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
@@ -32,6 +33,9 @@ import com.danusys.platform.west.service.GirlSafeVO;
 
 
 import com.danusys.service.BaseService;
+import com.danusys.sms.api.ApiClass;
+import com.danusys.sms.api.ApiResult;
+import com.danusys.sms.service.SmsInfoService;
 
 import egovframework.rte.psl.dataaccess.util.EgovMap;
 
@@ -52,6 +56,8 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
     private BaseService baseService;
 	private String hostname = "127.0.0.1";//"172.20.14.6";//"211.220.152.67";
     private int port = 10021;
+    @Resource(name="smsInfoService")
+    private SmsInfoService smsInfoService;
 
 	public void start(Vertx vertx) {
 		try {
@@ -144,12 +150,12 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			String sensorId = msgArray[1];
 			
 			map.put("sensorId", sensorId);
-			map.put("division", "samrt");
+			map.put("division", "smart");
 			map.put("egergency", "1");
 
 			try {
 				
-				
+				sendSms(sensorId);
 				JsonObject obj = new JsonObject(map);
 				//send(obj);
 				NetSocketVerticle.logger.info(obj
@@ -192,6 +198,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
+				sendSms(sensorId);
 				JsonObject obj = new JsonObject(map);
 				NetSocketVerticle.logger.info(obj
 						.toString());
@@ -259,6 +266,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
+				sendSms(sensorId);
 				JsonObject obj = new JsonObject(map);
 				NetSocketVerticle.logger.info(obj
 						.toString());
@@ -472,5 +480,84 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
         
         return map;
     }
+	
+	private Map<String, Object> sendSms(String hwId) throws IOException{
+		Random random = new Random();
+		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> map_ret = new HashMap<String, Object>();
+		Map<String, Object> param = new HashMap<String, Object>();
+		List<Map<String, Object>> info =  new ArrayList<Map<String, Object>>();    	
+    	param.put("sensorId",hwId);
+    	info = baseService.baseSelectList("girlSafe.smsUser", param);
+    	
+    	result = info.get(0);
+    	String name = (String)result.get("name");
+    	String smsCd = String.valueOf(random.nextInt());
+		char pSmsState = 'Y';
+		String content = name+"님 센서에 침입 감지가 되었습니다.";
+    	String sesUserId = "admin";
+    	String rcvId = (String)result.get("sName");
+    	String rcvMobl = (String)result.get("sPhoneNumber");
+    	
+    	
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("SMS_CD", smsCd);
+		map.put("SMS_STATE", pSmsState);
+		map.put("CONTENT", content);
+		map.put("SEND_ID", sesUserId);
+		map.put("RCV_ID", rcvId);
+		map.put("RCV_MOBL", rcvMobl);
+		//map.put("UPD_USER_ID", sesUserId);
+		
+		logger.debug(" ===== send() map >>>>> {}", new Object[] { map });
+		try
+		{		  
+			String api_id = "danu";
+			String api_key = "6fdc23b16b34710e772458a75e35e501";	// 환결설정에서 확인 가능한 SMS API KEY
+
+			ApiClass api = new ApiClass(api_id, api_key);
+			String _UNIQUE_KEY_ = api.getNonce();
+			String _CALLBACK_NUM_ = "070-7167-0747";
+			String _PHONE_NUM_ = rcvMobl;
+			System.out.println("============_UNIQUE_KEY_: "+_UNIQUE_KEY_);
+
+			// 단문 발송 테스트
+			String arr[] = new String[7];
+			arr[0] = "sms";								// 발송 타입 sms or lms
+			arr[1] = _UNIQUE_KEY_;				// 결과 확인을 위한 KEY ( 중복되지 않도록 생성하여 전달해 주시기 바랍니다. )
+			arr[2] = "_TITLE_";							//  LMS 발송시 제목으로 사용 SMS 발송시는 수신자에게 내용이 보이지 않음.
+			arr[3] = content; //"_MESSAGE_";					// 본문 (90byte 제한)
+			arr[4] = _CALLBACK_NUM_;			// 발신 번호
+			arr[5] = _PHONE_NUM_;				// 수신 번호
+			arr[6] = "0";									//예약 일자 "2013-07-30 12:00:00" 또는 "0" 0또는 빈값(null)은 즉시 발송 
+			
+			String responseXml = api.send(arr);
+			System.out.println("response xml : \n" + responseXml);
+			
+			ApiResult res = api.getResult(responseXml);
+			System.out.println(" ===== result : code["+res.getCode()+"], msg["+res.getMesg()+"]");
+			if(res.getCode().compareTo("0000")!=0){
+				System.out.println(res.getMesg());
+			    map_ret.put("session", Integer.valueOf(0));
+			    map_ret.put("msg", res.getMesg());
+			}else{
+				this.smsInfoService.send(map);
+			    map_ret.put("session", Integer.valueOf(1));
+			    map_ret.put("msg", "발송이 완료되었습니다.");
+			}
+		    System.out.println("=======================================================");
+		}
+		catch (DataIntegrityViolationException e)
+		{
+			logger.error("update DataIntegrityViolationException : {}", new Object[] { e.getMessage() });
+		}		  
+    	catch (Exception e)
+    	{
+    		map_ret.put("session", Integer.valueOf(0));
+    		map_ret.put("msg", "알수 없는 에러입니다.");
+    		this.logger.error("update Exception : {}", new Object[] { e.getMessage() });
+    	} 
+      return map_ret;
+	}
 
 }
