@@ -448,3 +448,151 @@
     color: white;
 }
 
+
+.popup_list_condi, .popup_list_condi_sms {
+	font-family: 'nanum-barun-gothic-regular';
+}
+
+.popup_list_condi .list {
+	margin: 10px 0 0 0;
+	float: left;
+	width: 95%;
+	height: 30px;
+	padding: 0 13px;
+}
+
+.popup_list_condi_sms .list {
+	margin: 10px 0 0 0;
+	float: left;
+	width: 95%;
+	padding: 0 13px;
+}
+
+.popup_list_title, .popup_list_title_full {
+	background-color: #555555;
+	text-align: center;
+	height: 30px;
+	color: #ffffff;
+	float: left;
+	line-height: 30px;
+}
+
+.popup_list_title {
+	width: 66px;
+}
+
+.popup_list_cont_harf {
+	width: 50%;
+	float: left;
+	text-align: center;
+}
+
+.list_padding {
+	padding: 10px 0;
+}
+
+.popup_list_title_full {
+	width: 100%;
+}
+
+.popup_list_cont, .popup_list_cont_full {
+	text-align: center;
+	float: right;
+}
+
+.popup_list_cont {
+	width: 288px;
+	height: 30px;
+}
+
+.popup_list_cont_full {
+	width: 99.44%;
+}
+
+.popup_list_cont_full2 {
+	width: 99.44%;
+	float: left;
+	text-align: center;
+}
+
+.list_border {
+	border: 1px solid;
+}
+
+.popup_list_cont_full a {
+	float: left;
+	width: 90.21%;
+}
+
+.popup_list_cont input, .popup_list_cont select {
+	width: 97%;
+	height: 28px;
+	height: -webkit-calc(26px);
+	height: -moz-calc(26px);
+	text-align: center;
+}
+
+.popup_list_cont_full2 input[type="text"] {
+	height: 25px;
+	height: -webkit-calc(25px);
+	height: -moz-calc(25px);
+	text-align: center;
+	float: left;
+	margin: 0 13px 0 13px;
+}
+
+.popup_list_cont_full2 a {
+	text-align: center;
+	float: left;
+}
+
+.popup_list_btn_full {
+	width: 100%;
+	float: left;
+	margin: 10px 0 0 0;
+	text-align: center;
+}
+
+.cont_box {
+	border: 1px #555555 solid;
+	float: left;
+}
+
+.cont_box img {
+	display: none;
+	float: left;
+}
+
+.cont_box_inner {
+	padding: 116px 140.2px;
+	float: left;
+	text-align: center;
+	cursor: pointer;
+  	-webkit-touch-callout: none; /* iOS Safari */
+  	-webkit-user-select: none; /* Safari */
+  	-khtml-user-select: none; /* Konqueror HTML */
+  	-moz-user-select: none; /* Firefox */
+  	-ms-user-select: none; /* Internet Explorer/Edge */
+  	user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.popup_list_ty_full {
+	float: left;
+	width: 100%;
+	padding: 1% 0 0 0;
+}
+
+.popup_list_ty_full .btn_list {
+	margin: 10px 0 0 0;
+	text-align: center;
+}
+
+.cont_wrap_border {
+	width: 100%;
+	height: 100%;
+	border: 1px solid;
+	line-height: 30px;
+	text-align: center;
+}
+

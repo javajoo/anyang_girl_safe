@@ -35,12 +35,15 @@
 				</table>
 			</li>
 			<li class="btn_list">
-				<a href="#" id="approval_button" class="eventR_button_list" onclick="approval()">승인</a>
+				<a href="#" id="approval_button" class="eventR_button_list" onclick="onAddUserPopup()">추가</a>
 			</li>
 		</ul>
 	</div>
 </div>
 <script>
+
+var selectedData;
+
 $(document).ready(function(){
 	$('#search_eventR_timeS').datebox({
 		requeired:true
@@ -78,7 +81,7 @@ $(document).ready(function(){
 	    }]
 	});
 	
-	$("#approval_box").combobox({
+	/* $("#approval_box").combobox({
 		valueField:'value',
 	    textField:'label',
 	    data: [{
@@ -93,7 +96,7 @@ $(document).ready(function(){
 	    	label: '미승인',
 	    	value: 'N'
 	    }]
-	});
+	}); */
 	
 	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
 	$('.datebox').removeClass("datebox").addClass("datebox-black");
@@ -102,6 +105,40 @@ $(document).ready(function(){
 	
 	reload();
 });
+
+function clearPopup() {
+	$('#user_sensor_box').val('');
+	$('#user_smart_box').val('');
+	$('#user_name_box').val('');
+	$('#user_age_box').val('');
+	$('#user_address_box').val('');
+	$('#user_phone_box').val('');
+	$('#user_update_btn').css('display', 'inline-block');
+	$('#user_save_btn').css('display', 'none');
+}
+
+function onAddUserPopup() {
+	var page = '/popup/user_popup'; 
+    $("#popup_area").html("");
+    $("#popup_area").load("/action/page.do", { path : page }, function() {
+    	
+    });
+    
+    $('#popup_area').dialog({
+        title: '사용자 신규 등록',
+        width: 400,
+        height: 340,
+        closed: false,
+        cache: false,
+        modal: true,
+		onClose: function() {
+			selectedData = '';
+			clearPopup();
+		}
+    });
+    $('#popup_area').dialog('open');
+}
+
 function approval(){
 	var row = $('#userApprovalList_table').datagrid('getSelected');
 	if (row){
@@ -138,13 +175,58 @@ function approval(){
         });
 	}
 }
+
+function onUserDetailPopup(row) {
+	var page = '/popup/user_popup'; 
+    $("#popup_area").html("");
+    $("#popup_area").load("/action/page.do", { path : page }, function() {
+    	
+    });
+
+	const jsonObj = {};
+    jsonObj.phoneNumber = row.phoneNumber;
+
+    $.ajax(
+        {
+            type       : "POST",
+            url        : "/select/girlSafe.getUser/action.do",
+            dataType   : "json",
+            data       : {
+                "param" : JSON.stringify(jsonObj)
+            },
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (data) {
+        	selectedData = data;
+            $('#popup_area').dialog({
+                title: '사용자 상세 정보',
+                width: 400,
+                height: 340,
+                closed: false,
+                cache: false,
+                modal: true,
+        		onClose: function() {
+        			selectedData = '';
+        			clearPopup();
+        		}
+            });
+            $('#popup_area').dialog('open');
+    }).fail(function (xhr) {
+        alert("수정 실패");
+    }).always(function() {
+
+    });
+}
+
 function reload(){
 	const jsonObj = {};
 	jsonObj.eventDeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
 	jsonObj.eventDeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.totSearch = $("#search_eventR_tot").val();
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
-	jsonObj.approval = $("#approval_box").combobox('getValue');
+	// jsonObj.approval = $("#approval_box").combobox('getValue');
 	$('#userApprovalList_table').datagrid({
 	    url:'/selectList/girlSafe.getUserList/action.do',
 	    pagination:true,
@@ -164,6 +246,9 @@ function reload(){
 			{field:'sensorId',title:'단말기번호',width:'15%',align:'center'},
 			{field:'approval',title:'승인여부',width:'15%',align:'center'}
 	    ]],
+	    onDblClickRow:function(index, row) {
+	    	onUserDetailPopup(row);
+	    },
 	    onLoadSuccess:function(data){
 			if($('#userApprovalList_table').datagrid('getData').rows=='sessionOut'){
 				sCnt++;

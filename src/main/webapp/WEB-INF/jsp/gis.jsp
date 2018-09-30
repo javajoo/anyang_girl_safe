@@ -1076,7 +1076,7 @@
 					    <ul class="gnb_ul">
 					    	<li><a id="topmenu_home" href="javascript:menuDisplay('menu_home')" class="selected">HOME</a></li>
 					    	<li><a id="topmenu_userList" href="javascript:menuDisplay('menu_userList')">가입자 현황</a></li>
-					    	<li><a id="topmenu_userList" href="javascript:menuDisplay('menu_approvalList')">가입자 승인 현황</a></li>
+					    	<li><a id="topmenu_userList" href="javascript:menuDisplay('menu_approvalList')">가입자 관리</a></li>
 							<li><a id="topmenu_eventSearch" href="javascript:menuDisplay('menu_evnetList')">이벤트 검색</a></li>
 							<li><a id="topmenu_hwCheck" href="javascript:menuDisplay('menu_hwStatus')">단말 상태 체크</a></li>
 							<li><a id="topmenu_statistics" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
@@ -1244,6 +1244,9 @@
 	
 	<div class="account_setting">
 		<span id="logout" class="logout"><a href="javascript:logout()">Logout</a></span>
+	</div>
+	
+	<div id="popup_area" style="display:none;">
 	</div>
 	
 	
