@@ -206,7 +206,7 @@
 			#{age},
 			#{name},
 			#{address},
-			'Y',
+			'N',
 			NOW(),
 			NOW()
 		)
@@ -246,6 +246,8 @@
 			EMERGENCY,
 			SMART_CONN,
 			SENSOR_CONN,
+			STATUS_TIME,
+			SENSOR_ACTION,
 			INSERT_DATE,
 			UPDATE_DATE
 		) VALUES (
@@ -257,6 +259,8 @@
 			0,
 			0,
 			0,
+			10,
+			1,
 			NOW(),
 			NOW()
 		)
