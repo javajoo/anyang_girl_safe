@@ -57,6 +57,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.danusys.sms.service.SmsInfoService;
+import com.danusys.cmm.util.AES128;
 
 /*
 //  클래스  명 : BaseController
@@ -383,13 +384,26 @@ public class BaseController
         {
         	System.out.println("어디");
            param = new HashMap<String, Object>();
+           try {
+			AES128.encAES((String)param.get("123"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         }
         else
         {
         	System.out.println("타니");
             param = JsonUtil.JsonToMap(request.getParameter("param"));
+            try {
+				AES128.encAES((String)param.get("123"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }        
         System.out.println("파라미터 " + param);
+        
         /** EgovPropertyService.sample */
         vo.setPageUnit(propertiesService.getInt("pageUnit"));
         //vo.setPageSize(propertiesService.getInt("pageSize")); //공통 아닌 파라미터로 가져오기

@@ -17,11 +17,11 @@ import org.apache.commons.codec.binary.Base64;
 
 public class AES128
 {
-	public Key getAESKey() throws Exception {
+	public static Key getAESKey() throws Exception {
 	    String iv;
 	    Key keySpec;
 
-	    String key = "1234567890123456";
+	    String key = "aycctv!1808";
 	    iv = key.substring(0, 16);
 	    byte[] keyBytes = new byte[16];
 	    byte[] b = key.getBytes("UTF-8");
@@ -38,7 +38,7 @@ public class AES128
 	}
 
 	// 암호화
-	public String encAES(String str) throws Exception {
+	public static String encAES(String str) throws Exception {
 	    Key keySpec = getAESKey();
 	    Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	    c.init(Cipher.ENCRYPT_MODE, keySpec);

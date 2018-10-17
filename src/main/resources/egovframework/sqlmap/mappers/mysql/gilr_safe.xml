@@ -40,7 +40,7 @@
 				c.S_PHONE_NUMBER as sPhoneNumber
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
-	        JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	     ]]>
@@ -106,7 +106,7 @@
 				COUNT(*)
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
-	        LEFT JOIN (select * from girl_safe_user_sub LIMIT 1) c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        WHERE 1=1
 	     ]]>
 		<if test="approval != null and approval != ''">
@@ -909,16 +909,38 @@
 
 	<select id="smsUser" parameterType="map" resultType="HashMap">
 		SELECT
-		a.ENCRYPT_NAME as name,
-		c.S_ENCRYPT_NAME as sName,
-		c.S_PHONE_NUMBER sPhoneNumber,
-		b.SENSOR_CONN as sensorConn,
-		b.SMART_CONN as smartConn
+			a.ENCRYPT_NAME as name,
+			c.S_ENCRYPT_NAME as sName,
+			c.S_PHONE_NUMBER as sPhoneNumber,
+			b.SENSOR_CONN as sensorConn,
+			b.SMART_CONN as smartConn
 		FROM girl_safe_user a
-		JOIN girl_safe_hw b ON a.PHONE_NUMBER =
-		b.PHONE_NUMBER
-		JOIN girl_safe_user_sub c ON a.PHONE_NUMBER =
-		c.PHONE_NUMBER
+		JOIN girl_safe_hw b ON a.PHONE_NUMBER =	b.PHONE_NUMBER
+		JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+		WHERE b.SENSOR_ID = #{sensorId}
+	</select>
+	
+	<select id="getEvent" parameterType="map" resultType="HashMap">
+		SELECT
+			a.ENCRYPT_NAME as name,
+			a.PHONE_NUMBER as phoneNumber,
+			a.ENCRYPT_ADRES as adres,
+			a.AGE as age,
+			b.POINT_X as pointX,
+			b.POINT_Y as pointY,
+			b.M_POINT_X as mPointX,
+			b.M_POINT_Y as mPointY,
+			b.SENSOR_CONN as sensorConn,
+			b.SMART_CONN as smartConn,
+			b.EMERGENCY as emergency,
+			c.S_ENCRYPT_NAME as sName,
+			c.S_PHONE_NUMBER as sPhoneNumber,
+			c.S_ENCRYPT_ADRES as sAdres,
+			c.RELATIONS as realation,
+			now() as time
+		FROM girl_safe_user a
+		JOIN girl_safe_hw b ON a.PHONE_NUMBER = b.PHONE_NUMBER
+		JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 		WHERE b.SENSOR_ID = #{sensorId}
 	</select>
 </mapper>

@@ -246,6 +246,7 @@ function setEmergencyControl(data) {
         eventPopup.autoSize=true;
         // 맵에 팝업 추가
         map.addPopup(eventPopup);
+        map.setCenter(centerLonlat, 14);
         
         return true;
 

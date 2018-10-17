@@ -509,6 +509,7 @@
 		//위경도 시
 		// var centerLonlat = new OpenLayers.LonLat(128.980592, 35.21242);
 		//var centerLonlat = new OpenLayers.LonLat(127.099098, 37.411375);
+		
 		var centerLonlat = new OpenLayers.LonLat(126.959082, 37.390032);
 		centerLonlat.transform(new OpenLayers.Projection("EPSG:4326"),
 				new OpenLayers.Projection("EPSG:900913"));

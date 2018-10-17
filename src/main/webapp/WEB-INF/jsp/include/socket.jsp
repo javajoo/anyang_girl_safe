@@ -22,11 +22,12 @@
 		{
 			//var socket = io.connect('http://121.140.40.52:10027');
 			//var socket = io.connect('http://172.20.20.107:10027');
-			var socket = io.connect('http://127.0.0.1:10027');
+			//var socket = io.connect('http://127.0.0.1:10027');
+			var socket = io.connect('http://58.76.192.101:10027');
 			socket.on('response', function(evt) {
 				console.log('[EVENT] Event Received : ' + JSON.stringify(evt));
 				var sensorId = evt.sensorId; 
-				var emergency = evt.emergency;
+				
 				
 
 				var sPath = window.location.pathname;
@@ -50,7 +51,7 @@
 					var audio = new Audio(contextRoot + '/sound/siren.mp3');
 					var pointX;
 					var pointY;
-					if(emergency == 1){
+					if(result[0].emergency == 1){
 						audio.play();
 					}
 					layerClean(eventLayer);

@@ -100,7 +100,7 @@ function openFeaturePopup(feature) {
             selectedFeature.popup = null;
        }
     }
-    
+
     eventPopup = new OpenLayers.Popup.FramedCloud("chicken", 
         feature.geometry.getBounds().getCenterLonLat(),
         new OpenLayers.Size(405,350), setEventPopupUi(feature),

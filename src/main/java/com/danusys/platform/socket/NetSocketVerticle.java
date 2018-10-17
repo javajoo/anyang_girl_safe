@@ -54,8 +54,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	private NetServer netServer;
 	@Autowired
     private BaseService baseService;
-	private String hostname = "127.0.0.1";//"172.20.14.6";//"211.220.152.67";
-    private int port = 10021;
+	private String smsServer = "127.0.0.1";//"172.20.14.6";//"211.220.152.67";
+    private int sms_port = 10021;
+    private String gisServer = "58.76.192.7";//"172.20.14.6";//"211.220.152.67";
+    private int gisPort = 9000;
     @Resource(name="smsInfoService")
     private SmsInfoService smsInfoService;
 
@@ -139,6 +141,79 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		netSocket.write(msg);
 	}
 	
+//	public void testGis(String msg, NetSocket netSocket) {
+//		Map<String,Object> map = new HashMap<String,Object>();
+//	    String[] msgArray = msg
+//	      .split(":");
+//	    SimpleDateFormat sf = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss");
+//	    String rslt = sf.format(new Date());
+//	    String pointX = "126.953631";
+//	    String pointY = "37.387792";
+//	    String name = "홍길동";
+//	    String phoneNumber = "01012345678";
+//	    String address = "주소입니다.";
+//	    String age = "30";
+//	    String protName = "활빈당";
+//	    String protPhoneNumber = "01045678901";
+//	    String protAddress = "보호자 주소입니다.";
+//	    String protRelation = "보호자 관계";
+//	    String time = rslt;
+//	    String endYN = msgArray[1];
+//	    String serviceType = msgArray[0];
+//	    String driverKind = "0";
+//	    String type = "112";
+//	    String aptName = "푸르지오아파트1단지";
+//	    String carNumber = "65허1234";
+//	    String purpose = "스토커";
+//
+//	    if ("G".equals(msgArray[0])) {
+//	      map.put("pointX", pointX);
+//	      map.put("pointY", pointY);
+//	      map.put("name", name);
+//	      map.put("phoneNumber", phoneNumber);
+//	      map.put("address", address);
+//	      map.put("age", age);
+//	      map.put("protName", protName);
+//	      map.put("protPhoneNumber", protPhoneNumber);
+//	      map.put("protAddress", protAddress);
+//	      map.put("protRelation", protRelation);
+//	      map.put("time", time);
+//	      map.put("endYN", endYN);
+//	      map.put("serviceType", serviceType);
+//	      send(map);
+//	    }
+//	    else if ("T".equals(msgArray[0])) {
+//	      map.put("pointX", pointX);
+//	      map.put("pointY", pointY);
+//	      map.put("name", name);
+//	      map.put("phoneNumber", phoneNumber);
+//	      map.put("driverKind", driverKind);
+//	      map.put("type", type);
+//	      map.put("time", time);
+//	      map.put("endYN", endYN);
+//	      map.put("serviceType", serviceType);
+//	      send(map);
+//	    }
+//	    else if ("P".equals(msgArray[0])) {
+//	      map.put("pointX", pointX);
+//	      map.put("pointY", pointY);
+//	      map.put("name", name);
+//	      map.put("phoneNumber", phoneNumber);
+//	      map.put("address", address);
+//	      map.put("aptName", aptName);
+//	      map.put("carNumber", carNumber);
+//	      map.put("purpose", purpose);
+//	      map.put("protName", protName);
+//	      map.put("protPhoneNumber", protPhoneNumber);
+//	      map.put("protAddress", protAddress);
+//	      map.put("protRelation", protRelation);
+//	      map.put("time", time);
+//	      map.put("endYN", endYN);
+//	      map.put("serviceType", serviceType);
+//	      send(map);
+//	    }
+//	  }
+//	
 	
 	
 	public void smartEvent(String msg, NetSocket netSocket) {
@@ -146,16 +221,20 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		String[] msgArray = msg
 				.split(",");
 		Map<String,Object> map = new HashMap<String,Object>();
+		String sensorId = msgArray[1];
+		
+		map.put("sensorId", sensorId);
+		List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+				.baseSelectList("girlSafe.getEvent",map);
 		if (msgArray.length == 3) {
-			String sensorId = msgArray[1];
 			
-			map.put("sensorId", sensorId);
 			map.put("division", "smart");
-			map.put("egergency", "1");
+			map.put("emergency", "1");
 
 			try {
 				
-				sendSms(sensorId);
+				//sendSms(eventList);
+				sendGis(eventList);
 				JsonObject obj = new JsonObject(map);
 				//send(obj);
 				NetSocketVerticle.logger.info(obj
@@ -180,66 +259,64 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 						new Object[] { e.getMessage() });
 			}
 		}
-		else if(msgArray.length == 5){
-			String sensorId = msgArray[1];
-			String pointY = msgArray[3];
-			String pointX = msgArray[4];
-			
-			map.put("sensorId", sensorId);
-			map.put("emergency", "1");
-			map.put("pointY", pointY);
-			map.put("pointX", pointX);
-			try {
-			
-				NetSocketVerticle.this.baseService
-						.baseUpdate("girlSafe.updateEmergency", map);
-				NetSocketVerticle.this.baseService
-						.baseInsert("girlSafe.insertEvent", map);
-				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
-						.baseSelectList("girlSafe.getHwInfo",map);
-				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
-				sendSms(sensorId);
-				JsonObject obj = new JsonObject(map);
-				NetSocketVerticle.logger.info(obj
-						.toString());
-
-				NetSocketVerticle.this.webSocketVerticle
-						.getIo().sockets()
-						.emit("response", obj);
-
-//				netSocket.write("00000");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 4: OK");
-			} catch (SocketException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (SocketTimeoutException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketTimeoutException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (Exception e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle Exception : {} ",
-						new Object[] { e.getMessage() });
-			}
-		}
+//		else if(msgArray.length == 5){
+//			String pointY = msgArray[3];
+//			String pointX = msgArray[4];
+//			
+//			map.put("emergency", "1");
+//			map.put("pointY", pointY);
+//			map.put("pointX", pointX);
+//			try {
+//			
+//				NetSocketVerticle.this.baseService
+//						.baseUpdate("girlSafe.updateEmergency", map);
+//				NetSocketVerticle.this.baseService
+//						.baseInsert("girlSafe.insertEvent", map);
+//				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+//						.baseSelectList("girlSafe.getHwInfo",map);
+//				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
+//				sendSms(eventList);
+//				JsonObject obj = new JsonObject(map);
+//				NetSocketVerticle.logger.info(obj
+//						.toString());
+//
+//				NetSocketVerticle.this.webSocketVerticle
+//						.getIo().sockets()
+//						.emit("response", obj);
+//
+////				netSocket.write("00000");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 4: OK");
+//			} catch (SocketException e) {
+////				netSocket.write("11111");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 6: ERROR"
+//								+ e.getMessage());
+//				NetSocketVerticle.logger.error(
+//						"handle SocketException : {} ",
+//						new Object[] { e.getMessage() });
+//			} catch (SocketTimeoutException e) {
+////				netSocket.write("11111");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 6: ERROR"
+//								+ e.getMessage());
+//				NetSocketVerticle.logger.error(
+//						"handle SocketTimeoutException : {} ",
+//						new Object[] { e.getMessage() });
+//			} catch (Exception e) {
+////				netSocket.write("11111");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 6: ERROR"
+//								+ e.getMessage());
+//				NetSocketVerticle.logger.error(
+//						"handle Exception : {} ",
+//						new Object[] { e.getMessage() });
+//			}
+//		}
 		else {
 //			netSocket.write("11111");
 //			netSocket.write("\n");
@@ -252,21 +329,19 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		msg.replaceAll("\\r|\\n", "");
 		String[] msgArray = msg.split(",");
 		Map<String,Object> map = new HashMap<String,Object>();
+		String sensorId = msgArray[1];
 		
+		map.put("sensorId", sensorId);
+		List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+				.baseSelectList("girlSafe.getEvent",map);
 		if (msgArray.length == 5) {
-			String sensorId = "";
-			
-			
 			try {
-				sensorId = msgArray[1];
-				
-				map.put("sensorId", sensorId);
 				map.put("emergency", "1");
-				
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
-				sendSms(sensorId);
+				//sendSms(eventList);
+				sendGis(eventList);
 				JsonObject obj = new JsonObject(map);
 				NetSocketVerticle.logger.info(obj
 						.toString());
@@ -290,64 +365,64 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 						new Object[] { e.getMessage() });
 			}
 		}
-		else if(msgArray.length > 7){
-			String smartId = msgArray[4];
-			String sensorId = msgArray[6];
-			String status = Integer.toString(Integer.parseInt(msgArray[7],16));
-			String bat = Integer.toString(Integer.parseInt(msgArray[8],16));
-		
-			map.put("smartId", smartId);
-			map.put("sensorId", sensorId);
-			map.put("status", status);
-			map.put("bat", bat);
-			try {
-				NetSocketVerticle.this.baseService
-				.baseUpdate("girlSafe.updateSensorStat", map);
-				List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
-				.baseSelectList("girlSafe.getHwInfo",map);
-				Map<String,Object> event = CommonUtil.ListToMap(eventList);
-				
-				JsonObject obj = new JsonObject(event);
-				NetSocketVerticle.logger.info(obj
-						.toString());
-
-				NetSocketVerticle.this.webSocketVerticle
-						.getIo().sockets()
-						.emit("response", obj);
-
-//				netSocket.write("00000");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 4: OK");
-			} catch (SocketException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (SocketTimeoutException e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle SocketTimeoutException : {} ",
-						new Object[] { e.getMessage() });
-			} catch (Exception e) {
-//				netSocket.write("11111");
-//				netSocket.write("\n");
-				NetSocketVerticle.logger
-						.info("received socket message 6: ERROR"
-								+ e.getMessage());
-				NetSocketVerticle.logger.error(
-						"handle Exception : {} ",
-						new Object[] { e.getMessage() });
-			}
-			}		
+//		else if(msgArray.length > 7){
+//			String smartId = msgArray[4];
+//			sensorId = msgArray[6];
+//			String status = Integer.toString(Integer.parseInt(msgArray[7],16));
+//			String bat = Integer.toString(Integer.parseInt(msgArray[8],16));
+//		
+//			map.put("smartId", smartId);
+//			map.put("sensorId", sensorId);
+//			map.put("status", status);
+//			map.put("bat", bat);
+//			try {
+//				NetSocketVerticle.this.baseService
+//				.baseUpdate("girlSafe.updateSensorStat", map);
+////				List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+////				.baseSelectList("girlSafe.getHwInfo",map);
+////				Map<String,Object> event = CommonUtil.ListToMap(eventList);
+//				
+//				JsonObject obj = new JsonObject(map);
+//				NetSocketVerticle.logger.info(obj
+//						.toString());
+//
+//				NetSocketVerticle.this.webSocketVerticle
+//						.getIo().sockets()
+//						.emit("response", obj);
+//
+////				netSocket.write("00000");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 4: OK");
+//			} catch (SocketException e) {
+////				netSocket.write("11111");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 6: ERROR"
+//								+ e.getMessage());
+//				NetSocketVerticle.logger.error(
+//						"handle SocketException : {} ",
+//						new Object[] { e.getMessage() });
+//			} catch (SocketTimeoutException e) {
+////				netSocket.write("11111");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 6: ERROR"
+//								+ e.getMessage());
+//				NetSocketVerticle.logger.error(
+//						"handle SocketTimeoutException : {} ",
+//						new Object[] { e.getMessage() });
+//			} catch (Exception e) {
+////				netSocket.write("11111");
+////				netSocket.write("\n");
+//				NetSocketVerticle.logger
+//						.info("received socket message 6: ERROR"
+//								+ e.getMessage());
+//				NetSocketVerticle.logger.error(
+//						"handle Exception : {} ",
+//						new Object[] { e.getMessage() });
+//			}
+//			}		
 		else {
 //			netSocket.write("11111");
 //			netSocket.write("\n");
@@ -361,20 +436,22 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		msg.replaceAll("\\r|\\n", "");
 		String[] msgArray = msg.split(",");
 		Map<String,Object> map = new HashMap<String,Object>();
-		
+		String sensorId = msgArray[0];
+		map.put("sensorId", sensorId);
+		List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+				.baseSelectList("girlSafe.getHwInfo",map);
 		if (msgArray.length == 3) {
-			String sensorId = "";
+			
 			
 			
 			try {
-				sensorId = msgArray[0];
 				
-				map.put("sensorId", sensorId);
 				map.put("emergency", "0");
 				
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
+				sendGis(eventList);
 				JsonObject obj = new JsonObject(map);
 				NetSocketVerticle.logger.info(obj
 						.toString());
@@ -434,21 +511,27 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	    return sb.toString();
 	}
 	
-	private void send(Object msg){
-    	ObjectMapper objectMapper = new ObjectMapper();
+	private void sendSms(List<Map<String,Object>> eventList){
+    	
     	Socket socket = null;
     	BufferedWriter oos = null;
     	try{ // 서버가 가동되지 않는 환경에서는 막아둘 것
-    		
-        	socket = new Socket(hostname , port);
-        	
-        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
-
-        	String value = objectMapper.writeValueAsString(msg);
-        	value = new String(value.getBytes("utf-8"), "utf-8");
-			oos.write(value+"\0\n"+null);
-			oos.flush();
-			oos.close();
+    		Map<String, Object> result = new HashMap<String, Object>();
+    		String msg;
+        	if(result.get("sPhoneNumber") != null){
+	        	result = eventList.get(0);
+	        	String name = (String)result.get("name");
+	        	String content = name+"님 센서에 침입 감지가 되었습니다.";
+	        	String rcvId = (String)result.get("sName");
+		    	String rcvMobl = (String)result.get("sPhoneNumber");
+	        	socket = new Socket(smsServer , sms_port);
+	        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
+	        	msg = "SAF,"+name+","+content+","+rcvId+","+rcvMobl;
+	        	
+	        	oos.write(msg);
+				oos.flush();
+				oos.close();
+        	}
     	}catch(Exception exx){
     		exx.printStackTrace();
     	}finally{
@@ -481,83 +564,186 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
         return map;
     }
 	
-	private Map<String, Object> sendSms(String hwId) throws IOException{
-		Random random = new Random();
-		Map<String, Object> result = new HashMap<String, Object>();
-		Map<String, Object> map_ret = new HashMap<String, Object>();
-		Map<String, Object> param = new HashMap<String, Object>();
-		List<Map<String, Object>> info =  new ArrayList<Map<String, Object>>();    	
-    	param.put("sensorId",hwId);
-    	info = baseService.baseSelectList("girlSafe.smsUser", param);
-    	
-    	result = info.get(0);
-    	String name = (String)result.get("name");
-    	String smsCd = String.valueOf(random.nextInt());
-		char pSmsState = 'Y';
-		String content = name+"님 센서에 침입 감지가 되었습니다.";
-    	String sesUserId = "admin";
-    	String rcvId = (String)result.get("sName");
-    	String rcvMobl = (String)result.get("sPhoneNumber");
-    	
-    	
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("SMS_CD", smsCd);
-		map.put("SMS_STATE", pSmsState);
-		map.put("CONTENT", content);
-		map.put("SEND_ID", sesUserId);
-		map.put("RCV_ID", rcvId);
-		map.put("RCV_MOBL", rcvMobl);
-		//map.put("UPD_USER_ID", sesUserId);
-		
-		logger.debug(" ===== send() map >>>>> {}", new Object[] { map });
-		try
-		{		  
-			String api_id = "danu";
-			String api_key = "6fdc23b16b34710e772458a75e35e501";	// 환결설정에서 확인 가능한 SMS API KEY
+	
+	
+	 private void sendGis(List<Map<String,Object>> eventList) {
+		    ObjectMapper objectMapper = new ObjectMapper();
+		    Socket socket = null;
+		    BufferedWriter oos = null;
+		    Map<String, Object> result = new HashMap<String, Object>();
+		    Map<String, Object> msg = new HashMap<String, Object>();
+		    SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    String rslt = sf.format(new Date());
+		    result = eventList.get(0);
+		    String a = (String) (result.get("sensorConn"));
+        	int b = Integer.parseInt(a);
+        	
+		    String name = (String) result.get("name");
+		    String phoneNumber = (String) result.get("phoneNumber");
+		    String address = (String) result.get("adres");
+		    String age = Integer.toString((int) result.get("age"));
+		    String protName = (String) result.get("sName");
+        	String protPhoneNumber = (String) result.get("sPhoneNumber");
+        	String protAddress = " ";
+        	String protRelation = (String) result.get("realation");
+        	String pointX;
+        	String pointY; 
+        	if(b > 0){
+        		pointX = Double.toString((double)result.get("pointX"));
+	        	pointY = Double.toString((double)result.get("pointY"));
+        	}
+        	else{
+        		pointX = Double.toString((double)result.get("mPointX"));
+	        	pointY = Double.toString((double)result.get("mPointY"));
+        	}
+//		    String rslt = sf.format(new Date());
+		    try
+		    {
+		    		
+		    		
+		        	msg.put("name", name);
+		        	msg.put("phoneNumber", phoneNumber);
+		        	msg.put("address", address);
+		        	msg.put("age", age);
+		        	msg.put("serviceType", "G");
+		        	msg.put("time", rslt);
+		        	if(protPhoneNumber != null){
+			        	msg.put("protName", protName);
+			        	msg.put("protPhoneNumber", protPhoneNumber);
+			        	msg.put("protAddress", protAddress);
+			        	msg.put("protRelation", protRelation);
+		        	}
+		        	else{
+		        		msg.put("protName", " ");
+			        	msg.put("protPhoneNumber", " ");
+			        	msg.put("protAddress", " ");
+			        	msg.put("protRelation", " ");
+		        	}
+		        	msg.put("pointX",pointX);
+		        	msg.put("pointX",pointY);
+		        	if(result.get("emergency") == "0"){
+		        		msg.put("endYN", "Y");
+		        	}
+		        	else{
+		        		msg.put("endYN", "N");
+		        	}
+		        	System.out.println("aaaa||||||||"+msg);
+		    	
+		      socket = new Socket(this.gisServer, this.gisPort);
 
-			ApiClass api = new ApiClass(api_id, api_key);
-			String _UNIQUE_KEY_ = api.getNonce();
-			String _CALLBACK_NUM_ = "070-7167-0747";
-			String _PHONE_NUM_ = rcvMobl;
-			System.out.println("============_UNIQUE_KEY_: "+_UNIQUE_KEY_);
+		      oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));
 
-			// 단문 발송 테스트
-			String arr[] = new String[7];
-			arr[0] = "sms";								// 발송 타입 sms or lms
-			arr[1] = _UNIQUE_KEY_;				// 결과 확인을 위한 KEY ( 중복되지 않도록 생성하여 전달해 주시기 바랍니다. )
-			arr[2] = "_TITLE_";							//  LMS 발송시 제목으로 사용 SMS 발송시는 수신자에게 내용이 보이지 않음.
-			arr[3] = content; //"_MESSAGE_";					// 본문 (90byte 제한)
-			arr[4] = _CALLBACK_NUM_;			// 발신 번호
-			arr[5] = _PHONE_NUM_;				// 수신 번호
-			arr[6] = "0";									//예약 일자 "2013-07-30 12:00:00" 또는 "0" 0또는 빈값(null)은 즉시 발송 
-			
-			String responseXml = api.send(arr);
-			System.out.println("response xml : \n" + responseXml);
-			
-			ApiResult res = api.getResult(responseXml);
-			System.out.println(" ===== result : code["+res.getCode()+"], msg["+res.getMesg()+"]");
-			if(res.getCode().compareTo("0000")!=0){
-				System.out.println(res.getMesg());
-			    map_ret.put("session", Integer.valueOf(0));
-			    map_ret.put("msg", res.getMesg());
-			}else{
-				this.smsInfoService.send(map);
-			    map_ret.put("session", Integer.valueOf(1));
-			    map_ret.put("msg", "발송이 완료되었습니다.");
-			}
-		    System.out.println("=======================================================");
-		}
-		catch (DataIntegrityViolationException e)
-		{
-			logger.error("update DataIntegrityViolationException : {}", new Object[] { e.getMessage() });
-		}		  
-    	catch (Exception e)
-    	{
-    		map_ret.put("session", Integer.valueOf(0));
-    		map_ret.put("msg", "알수 없는 에러입니다.");
-    		this.logger.error("update Exception : {}", new Object[] { e.getMessage() });
-    	} 
-      return map_ret;
-	}
+		      String value = objectMapper.writeValueAsString(msg);
+		      value = new String(value.getBytes("utf-8"), "utf-8");
+		      oos.write(value);
+		      oos.flush();
+		      oos.close();
+		    } catch (Exception exx) {
+		      exx.printStackTrace();
+		      try
+		      {
+		        oos.close();
+		      } catch (Exception localException1) {
+		      }
+		      try {
+		        socket.close();
+		      }
+		      catch (Exception localException2)
+		      {
+		      }
+		    }
+		    finally
+		    {
+		      try
+		      {
+		        oos.close();
+		      } catch (Exception localException3) {
+		      }
+		      try {
+		        socket.close();
+		      } catch (Exception localException4) {
+		      }
+		    }
+		  }
+	
+//	private Map<String, Object> sendSms(String hwId) throws IOException{
+//		Random random = new Random();
+//		Map<String, Object> result = new HashMap<String, Object>();
+//		Map<String, Object> map_ret = new HashMap<String, Object>();
+//		Map<String, Object> param = new HashMap<String, Object>();
+//		List<Map<String, Object>> info =  new ArrayList<Map<String, Object>>();    	
+//    	param.put("sensorId",hwId);
+//    	info = baseService.baseSelectList("girlSafe.smsUser", param);
+//    	if(result.get("sPhoneNumber") != null){
+//	    	result = info.get(0);
+//	    	String name = (String)result.get("name");
+//	    	String smsCd = String.valueOf(random.nextInt());
+//			char pSmsState = 'Y';
+//			String content = name+"님 센서에 침입 감지가 되었습니다.";
+//	    	String sesUserId = "admin";
+//	    	String rcvId = (String)result.get("sName");
+//	    	String rcvMobl = (String)result.get("sPhoneNumber");
+//	    	
+//	    	
+//			Map<String, Object> map = new HashMap<String, Object>();
+//			map.put("SMS_CD", smsCd);
+//			map.put("SMS_STATE", pSmsState);
+//			map.put("CONTENT", content);
+//			map.put("SEND_ID", sesUserId);
+//			map.put("RCV_ID", rcvId);
+//			map.put("RCV_MOBL", rcvMobl);
+//			//map.put("UPD_USER_ID", sesUserId);
+//			
+//			logger.debug(" ===== send() map >>>>> {}", new Object[] { map });
+//			try
+//			{		  
+//				String api_id = "danu";
+//				String api_key = "6fdc23b16b34710e772458a75e35e501";	// 환결설정에서 확인 가능한 SMS API KEY
+//	
+//				ApiClass api = new ApiClass(api_id, api_key);
+//				String _UNIQUE_KEY_ = api.getNonce();
+//				String _CALLBACK_NUM_ = "070-7167-0747";
+//				String _PHONE_NUM_ = rcvMobl;
+//				System.out.println("============_UNIQUE_KEY_: "+_UNIQUE_KEY_);
+//	
+//				// 단문 발송 테스트
+//				String arr[] = new String[7];
+//				arr[0] = "sms";								// 발송 타입 sms or lms
+//				arr[1] = _UNIQUE_KEY_;				// 결과 확인을 위한 KEY ( 중복되지 않도록 생성하여 전달해 주시기 바랍니다. )
+//				arr[2] = "_TITLE_";							//  LMS 발송시 제목으로 사용 SMS 발송시는 수신자에게 내용이 보이지 않음.
+//				arr[3] = content; //"_MESSAGE_";					// 본문 (90byte 제한)
+//				arr[4] = _CALLBACK_NUM_;			// 발신 번호
+//				arr[5] = _PHONE_NUM_;				// 수신 번호
+//				arr[6] = "0";									//예약 일자 "2013-07-30 12:00:00" 또는 "0" 0또는 빈값(null)은 즉시 발송 
+//				
+//				String responseXml = api.send(arr);
+//				System.out.println("response xml : \n" + responseXml);
+//				
+//				ApiResult res = api.getResult(responseXml);
+//				System.out.println(" ===== result : code["+res.getCode()+"], msg["+res.getMesg()+"]");
+//				if(res.getCode().compareTo("0000")!=0){
+//					System.out.println(res.getMesg());
+//				    map_ret.put("session", Integer.valueOf(0));
+//				    map_ret.put("msg", res.getMesg());
+//				}else{
+//					this.smsInfoService.send(map);
+//				    map_ret.put("session", Integer.valueOf(1));
+//				    map_ret.put("msg", "발송이 완료되었습니다.");
+//				}
+//			    System.out.println("=======================================================");
+//			}
+//			catch (DataIntegrityViolationException e)
+//			{
+//				logger.error("update DataIntegrityViolationException : {}", new Object[] { e.getMessage() });
+//			}		  
+//	    	catch (Exception e)
+//	    	{
+//	    		map_ret.put("session", Integer.valueOf(0));
+//	    		map_ret.put("msg", "알수 없는 에러입니다.");
+//	    		this.logger.error("update Exception : {}", new Object[] { e.getMessage() });
+//	    	} 
+//    	}
+//      return map_ret;
+//	}
 
 }
