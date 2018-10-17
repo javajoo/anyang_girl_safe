@@ -677,6 +677,8 @@
 		var phoneNumber = data.phoneNumber;
 		var address = data.address;
 		var sPhoneNumber = data.sPhoneNumber;
+		var sensorId = data.sensorId;
+		var emergency = data.emergency;
 		
 		var info = "";
 		
@@ -686,10 +688,11 @@
 			info += "<ul id=\"popup_list_area\" class=\"popup_list_area\">";
 				for ( var i in features) {
 					var listName = features[i].data.name;
+					var curPhoneNumber = features[i].data.phoneNumber;
 					if (i == 0) {
-						info += "<li><a href=\"#\" class=\"active\" onclick=\"setEventPopupValues(this)\">" + listName + "</a></li>";
+						info += "<li><a href=\"#\" class=\"active\" onclick=\"setEventPopupValues(this,'" + curPhoneNumber +"')\">" + listName + "</a></li>";
 					} else {
-						info += "<li><a href=\"#\" onclick=\"setEventPopupValues(this)\">" + listName + "</a></li>";
+						info += "<li><a href=\"#\" onclick=\"setEventPopupValues(this,'" + curPhoneNumber +"')\">" + listName + "</a></li>";
 					}
 				}
 			info += "</ul>";
@@ -701,10 +704,11 @@
 			info += "<div class='event_popup'>";
 		}
 		info += "<div id=\"popup_right_area\" class=\"popup_right_area\">";
+		info += "<span id=\"popup_sensor_id\" style=\"display: none;\">" + sensorId +"</span>";
 		info += "<table class=\"event_popup_table\">";
 		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
 		info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
-		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">나이</div></td>";
+		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + age + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_phoneNumber\">" + phoneNumber + "</div></td></tr>";
@@ -713,6 +717,13 @@
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_sPhoneNumber\">" + sPhoneNumber + "</div></td></tr>";
 	    info += "</table></div>";
+	    if (emergency == 1) {
+			info += "<div class=\"popup_btn_area\" id=\"popup_btn_area\">";
+	    } else {
+			info += "<div class=\"popup_btn_area\" id=\"popup_btn_area\" style=\"display: none;\">";
+	    }
+		info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd()\">응급상황 종료</a>"
+		info += "</div>";
 	    info += "</div>";
 		
 		return info;

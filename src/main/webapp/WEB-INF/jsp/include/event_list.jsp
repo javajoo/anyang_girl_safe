@@ -60,7 +60,7 @@ $(document).ready(function(){
 	    	value: 'name'
 	    },
 	    {
-	    	label: '나이',
+	    	label: '생년월일',
 	    	value: 'age'
 	    },
 	    {
@@ -123,7 +123,7 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'age',title:'나이',width:'5%',align:'center'},
+			{field:'age',title:'생년월일',width:'5%',align:'center'},
 			{field:'phoneNumber',title:'번호',width:'10%',align:'center'},
 			{field:'address',title:'주소',width:'30%',align:'center'},
 			{field:'startTime',title:'발생일',width:'15%',align:'center'},

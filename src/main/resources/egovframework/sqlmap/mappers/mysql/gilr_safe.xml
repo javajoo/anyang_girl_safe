@@ -295,6 +295,14 @@
 		UPDATE_DATE=NOW()
 		WHERE SENSOR_ID=#{sensorId};
 	</update>
+	
+	<update id="updateEventEnd" parameterType="map">
+		UPDATE girl_safe_event
+		SET
+		END_YN = 'Y',
+		END_TIME = NOW()
+		WHERE NO = #{no}
+	</update>
 
 	<update id="updateApproval" parameterType="map">
 		UPDATE girl_safe_user
@@ -413,6 +421,14 @@
 			</choose>
 		</if>
 
+	</select>
+	
+	<select id="getLastEvent" parameterType="map" resultType="HashMap">
+	       SELECT 
+				MAX(NO) as no
+			FROM girl_safe_event
+	        WHERE 1=1
+	        AND SENSOR_ID = #{sensorId}
 	</select>
 
 	<update id="insertEvent" parameterType="map">

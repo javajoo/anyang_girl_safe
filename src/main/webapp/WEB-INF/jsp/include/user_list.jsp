@@ -58,7 +58,7 @@ $(document).ready(function(){
 	    	value: 'name'
 	    },
 	    {
-	    	label: '나이',
+	    	label: '생년월일',
 	    	value: 'age'
 	    },
 	    {
@@ -98,7 +98,7 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:50,align:'center'},
 			{field:'name',title:'이름',width:80,align:'center'},
-			{field:'age',title:'나이',width:70,align:'center'},
+			{field:'age',title:'생년월일',width:70,align:'center'},
 			{field:'phoneNumber',title:'번호',width:60,align:'center'},
 			{field:'address',title:'주소',width:100,align:'center'},
 			{field:'sensorId',title:'단말기번호',width:70,align:'center'}

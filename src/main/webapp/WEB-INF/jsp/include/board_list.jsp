@@ -38,10 +38,10 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
-					<a href="#" id="write_button" class="eventR_button_list">글쓰기</a>
+					<a href="#" id="push_button" class="eventR_button_list" onclick="pushBoard()">푸시</a>
 				</div>
 				<div class="list_cont">
-					<a href="#" id="push_button" class="eventR_button_list">푸시</a>
+					<a href="#" id="write_button" class="eventR_button_list">글쓰기</a>
 				</div>
 			</li>
 		</ul>
@@ -138,6 +138,29 @@
 		});
 	}
 	
+	function pushBoard() {
+		var row = $('#boardList_table').datagrid('getSelected');
+		var url = "";
+		
+		const jsonObj = {};
+		
+		jsonObj.no = row.no;
+		
+		$.ajax({
+			type : "POST"
+			, url : url
+			, dataType : "json"
+			, data : {"param" : JSON.stringify(jsonObj)}
+			, success:function(data)
+			{
+				console.log(data);
+			}
+			, error:function(e){
+				alert(e.responseText);
+			}
+		});
+	}
+	
 	function reload(){
 		const jsonObj = {};
 		jsonObj.boardInsertTimeS = $("#search_board_timeS").datebox('getValue').replace(/\//g, '');
@@ -163,6 +186,12 @@
 				{field:'count',title:'조회수',width:'5%',align:'center'},
 				{field:'no',title:'번호',hidden:true}
 		    ]],
+		    onSelect:function(index, row) {
+				$('#push_button').css('display', 'inline-block');
+		    },
+		    onUnselect:function(index, row) {
+				$('#push_button').css('display', 'none');
+		    },
 		    onDblClickRow: function(row, data) {
 		    	updateCount(row, data);
 		    	getBoardOne(row, data);
@@ -176,7 +205,8 @@
 						closeWindow();
 					}
 				}
-				if(data && data.total > 0) {				
+				if(data && data.total > 0) {			
+					$('#push_button').css('display', 'none');	
 					selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 					$(this).datagrid('selectRow',0);
 				}

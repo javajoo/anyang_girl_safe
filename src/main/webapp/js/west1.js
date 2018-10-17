@@ -194,6 +194,7 @@ function setEmergencyPopup(data) {
 	var phoneNumber = data.phoneNumber;
 	var address = data.address;
 	var sPhoneNumber = data.sPhoneNumber;
+	var sensorId = data.sensorId;
 				
 	var info = ""; 
 	
@@ -201,16 +202,19 @@ function setEmergencyPopup(data) {
 	info += "<div id=\"popup_right_area\" class=\"popup_right_area\">";
 	info += "<table class=\"event_popup_table\">";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
-	info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">나이</div></td>";
-	info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + age + "</div></td></tr>";
+	info += "<td><div class=\"event_popup_col\">" + name + "</div></td></tr>";
+	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
+	info += "<td><div class=\"event_popup_col\">" + age + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
-	info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_phoneNumber\">" + phoneNumber + "</div></td></tr>";
+	info += "<td><div class=\"event_popup_col\">" + phoneNumber + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";
-	info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_address\">" + address + "</div></td></tr>";
+	info += "<td><div class=\"event_popup_col\">" + address + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
-	info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_sPhoneNumber\">" + sPhoneNumber + "</div></td></tr>";
+	info += "<td><div class=\"event_popup_col\">" + sPhoneNumber + "</div></td></tr>";
 	info += "</table></div>";
+	info += "<div class=\"popup_btn_area\">";
+	info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd('" + sensorId + "')\">응급상황 종료</a>"
+	info += "</div>";
 	info += "</div>";
 
 	return info;
@@ -252,3 +256,82 @@ function setEmergencyControl(data) {
 
  
 };
+
+function updateEventEnd(sensorId) {
+	var url = "/select/girlSafe.getLastEvent/action.do";
+	var no;
+	
+	if (typeof sensorId == 'undefined') {
+		sensorId = $('#popup_sensor_id').text();
+	}
+	
+	const jsonObj = {};
+	
+	jsonObj.sensorId = sensorId;
+	
+	$.ajax({
+		type : "POST"
+		, url : url
+		, dataType : "json"
+		, data : {"param" : JSON.stringify(jsonObj)}
+		, async : false
+		, success:function(data)
+		{
+			no = data[0].no;
+		}
+		, error:function(e){
+			alert(e.responseText);
+		}
+	});
+	
+
+	const jsonArray1 = [];
+	const jsonArray2 = [];
+	const jsonArray3 = [];
+	const jsonArray4 = [];
+	
+	const jsonObj1 = {};
+
+    jsonObj1.rowStatus = "U";
+	jsonObj1.no = no;
+	
+	const jsonObj2 = {};
+
+    jsonObj2.rowStatus = "U";
+	jsonObj2.sensorId = sensorId;
+	jsonObj2.emergency = '0';
+	
+    jsonArray1[0] = jsonObj1;
+    jsonArray2[0] = jsonObj2;
+
+    $.ajax(
+        {
+            type       : "POST",
+            url        : "/multiTransaction/girlSafe.updateEventEnd/girlSafe.updateEmergency/sqlid3/sqlid4/action.do",
+            dataType   : "json",
+            data       : {
+            	"param1" : JSON.stringify(jsonArray1),
+                "param2" : JSON.stringify(jsonArray2),
+                "param3" : JSON.stringify(jsonArray3),
+                "param4" : JSON.stringify(jsonArray4)
+            },
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (result) {
+        if (result == "SUCCESS")
+        {
+            alert("상황종료 성공");
+        }
+        else
+        {
+            alert("상황종료 실패");
+        }
+        search_home();
+    }).fail(function (xhr) {
+        alert("상황종료 실패");
+    }).always(function() {
+
+    });
+}

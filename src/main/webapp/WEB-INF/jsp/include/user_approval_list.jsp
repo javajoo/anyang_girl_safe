@@ -64,7 +64,7 @@ $(document).ready(function(){
 	    	value: 'name'
 	    },
 	    {
-	    	label: '나이',
+	    	label: '생년월일',
 	    	value: 'age'
 	    },
 	    {
@@ -220,6 +220,15 @@ function onUserDetailPopup(row) {
     });
 }
 
+function setStationId(rows) {
+	var length = rows.length;
+	
+	for (var i = 0; i < length; i++) {
+		rows[i].smartId = 'SA-S' + rows[i].smartId;
+		$('#userApprovalList_table').datagrid('refreshRow', i);
+	}
+}
+
 function reload(){
 	const jsonObj = {};
 	jsonObj.eventDeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
@@ -240,16 +249,18 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'age',title:'나이',width:'5%',align:'center'},
+			{field:'age',title:'생년월일',width:'5%',align:'center'},
 			{field:'phoneNumber',width:'15%',title:'번호',align:'center'},
-			{field:'address',title:'주소',width:'35%',align:'center'},
-			{field:'sensorId',title:'단말기번호',width:'15%',align:'center'},
+			{field:'address',title:'주소',width:'20%',align:'center'},
+			{field:'sensorId',title:'센서번호',width:'15%',align:'center'},
+			{field:'smartId',title:'스테이션번호',width:'15%',align:'center'},
 			{field:'approval',title:'승인여부',width:'15%',align:'center'}
 	    ]],
 	    onDblClickRow:function(index, row) {
 	    	onUserDetailPopup(row);
 	    },
 	    onLoadSuccess:function(data){
+	    	var rows = $('#userApprovalList_table').datagrid('getRows');
 			if($('#userApprovalList_table').datagrid('getData').rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
@@ -257,6 +268,8 @@ function reload(){
 					//location.href="/";
 					closeWindow();
 				}
+			} else {
+				setStationId(rows);
 			}
 		}
 	});

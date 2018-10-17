@@ -596,3 +596,13 @@
 	text-align: center;
 }
 
+.popup_btn_area {
+	padding: 10px 0 0 0;
+	display: inline-block;
+	width: 100%;
+}
+
+.popup_btn_area a {
+	float: right;
+}
+

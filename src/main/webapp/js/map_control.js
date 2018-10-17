@@ -71,20 +71,26 @@ function popupListActiveClear() {
 	});
 }
 
-function setEventPopupValues(obj) {
+function setEventPopupValues(obj, phoneNumber) {
 	popupListActiveClear();
 	$(obj).addClass('active');
 	
-	var name = $(obj).text();
 	for ( var i in nearFeatures) {
 		var data = nearFeatures[i].data;
-		var featureName = data.name;
-		if (featureName == name) {
+		var featurePhone = data.phoneNumber;
+		if (featurePhone == phoneNumber) {
 			$('#event_popup_event_name').text(data.name);
 			$('#event_popup_event_age').text(data.age);
 			$('#event_popup_event_phoneNumber').text(data.phoneNumber);
 			$('#event_popup_event_address').text(data.address);
 			$('#event_popup_event_sPhoneNumber').text(data.sPhoneNumber);
+			$('#popup_sensor_id').text(data.sensorId);
+			if (data.emergency == 1) {
+				$('#popup_btn_area').css('display', 'inline-block');
+			} else {
+				$('#popup_btn_area').css('display', 'none');
+			}
+			break;
 		}
 	}
 }
@@ -170,13 +176,14 @@ function getSearchRange() {
 	return searchRange;
 }
 
-function getNearFeatures(point, features) {
+function getNearFeatures(point) {
+	var eventFeatures = eventLayer.features;
 	var searchRange = getSearchRange();
-	var selectedFeatures = [];
+	var selectedEventFeatures = [];
 	
 	if (searchRange == 0) {
 		alert("지도를 확대하고 시도해 주시기 바랍니다.");
-		return selectedFeatures;
+		return selectedEventFeatures;
 	}
 	
 	var range = {
@@ -186,17 +193,18 @@ function getNearFeatures(point, features) {
 		right: point.lon + searchRange
 	}
 	
-	for (var i in features) {
-		var lat = parseFloat(features[i].data.gpsX);
-		var lon = parseFloat(features[i].data.gpsY);
+	for (var i in eventFeatures) {
+
+		var lat = parseFloat(eventFeatures[i].data.gpsX);
+		var lon = parseFloat(eventFeatures[i].data.gpsY);
 		
 		if ((range.left <= lat && range.right >= lat) &&
 				(range.bottom <= lon && range.top >= lon)) {
-			selectedFeatures.push(features[i]);
+			selectedEventFeatures.push(eventFeatures[i]);
 		}
 	}
 	
-	return selectedFeatures;
+	return selectedEventFeatures;
 }
 
 function onEventPopup(feature) {
@@ -205,8 +213,7 @@ function onEventPopup(feature) {
 		lon: parseFloat(data.gpsX),
 		lat: parseFloat(data.gpsY)
 	}
-    
-    nearFeatures = getNearFeatures(pos, eventLayer.features);
+    nearFeatures = getNearFeatures(pos);
     nearFeatures = sortEmergengy(nearFeatures);
     var length = nearFeatures.length;
     

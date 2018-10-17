@@ -798,7 +798,7 @@
 		info += "<table class=\"event_popup_table\">";
 		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
 		info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
-		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">나이</div></td>";
+		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + age + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_phoneNumber\">" + phoneNumber + "</div></td></tr>";

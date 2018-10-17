@@ -7,7 +7,7 @@
 					<em>Sensor ID</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_sensor_box" class="easyui-textbox" 
+					<input type="text" id="user_sensor_box" class="easyui-textbox" value="SA-I"
 						placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
@@ -16,7 +16,7 @@
 					<em>Station ID</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_smart_box" class="easyui-textbox" 
+					<input type="text" id="user_smart_box" class="easyui-textbox" value="SA-S"
 						placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
@@ -31,7 +31,7 @@
 			</li>
 			<li class="list" id="user_age_area">
 				<div class="popup_list_title">
-					<em>나이</em>
+					<em>생년월일</em>
 				</div>
 				<div class="popup_list_cont">
 					<input type="text" id="user_age_box" class="easyui-textbox"
@@ -102,7 +102,7 @@ function setUserDetailData(data) {
 	$('#user_phone_box').attr('disabled', true);
 	
 	$('#user_sensor_box').val(row.sensorId);
-	$('#user_smart_box').val(row.smartId);
+	$('#user_smart_box').val('SA-S' + row.smartId);
 	$('#user_name_box').val(row.name);
 	$('#user_age_box').val(row.age);
 	$('#user_address_box').val(row.address);
@@ -117,9 +117,37 @@ function closePopup() {
     $('#popup_area').dialog('close');
 }
 
+function checkValidation() {
+	
+}
+
+function checkStationId() {
+	var stationId = $('#user_smart_box').val();
+	var pattern = /^SA-S\d{4}$/;
+	
+	if (!pattern.test(stationId)) {
+		alert("Station ID가 틀렷습니다.\nID 형식은 아래와 같습니다.\n예)SA-S0000")
+		return false;
+	}
+	
+	return true;
+}
+
+function checkSensorId() {
+	var sensorId = $('#user_sensor_box').val();
+	var pattern = /^SA-I\d{4}$/;
+	
+	if (!pattern.test(stationId)) {
+		alert("Sensor ID가 틀렷습니다.\nID 형식은 아래와 같습니다.\n예)SA-I0000")
+		return false;
+	}
+	
+	return true;
+}
+
 function modifyUser() {
 	var sensorId = $('#user_sensor_box').val();
-	var stationId = $('#user_smart_box').val();
+	var stationId = $('#user_smart_box').val().replace('SA-S', '');
 	var name = $('#user_name_box').val();
 	var age = $('#user_age_box').val();
 	var address = $('#user_address_box').val();
