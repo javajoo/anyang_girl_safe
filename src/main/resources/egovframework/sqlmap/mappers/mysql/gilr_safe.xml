@@ -22,11 +22,12 @@
 					WHEN '1' THEN 'OFF'
 				END as status,
 				b.STATUS as chkStatus,
+				b.BAT as bat,
 				CASE b.BAT
-					WHEN '0' THEN '정상(대)'
-					WHEN '1' THEN '정상(중)'
-					WHEN '2' THEN '교체필요'
-				END as bat,
+					WHEN '0' THEN '좋음'
+					WHEN '1' THEN '양호'
+					WHEN '2' THEN '나쁨'
+				END as krBat,
 				b.SENSOR_CONN as sensorConn,
 				b.SMART_CONN as smartConn,
 				b.BAT as chkBat,
@@ -44,6 +45,9 @@
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	     ]]>
+		<if test="emergency != null and emergency != ''">
+			AND b.EMERGENCY = #{emergency}
+		</if>
 		<if test="approval != null and approval != ''">
 			AND a.APPROVAL = #{approval}
 		</if>
@@ -109,6 +113,9 @@
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        WHERE 1=1
 	     ]]>
+		<if test="emergency != null and emergency != ''">
+			AND b.EMERGENCY = #{emergency}
+		</if>
 		<if test="approval != null and approval != ''">
 			AND a.APPROVAL = #{approval}
 		</if>

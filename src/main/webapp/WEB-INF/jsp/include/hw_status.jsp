@@ -89,15 +89,15 @@ $(document).ready(function(){
 	    	value: ''
 	    },
 	    {
-	    	label: '정상(대)',
+	    	label: '좋음',
 	    	value: '0'
 	    },
 	    {
-	    	label: '정상(중)',
+	    	label: '양호',
 	    	value: '1'
 	    },
 	    {
-	    	label: '교체필요',
+	    	label: '나쁨',
 	    	value: '2'
 	    }]
 	});
@@ -126,9 +126,26 @@ $(document).ready(function(){
 	
 	reload();
 });
+
 function moveMap(){
 	$('#west-panel').hide();
 }
+
+function setBatIcons() {
+	var rows = $('#hwStatus_table').datagrid('getRows');
+	var length = rows.length;
+	console.log(length);
+	
+	for (var i = 0; i < length; i++) {
+		var imgUrl = 'url(../images/icons/BAT_' + rows[i].bat + '.png)';
+		var info = "<div class='grid_image_box' style='background-image:" + imgUrl +";'>"; 
+		info += "</div><span class='grid_image_text_box'>" + rows[i].krBat + "</span>";
+		rows[i].bat = info;
+		console.log(rows[i].bat);
+		$('#hwStatus_table').datagrid('refreshRow', i);
+	}
+}
+
 function reload(){
 	const jsonObj = {};
 	jsonObj.lastTimeS = $("#search_last_timeS").datebox('getValue').replace(/\//g, '');
@@ -155,7 +172,8 @@ function reload(){
 	        {field:'address',title:'주소',width:'35%',align:'center'},
 			{field:'updateDate',title:'최종접속체크일',width:'20%',align:'center'},
 			{field:'bat',title:'배터리',width:'5%',align:'center'},
-			{field:'status',title:'상태',width:'5%',align:'center'}
+			{field:'status',title:'상태',width:'5%',align:'center'},
+			{field:'krBat',hidden:true,align:'center'}
 	    ]],
 	    onLoadSuccess:function(data){
 			if($('#hwStatus_table').datagrid('getData').rows=='sessionOut'){
@@ -167,6 +185,7 @@ function reload(){
 				}
 			}
 			if(data && data.total > 0) {				
+				setBatIcons();
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 				$(this).datagrid('selectRow',0);
 				createIcon("hwStatus");

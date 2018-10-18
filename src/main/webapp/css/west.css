@@ -920,3 +920,18 @@
 .facility_dtl td {
     border: 1px solid #e1e1e1;
 }
+
+.grid_image_box {
+	width: 40px;
+	height: 18px;
+	background-size: 40px;
+	background-repeat: no-repeat;
+	display: inline-block;
+	padding: 0 5px;
+	position: relative;
+	top: 5px;
+}
+
+.grid_image_text_box {
+	line-height: 25px;
+}

@@ -292,10 +292,11 @@
 		$("#west-panel").show();
 		if(flag == 'menu_home'){
 			layerClean(selectedImageLayer);
-			$("#west-panel").hide();
-			changeWidth("start");
 			search_home();
+			$('#map').css('cursor', 'move');
+			
 			mapInfo();
+			search_list("/include/userEmergency_list");	
 		}
 		else if(flag == 'menu_userList') {
 			

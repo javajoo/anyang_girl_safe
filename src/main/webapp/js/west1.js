@@ -14,7 +14,8 @@ function search_home(){
 			for(var i=0; i<data.length; i++){
 				var result = data[i];
 				createFeature(result);
-			}	
+			}
+	        reloadEmergencyList();
 		}
 		, error:function(e){
 			alert(e.responseText);
@@ -257,6 +258,14 @@ function setEmergencyControl(data) {
  
 };
 
+function reloadEmergencyList() {
+	var menu = $('#topmenu_home');
+	
+	if (menu.hasClass('selected')) {
+		$('#userEmergencyList_table').datagrid('reload');
+	}
+}
+
 function updateEventEnd(sensorId) {
 	var url = "/select/girlSafe.getLastEvent/action.do";
 	var no;
@@ -329,6 +338,7 @@ function updateEventEnd(sensorId) {
             alert("상황종료 실패");
         }
         search_home();
+        reloadEmergencyList();
     }).fail(function (xhr) {
         alert("상황종료 실패");
     }).always(function() {
