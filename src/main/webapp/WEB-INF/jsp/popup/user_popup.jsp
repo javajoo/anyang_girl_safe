@@ -153,6 +153,8 @@ function modifyUser() {
 	var address = $('#user_address_box').val();
 	var phoneNumber = $('#user_phone_box').val();
 	
+	stationId = parseInt(stationId);
+	
 	const jsonArray1 = [];
 	const jsonArray2 = [];
 	const jsonArray3 = [];
