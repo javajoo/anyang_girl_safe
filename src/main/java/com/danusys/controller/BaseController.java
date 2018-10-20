@@ -383,24 +383,12 @@ public class BaseController
         if (request.getParameter("param").trim().equals("") == true)
         {
         	System.out.println("어디");
-           param = new HashMap<String, Object>();
-           try {
-			AES128.encAES((String)param.get("123"));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        	param = new HashMap<String, Object>();
         }
         else
         {
         	System.out.println("타니");
             param = JsonUtil.JsonToMap(request.getParameter("param"));
-            try {
-				AES128.encAES((String)param.get("123"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
         }        
         System.out.println("파라미터 " + param);
         

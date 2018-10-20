@@ -56,7 +56,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
     private BaseService baseService;
 	private String smsServer = "127.0.0.1";//"172.20.14.6";//"211.220.152.67";
     private int sms_port = 10021;
-    private String gisServer = "58.76.192.7";//"172.20.14.6";//"211.220.152.67";
+    private String gisServer = "58.76.192.7";//"172.20.14.29";//"172.20.14.6";//"211.220.152.67";
     private int gisPort = 9000;
     @Resource(name="smsInfoService")
     private SmsInfoService smsInfoService;
@@ -128,11 +128,12 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			result = msg;
 			eventClear(result, netSocket);
 		}
-		/*else {
-			System.out.println("2");
-			result = msgParseDuc(msg);
-			emitEventDuc(result, netSocket);
-		}*/
+		else {
+//			testGis(msg, netSocket);
+//			System.out.println("2");
+//			result = msgParseDuc(msg);
+//			emitEventDuc(result, netSocket);
+		}
 		return result;
 	}
 	
@@ -213,7 +214,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //	      send(map);
 //	    }
 //	  }
-//	
+	
 	
 	
 	public void smartEvent(String msg, NetSocket netSocket) {
@@ -234,6 +235,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			try {
 				
 				//sendSms(eventList);
+				
 				sendGis(eventList);
 				JsonObject obj = new JsonObject(map);
 				//send(obj);
@@ -439,15 +441,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		String sensorId = msgArray[0];
 		map.put("sensorId", sensorId);
 		List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
-				.baseSelectList("girlSafe.getHwInfo",map);
+				.baseSelectList("girlSafe.getEvent",map);
 		if (msgArray.length == 3) {
-			
-			
-			
 			try {
-				
 				map.put("emergency", "0");
-				
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
@@ -586,6 +583,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
         	String protPhoneNumber = (String) result.get("sPhoneNumber");
         	String protAddress = " ";
         	String protRelation = (String) result.get("realation");
+        	int emergency = (int) result.get("emergency");
         	String pointX;
         	String pointY; 
         	if(b > 0){
@@ -599,8 +597,6 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //		    String rslt = sf.format(new Date());
 		    try
 		    {
-		    		
-		    		
 		        	msg.put("name", name);
 		        	msg.put("phoneNumber", phoneNumber);
 		        	msg.put("address", address);
@@ -620,8 +616,8 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			        	msg.put("protRelation", " ");
 		        	}
 		        	msg.put("pointX",pointX);
-		        	msg.put("pointX",pointY);
-		        	if(result.get("emergency") == "0"){
+		        	msg.put("pointY",pointY);
+		        	if(emergency < 1){
 		        		msg.put("endYN", "Y");
 		        	}
 		        	else{
@@ -635,7 +631,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 
 		      String value = objectMapper.writeValueAsString(msg);
 		      value = new String(value.getBytes("utf-8"), "utf-8");
-		      oos.write(value);
+		      oos.write(value+""+null);
 		      oos.flush();
 		      oos.close();
 		    } catch (Exception exx) {
@@ -745,5 +741,49 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //    	}
 //      return map_ret;
 //	}
+	 
+//	 private void send(Object msg) {
+//		    ObjectMapper objectMapper = new ObjectMapper();
+//		    Socket socket = null;
+//		    BufferedWriter oos = null;
+//		    try
+//		    {
+//		      socket = new Socket(this.gisServer, this.gisPort);
+//
+//		      oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));
+//
+//		      String value = objectMapper.writeValueAsString(msg);
+//		      value = new String(value.getBytes("utf-8"), "utf-8");
+//		      //JsonTurilMapToJson(map);
+//		      oos.write(value);
+//		      oos.flush();
+//		      oos.close();
+//		    } catch (Exception exx) {
+//		      exx.printStackTrace();
+//		      try
+//		      {
+//		        oos.close();
+//		      } catch (Exception localException1) {
+//		      }
+//		      try {
+//		        socket.close();
+//		      }
+//		      catch (Exception localException2)
+//		      {
+//		      }
+//		    }
+//		    finally
+//		    {
+//		      try
+//		      {
+//		        oos.close();
+//		      } catch (Exception localException3) {
+//		      }
+//		      try {
+//		        socket.close();
+//		      } catch (Exception localException4) {
+//		      }
+//		    }
+//		  }
 
 }
