@@ -251,7 +251,7 @@ function setEmergencyControl(data) {
         eventPopup.autoSize=true;
         // 맵에 팝업 추가
         map.addPopup(eventPopup);
-        map.setCenter(centerLonlat, 14);
+        map.setCenter(centerLonlat);
         
         return true;
 
@@ -344,4 +344,28 @@ function updateEventEnd(sensorId) {
     }).always(function() {
 
     });
+}
+
+function getAge(dateString) {
+    var today = new Date();
+    var birthDate = new Date(dateString);
+    var age = today.getFullYear() - birthDate.getFullYear();
+   /* var m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }*/
+    return age;
+}
+
+function setBirthToAge(listTable) {
+	var rows = $(listTable).datagrid('getRows');
+	var length = rows.length;
+	var maxLength = 4;
+	
+	for (var i = 0; i < length; i++) {
+		var birth = rows[i].birth;
+		birth = getAge(birth);
+		rows[i].birth = birth;
+		$(listTable).datagrid('refreshRow', i);
+	}
 }

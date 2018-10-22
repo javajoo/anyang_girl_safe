@@ -141,7 +141,6 @@ function setBatIcons() {
 		var info = "<div class='grid_image_box' style='background-image:" + imgUrl +";'>"; 
 		info += "</div><span class='grid_image_text_box'>" + rows[i].krBat + "</span>";
 		rows[i].bat = info;
-		console.log(rows[i].bat);
 		$('#hwStatus_table').datagrid('refreshRow', i);
 	}
 }
@@ -166,7 +165,7 @@ function reload(){
 	    },
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
-	        {field:'sensorId',title:'단말기번호',width:'10%',align:'center'},
+	        {field:'sensorId',title:'센서번호',width:'10%',align:'center'},
 	        {field:'name',title:'이름',width:'10%',align:'center'},
 	        {field:'phoneNumber',title:'번호',width:'10%',align:'center'},
 	        {field:'address',title:'주소',width:'35%',align:'center'},
@@ -184,7 +183,7 @@ function reload(){
 					closeWindow();
 				}
 			}
-			if(data && data.total > 0) {				
+			if(data && data.total > 0) {
 				setBatIcons();
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 				$(this).datagrid('selectRow',0);

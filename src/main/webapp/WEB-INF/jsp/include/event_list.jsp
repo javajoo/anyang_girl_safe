@@ -123,7 +123,7 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'age',title:'생년월일',width:'5%',align:'center'},
+			{field:'birth',title:'생년월일',width:'5%',align:'center'},
 			{field:'phoneNumber',title:'번호',width:'10%',align:'center'},
 			{field:'address',title:'주소',width:'30%',align:'center'},
 			{field:'startTime',title:'발생일',width:'15%',align:'center'},
@@ -141,6 +141,7 @@ function reload(){
 				}
 			}
 			if(data && data.total > 0) {				
+				setBirthToAge(this);
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 				$(this).datagrid('selectRow',0);
 			}

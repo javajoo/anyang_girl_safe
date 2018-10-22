@@ -65,7 +65,7 @@ $(document).ready(function(){
 	    },
 	    {
 	    	label: '생년월일',
-	    	value: 'age'
+	    	value: 'birth'
 	    },
 	    {
 	    	label: '주소',
@@ -110,7 +110,7 @@ function clearPopup() {
 	$('#user_sensor_box').val('');
 	$('#user_smart_box').val('');
 	$('#user_name_box').val('');
-	$('#user_age_box').val('');
+	$('#user_birth_box').val('');
 	$('#user_address_box').val('');
 	$('#user_phone_box').val('');
 	$('#user_update_btn').css('display', 'inline-block');
@@ -222,9 +222,15 @@ function onUserDetailPopup(row) {
 
 function setStationId(rows) {
 	var length = rows.length;
+	var maxLength = 4;
 	
 	for (var i = 0; i < length; i++) {
-		rows[i].smartId = 'SA-S' + rows[i].smartId;
+		var smartId = rows[i].smartId;
+		var idLength = maxLength - smartId.length;
+		for (var j = 0; j < idLength; j++) {
+			smartId = '0' + smartId;
+		}
+		rows[i].smartId = 'SA-S' + smartId;
 		$('#userApprovalList_table').datagrid('refreshRow', i);
 	}
 }
@@ -249,7 +255,7 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'age',title:'생년월일',width:'5%',align:'center'},
+			{field:'birth',title:'생년월일',width:'5%',align:'center'},
 			{field:'phoneNumber',width:'15%',title:'번호',align:'center'},
 			{field:'address',title:'주소',width:'20%',align:'center'},
 			{field:'sensorId',title:'센서번호',width:'15%',align:'center'},
@@ -270,6 +276,7 @@ function reload(){
 				}
 			} else {
 				setStationId(rows);
+				setBirthToAge(this);
 			}
 		}
 	});

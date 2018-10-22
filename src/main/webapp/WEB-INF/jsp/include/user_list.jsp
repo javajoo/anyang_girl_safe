@@ -59,7 +59,7 @@ $(document).ready(function(){
 	    },
 	    {
 	    	label: '생년월일',
-	    	value: 'age'
+	    	value: 'birth'
 	    },
 	    {
 	    	label: '주소',
@@ -98,7 +98,7 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:50,align:'center'},
 			{field:'name',title:'이름',width:80,align:'center'},
-			{field:'age',title:'생년월일',width:70,align:'center'},
+			{field:'birth',title:'생년월일',width:70,align:'center'},
 			{field:'phoneNumber',title:'번호',width:60,align:'center'},
 			{field:'address',title:'주소',width:100,align:'center'},
 			{field:'sensorId',title:'단말기번호',width:70,align:'center'}
@@ -117,6 +117,7 @@ function reload(){
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 				$(this).datagrid('selectRow',0);
 				createIcon("userList");
+				setBirthToAge(this);
 			}
 		}
 	});

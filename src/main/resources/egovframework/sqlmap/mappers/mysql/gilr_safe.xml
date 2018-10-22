@@ -8,7 +8,7 @@
 	       SELECT 
 				@ROWNUM := @ROWNUM + 1 AS num,
 				a.ENCRYPT_NAME as name,
-				a.AGE as age,
+				date_format(a.BIRTH,'%Y/%m/%d') as birth,
 				a.PHONE_NUMBER as phoneNumber,
 				a.ENCRYPT_ADRES as address,
 				CASE a.APPROVAL
@@ -85,8 +85,8 @@
 				<when test="searchType == 'name'">
 					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'age'">
-					AND a.AGE LIKE CONCAT('%', #{totSearch}, '%')
+				<when test="searchType == 'birth'">
+					AND a.BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
 					AND a.ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
@@ -140,8 +140,8 @@
 				<when test="searchType == 'name'">
 					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'age'">
-					AND a.AGE LIKE CONCAT('%', #{totSearch}, '%')
+				<when test="searchType == 'birth'">
+					AND a.BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
 					AND a.ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
@@ -161,7 +161,7 @@
 		<![CDATA[		
 	       SELECT 
 				a.ENCRYPT_NAME as name,
-				a.AGE as age,
+				date_format(a.BIRTH,'%Y/%m/%d') as birth,
 				a.PHONE_NUMBER as phoneNumber,
 				a.ENCRYPT_ADRES as address,
 				CASE a.APPROVAL
@@ -202,7 +202,7 @@
 	<insert id="insertUser" parameterType="map">
 		INSERT INTO girl_safe_user (
 			PHONE_NUMBER,
-			AGE,
+			BIRTH,
 			ENCRYPT_NAME,
 			ENCRYPT_ADRES,
 			APPROVAL,
@@ -210,7 +210,7 @@
 			UPDATE_DATE
 		) VALUES (
 			#{phoneNumber},
-			#{age},
+			#{birth},
 			#{name},
 			#{address},
 			'N',
@@ -219,7 +219,7 @@
 		)
 		ON DUPLICATE KEY UPDATE
 			PHONE_NUMBER = #{phoneNumber},
-			AGE = #{age},
+			BIRTH = #{birth},
 			ENCRYPT_NAME = #{name},
 			ENCRYPT_ADRES = #{address},
 			UPDATE_DATE = NOW()
@@ -258,7 +258,7 @@
 			INSERT_DATE,
 			UPDATE_DATE
 		) VALUES (
-			#{stationId},
+			#{smartId},
 			#{sensorId},
 			#{phoneNumber},
 			0,
@@ -272,7 +272,7 @@
 			NOW()
 		)
 		ON DUPLICATE KEY UPDATE
-			SMART_ID = #{stationId},
+			SMART_ID = #{smartId},
 			SENSOR_ID = #{sensorId},
 			PHONE_NUMBER = #{phoneNumber},
 			UPDATE_DATE = NOW()
@@ -325,7 +325,7 @@
 				@ROWNUM := @ROWNUM + 1 AS num,
 				PHONE_NUMBER as phoneNumber,
 				ENCRYPT_NAME as name,
-				AGE as age,
+				date_format(BIRTH,'%Y/%m/%d') as birth,
 				ENCRYPT_ADRES as address,
 				SMART_ID as smartId,
 				SENSOR_ID as sensorId,
@@ -344,6 +344,9 @@
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	    ]]>
+		<if test="phoneNumber != null and phoneNumber != ''">
+			AND PHONE_NUMBER = #{phoneNumber}
+		</if>
 		<if test="endYN != null and endYN != ''">
 			AND END_YN = #{endYN}
 		</if>
@@ -362,8 +365,8 @@
 				<when test="searchType == 'name'">
 					AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'age'">
-					AND AGE LIKE CONCAT('%', #{totSearch}, '%')
+				<when test="searchType == 'birth'">
+					AND BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
 					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
@@ -410,8 +413,8 @@
 				<when test="searchType == 'name'">
 					AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'age'">
-					AND AGE LIKE CONCAT('%', #{totSearch}, '%')
+				<when test="searchType == 'birth'">
+					AND BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
 					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
@@ -441,12 +444,12 @@
 	<update id="insertEvent" parameterType="map">
 		INSERT INTO
 		girl_safe_event
-		(PHONE_NUMBER, ENCRYPT_NAME, AGE, ENCRYPT_ADRES, SENSOR_ID, SMART_ID, DIVISION,
+		(PHONE_NUMBER, ENCRYPT_NAME, BIRTH, ENCRYPT_ADRES, SENSOR_ID, SMART_ID, DIVISION,
 		END_YN, POINT_X, POINT_Y, START_TIME, END_TIME, INSERT_DATE)
 		SELECT
 		a.PHONE_NUMBER,
 		a.ENCRYPT_NAME,
-		a.AGE,
+		a.BIRTH,
 		a.ENCRYPT_ADRES,
 		b.SENSOR_ID,
 		b.SMART_ID,
@@ -948,7 +951,7 @@
 			a.ENCRYPT_NAME as name,
 			a.PHONE_NUMBER as phoneNumber,
 			a.ENCRYPT_ADRES as adres,
-			a.AGE as age,
+			date_format(a.BIRTH,'%Y/%m/%d') as birth,
 			b.POINT_X as pointX,
 			b.POINT_Y as pointY,
 			b.M_POINT_X as mPointX,
@@ -965,5 +968,26 @@
 		JOIN girl_safe_hw b ON a.PHONE_NUMBER = b.PHONE_NUMBER
 		JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 		WHERE b.SENSOR_ID = #{sensorId}
+	</select>
+	
+	<select id="isSensorId" parameterType="map" resultType="HashMap">
+		SELECT
+			COUNT(SENSOR_ID) as cnt
+		FROM girl_safe_hw
+		WHERE SENSOR_ID = #{sensorId}
+	</select>
+	
+	<select id="isSmartId" parameterType="map" resultType="HashMap">
+		SELECT
+			COUNT(SMART_ID) as cnt
+		FROM girl_safe_hw
+		WHERE SMART_ID = #{smartId}
+	</select>
+	
+	<select id="isPhoneNumber" parameterType="map" resultType="HashMap">
+		SELECT
+			COUNT(PHONE_NUMBER) as cnt
+		FROM girl_safe_user
+		WHERE PHONE_NUMBER = #{phoneNumber}
 	</select>
 </mapper>
