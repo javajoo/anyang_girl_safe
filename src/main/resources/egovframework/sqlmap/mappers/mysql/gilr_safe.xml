@@ -951,7 +951,7 @@
 			a.ENCRYPT_NAME as name,
 			a.PHONE_NUMBER as phoneNumber,
 			a.ENCRYPT_ADRES as adres,
-			date_format(a.BIRTH,'%Y/%m/%d') as birth,
+			a.BIRTH as birth,
 			b.POINT_X as pointX,
 			b.POINT_Y as pointY,
 			b.M_POINT_X as mPointX,
@@ -961,12 +961,11 @@
 			b.EMERGENCY as emergency,
 			c.S_ENCRYPT_NAME as sName,
 			c.S_PHONE_NUMBER as sPhoneNumber,
-			c.S_ENCRYPT_ADRES as sAdres,
 			c.RELATIONS as realation,
 			now() as time
 		FROM girl_safe_user a
 		JOIN girl_safe_hw b ON a.PHONE_NUMBER = b.PHONE_NUMBER
-		JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+		LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 		WHERE b.SENSOR_ID = #{sensorId}
 	</select>
 	

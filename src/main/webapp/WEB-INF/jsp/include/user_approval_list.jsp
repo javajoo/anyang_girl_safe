@@ -276,7 +276,6 @@ function reload(){
 				}
 			} else {
 				setStationId(rows);
-				setBirthToAge(this);
 			}
 		}
 	});

@@ -122,7 +122,7 @@ function createFeature(data){
 	if(pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
 	            new OpenLayers.Geometry.Point(pointX,pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-	            {sensorId:data.sensorId, name:data.name, age:data.age, gpsX:pointX, gpsY:pointY, 
+	            {sensorId:data.sensorId, name:data.name, birth:data.birth, gpsX:pointX, gpsY:pointY, 
 	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
 	            	bat: data.bat, emergency: data.emergency
 	            } ,
@@ -143,7 +143,7 @@ function removeFeature(data){
 	if(data.pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
 	            new OpenLayers.Geometry.Point(data.pointX,data.pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-	            {hwSerial:data.hwSerial, name:data.name, age:data.age, gpsX:data.pointX, gpsY:data.pointY, 
+	            {hwSerial:data.hwSerial, name:data.name, birth:data.birth, gpsX:data.pointX, gpsY:data.pointY, 
 	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
 	            	bat: data.bat, emergency: data.emergency
 	            } ,
@@ -191,7 +191,7 @@ function selectEeventMGIS(row, data){
 function setEmergencyPopup(data) {
 	
 	var name = data.name;
-	var age = data.age;
+	var birth = data.birth;
 	var phoneNumber = data.phoneNumber;
 	var address = data.address;
 	var sPhoneNumber = data.sPhoneNumber;
@@ -205,7 +205,7 @@ function setEmergencyPopup(data) {
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + name + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + age + "</div></td></tr>";
+	info += "<td><div class=\"event_popup_col\">" + birth + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + phoneNumber + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";

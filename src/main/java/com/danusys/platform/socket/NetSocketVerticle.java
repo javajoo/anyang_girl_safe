@@ -54,8 +54,8 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	private NetServer netServer;
 	@Autowired
     private BaseService baseService;
-	private String smsServer = "127.0.0.1";//"172.20.14.6";//"211.220.152.67";
-    private int sms_port = 10021;
+	private String smsServer = "58.76.192.101";//"172.20.14.6";//"211.220.152.67";
+    private int smsPort = 10031;
     private String gisServer = "58.76.192.7";//"172.20.14.29";//"172.20.14.6";//"211.220.152.67";
     private int gisPort = 9000;
     @Resource(name="smsInfoService")
@@ -234,10 +234,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 
 			try {
 				
-				//sendSms(eventList);
-				
+				sendSms(eventList);
 				sendGis(eventList);
-				JsonObject obj = new JsonObject(map);
+				Map<String,Object> event = eventList.get(0);
+				JsonObject obj = new JsonObject(event);
 				//send(obj);
 				NetSocketVerticle.logger.info(obj
 						.toString());
@@ -340,11 +340,11 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			try {
 				map.put("emergency", "1");
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
-						.baseSelectList("girlSafe.getHwInfo",map);
-				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
-				//sendSms(eventList);
+						.baseSelectList("girlSafe.getHwInfo",map);*/
+				sendSms(eventList);
 				sendGis(eventList);
-				JsonObject obj = new JsonObject(map);
+				Map<String,Object> event = eventList.get(0);
+				JsonObject obj = new JsonObject(event);
 				NetSocketVerticle.logger.info(obj
 						.toString());
 
@@ -447,12 +447,13 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				map.put("emergency", "0");
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
-				Map<String,Object> event = CommonUtil.ListToMap(eventList);*/
+*/
 				sendGis(eventList);
-				JsonObject obj = new JsonObject(map);
+				
+				Map<String,Object> event = eventList.get(0);
+				JsonObject obj = new JsonObject(event);
 				NetSocketVerticle.logger.info(obj
 						.toString());
-
 				NetSocketVerticle.this.webSocketVerticle
 						.getIo().sockets()
 						.emit("response", obj);
@@ -515,19 +516,22 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
     	try{ // 서버가 가동되지 않는 환경에서는 막아둘 것
     		Map<String, Object> result = new HashMap<String, Object>();
     		String msg;
-        	if(result.get("sPhoneNumber") != null){
-	        	result = eventList.get(0);
+        	for(int i=0 ;i<eventList.size();i++){
+	        	result = eventList.get(i);
+	        	
 	        	String name = (String)result.get("name");
 	        	String content = name+"님 센서에 침입 감지가 되었습니다.";
 	        	String rcvId = (String)result.get("sName");
 		    	String rcvMobl = (String)result.get("sPhoneNumber");
-	        	socket = new Socket(smsServer , sms_port);
-	        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
-	        	msg = "SAF,"+name+","+content+","+rcvId+","+rcvMobl;
-	        	
-	        	oos.write(msg);
-				oos.flush();
-				oos.close();
+		    	if(rcvMobl != null){
+		        	socket = new Socket(smsServer , smsPort);
+		        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
+		        	msg = "SAF,"+name+","+content+","+rcvId+","+rcvMobl;
+		        	
+		        	oos.write(msg);
+					oos.flush();
+					oos.close();
+		    	}
         	}
     	}catch(Exception exx){
     		exx.printStackTrace();
@@ -578,10 +582,9 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		    String name = (String) result.get("name");
 		    String phoneNumber = (String) result.get("phoneNumber");
 		    String address = (String) result.get("adres");
-		    String age = Integer.toString((int) result.get("age"));
+		    String age = (String)result.get("birth");
 		    String protName = (String) result.get("sName");
         	String protPhoneNumber = (String) result.get("sPhoneNumber");
-        	String protAddress = " ";
         	String protRelation = (String) result.get("realation");
         	int emergency = (int) result.get("emergency");
         	String pointX;
@@ -606,13 +609,11 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		        	if(protPhoneNumber != null){
 			        	msg.put("protName", protName);
 			        	msg.put("protPhoneNumber", protPhoneNumber);
-			        	msg.put("protAddress", protAddress);
 			        	msg.put("protRelation", protRelation);
 		        	}
 		        	else{
 		        		msg.put("protName", " ");
-			        	msg.put("protPhoneNumber", " ");
-			        	msg.put("protAddress", " ");
+			        	msg.put("protPhoneNumber", " ");			        	
 			        	msg.put("protRelation", " ");
 		        	}
 		        	msg.put("pointX",pointX);

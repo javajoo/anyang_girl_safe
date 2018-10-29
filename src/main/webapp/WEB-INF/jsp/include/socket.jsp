@@ -27,49 +27,32 @@
 			socket.on('response', function(evt) {
 				console.log('[EVENT] Event Received : ' + JSON.stringify(evt));
 				var sensorId = evt.sensorId; 
+				var emergency = evt.emergency;
+				var sensorConn = evt.sensorConn;
 				var sPath = window.location.pathname;
 				var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
 
 				console.log('[EVENT] authority check.' + contextRoot + ':' + sensorId);
-				jsonObj = {};
-				jsonObj.sensorId = sensorId; 
-				 $.ajax(
-				{
-					type       : "POST",
-					url        : "${pageContext.request.contextPath}/select/girlSafe.getHwInfo/action.do",
-					dataType   : "json",
-					data       : {"param" : JSON.stringify(jsonObj)},
-					async      : false,
-					beforeSend : function(xhr)
-					{
-					    // 전송 전 Code
-					}
-				}).done(function (result) {
+				
 					var audio = new Audio(contextRoot + '/sound/siren.mp3');
 					var pointX;
 					var pointY;
-					if(result[0].emergency == '1'){
+					if(emergency == '1'){
 						audio.play();
 					}
 					layerClean(eventLayer);
 					search_home();
-					if(result[0].sensorConn > 0){
-						pointX = result[0].pointX;
-						pointY = result[0].pointY;
+					if(sensorConn > 0){
+						pointX = evt.pointX;
+						pointY = evt.pointY;
 					}
 					else{
-						pointX = result[0].mPointX;
-						pointY = result[0].mPointY;
+						pointX = evt.mPointX;
+						pointY = evt.mPointY;
 					}
-					if (result[0].emergency > 0) {
-						map.setCenter(new OpenLayers.LonLat(pointX, pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 18);
+					if (emergency > 0) {
+						map.setCenter(new OpenLayers.LonLat(pointX, pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 18);					
 					}
-				}).fail(function (xhr) {
-					alert("실패");
-				}).always(function() {
-				
-				});
-				
 			});
 		}
 		catch (err) 
