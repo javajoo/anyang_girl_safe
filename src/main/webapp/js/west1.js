@@ -369,3 +369,11 @@ function setBirthToAge(listTable) {
 		$(listTable).datagrid('refreshRow', i);
 	}
 }
+
+function loadEditor(id){
+    var instance = CKEDITOR.instances[id];
+    if(CKEDITOR.instances.instance){
+        CKEDITOR.instances.instance.destroy();
+    }
+    CKEDITOR.replace(id, {removePlugins: "wordcount"});
+}

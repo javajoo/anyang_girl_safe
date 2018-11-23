@@ -33,8 +33,8 @@
 	</div>
 </div>
 <script>
-CKEDITOR.replace('editor1');
 $(document).ready(function(){
+	loadEditor('editor1');
 	reload();
 });
 

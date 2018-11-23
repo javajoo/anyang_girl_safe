@@ -112,10 +112,11 @@
 	function getBoardOne(row, data) {
 		var url = "/select/girlSafe.getBoardOne/action.do";
 		const path = "include/board_detail";
+		const id = path.split("/")[1];
 		const jsonObj = {};
 		jsonObj.no = data.no;
 		jsonObj.path = path;
-        common.openDialogPopPosition("", "상세보기", "1024", "470", "true", "/action/page.do", jsonObj, path.split("/")[1]);
+        common.openDialogPopPosition(id, "상세보기", "1024", "470", true, "/action/page.do", jsonObj, id);
 	}
 	
 	function updateCount(row, data) {

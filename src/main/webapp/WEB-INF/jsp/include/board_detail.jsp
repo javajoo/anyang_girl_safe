@@ -79,7 +79,7 @@
 					<em>내용</em>
 				</div>
 				<div class="list_cont7">
-					<textarea name="editor2" id="update_board_content" id="editor1" rows="10" cols="80">
+					<textarea name="editor2" id="editor2" rows="10" cols="80">
 					</textarea>
 				</div>
 			</li>
@@ -99,8 +99,8 @@
 </div>
 
 <script>
-CKEDITOR.replace('editor2');
 $(document).ready(function(){
+	loadEditor('editor2');
 	$("#update_area").hide();
 	reload_detail();
 });
@@ -124,7 +124,7 @@ function updatePosts() {
 	var no = "${no}";
 	const jsonObj = {};
 	jsonObj.title = $("#update_board_title").val();
-	jsonObj.content = CKEDITOR.instances.update_board_content.getData();
+	jsonObj.content = CKEDITOR.instances['editor2'].getData();
 	jsonObj.no = no;
 	$.ajax({
 		type : "POST"
@@ -143,7 +143,7 @@ function updatePosts() {
 	});
 }
 
-function setValues(data) {
+function setBoardValues(data) {
 	$("#board_detail_title").text(data.title);
 	$("#board_detail_content").html(data.content);
 	$("#board_detail_count").text(data.count);
@@ -152,7 +152,13 @@ function setValues(data) {
 	$("#board_detail_update_date").text(data.updateDate);
 	
 	$("#update_board_title").val(data.title);
-	CKEDITOR.instances.update_board_content.setData(data.content);
+	
+	CKEDITOR.instances['editor2'].setData(data.content, {
+		callback: function() {
+			CKEDITOR.instances['editor2'].setData(data.content);
+			this.checkDirty();
+		}
+	});
 }
 
 function reload_detail(){
@@ -167,8 +173,7 @@ function reload_detail(){
 		, data : {"param" : JSON.stringify(jsonObj)}
 		, success:function(datas)
 		{
-			console.log(datas);
-			setValues(datas[0]);
+			setBoardValues(datas[0]);
 		}
 		, error:function(e){
 			alert(e.responseText);

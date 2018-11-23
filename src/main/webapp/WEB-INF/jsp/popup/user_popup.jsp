@@ -73,7 +73,6 @@
 </div>
 <script>
 $(document).ready(function(){
-	console.log(selectedData);
 	if (typeof(selectedData) != 'undefined' && selectedData != '') {
 		setUserDetailData(selectedData);
 	}
@@ -94,6 +93,13 @@ function onUserUpdatePopup() {
 function setUserDetailData(data) {
 	var row = data[0];
 	
+	var smartId = row.smartId;
+	var idLength = 4 - smartId.length;
+	for (var j = 0; j < idLength; j++) {
+		smartId = '0' + smartId;
+	}
+	smartId = 'SA-S' + smartId;
+	
 	$('#user_sensor_box').attr('disabled', true);
 	$('#user_smart_box').attr('disabled', true);
 	$('#user_name_box').attr('disabled', true);
@@ -102,9 +108,9 @@ function setUserDetailData(data) {
 	$('#user_phone_box').attr('disabled', true);
 	
 	$('#user_sensor_box').val(row.sensorId);
-	$('#user_smart_box').val('SA-S' + row.smartId);
+	$('#user_smart_box').val(smartId);
 	$('#user_name_box').val(row.name);
-	$('#user_birth_box').val(getAge(row.birth));
+	$('#user_birth_box').val(row.birth);
 	$('#user_address_box').val(row.address);
 	$('#user_phone_box').val(row.phoneNumber);
 	$('#user_update_btn').css('display', 'inline-block');
@@ -123,7 +129,7 @@ function checkSmartId() {
 	var pattern = /^SA-S\d{4}$/;
 	
 	if (!pattern.test(smartId)) {
-		alert("Station ID 형식과 맞지 않습니다.\nID 형식은 아래와 같습니다.\n예)SA-S0000")
+		alert("Station ID 형식과 맞지 않습니다.\nID 형식은 아래와 같습니다.\n예)SA-S0000");
 		return flag;
 	}
 	
@@ -132,7 +138,13 @@ function checkSmartId() {
 	smartId = smartId.replace('SA-S', '');
 	
 	smartId = parseInt(smartId);
-	
+
+	if (typeof(selectedData) != 'undefined' && selectedData != '' && 
+			selectedData[0].smartId == smartId) {
+		flag = true;
+		return flag;
+	}
+
 	jsonObj.smartId = smartId;
 
     $.ajax(
@@ -159,7 +171,7 @@ function checkSmartId() {
     }).always(function() {
 
     });
-	
+    
 	return flag;
 }
 
@@ -169,11 +181,18 @@ function checkSensorId() {
 	var pattern = /^SA-I\d{4}$/;
 	
 	if (!pattern.test(sensorId)) {
-		alert("Sensor ID 형식과 맞지 않습니다.\nID 형식은 아래와 같습니다.\n예)SA-I0000")
+		alert("Sensor ID 형식과 맞지 않습니다.\nID 형식은 아래와 같습니다.\n예)SA-I0000");
 		return false;
 	}
 	
 	const jsonObj = {};
+
+	if (typeof(selectedData) != 'undefined' && selectedData != '' && 
+			selectedData[0].sensorId == sensorId) {
+		flag = true;
+		return flag;
+	}
+	
 	jsonObj.sensorId = sensorId;
 	
     $.ajax(
@@ -211,14 +230,19 @@ function checkPhoneNumber() {
 	
 	phoneNumber = phoneNumber.replace(/-/g, "");
 	
-	console.log(phoneNumber);
-	
 	if (!pattern.test(phoneNumber)) {
-		alert("핸드폰 번호 형식에 맞지 않습니다.\n형식은 아래와 같습니다.\n예)01012345678 또는 010-1234-4382")
+		alert("핸드폰 번호 형식에 맞지 않습니다.\n형식은 아래와 같습니다.\n예)01012345678 또는 010-1234-4382");
 		return flag;
 	}
 	
 	const jsonObj = {};
+
+	if (typeof(selectedData) != 'undefined' && selectedData != '' && 
+			selectedData[0].phoneNumber == phoneNumber) {
+		flag = true;
+		return flag;
+	}
+	
 	jsonObj.phoneNumber = phoneNumber;
 
     $.ajax(
@@ -255,7 +279,7 @@ function checkBirth() {
 	var pattern = /\d{8}$/;
 	
 	if (!pattern.test(birth)) {
-		alert("생년월일 형식에 맞지 않습니다.\n형식은 아래와 같습니다.\n예)19900222")
+		alert("생년월일 형식에 맞지 않습니다.\n형식은 아래와 같습니다.\n예)19900222");
 	} else {
 		flag = true;
 	}
