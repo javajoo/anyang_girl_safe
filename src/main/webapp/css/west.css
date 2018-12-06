@@ -172,6 +172,26 @@
 	line-height: 27px;
 }
 
+.list_ty_middle {
+	float: left;
+	width: 60%;
+	padding: 20% 20%;
+}
+
+.list_ty_middle li {
+	float: left;
+	width: 100%;
+	margmin: 10px 0 0 0;
+}
+
+.list_ty_middle .btn_list {
+	margin: 10px 0 0 0;
+	float: right;
+}
+
+.list_ty_middle li span {
+	margin: 0 !important;
+}
 .list_ty_full {
 	float: left;
 	width: 100%;
@@ -193,7 +213,7 @@
 
 .list_cont {
 	display: inline;
-	margin: 0 0 0 10px;
+	/* margin: 0 0 0 10px; */
 }
 
 .list_cont2 {
@@ -921,6 +941,52 @@
     border: 1px solid #e1e1e1;
 }
 
+.list_title, .list_title_full {
+	background-color: #555555;
+	text-align: center;
+	height: 30px;
+	color: #ffffff;
+	float: left;
+	line-height: 30px;
+}
+
+.list_title {
+	width: 20%;
+}
+
+.list_cont_harf {
+	width: 50%;
+	float: left;
+	text-align: center;
+}
+
+.list_padding {
+	padding: 10px 0;
+}
+
+.list_cont input, .list_cont select {
+	width: 97%;
+	height: 28px;
+	height: -webkit-calc(26px);
+	height: -moz-calc(26px);
+	text-align: center;
+}
+
+.list_cont_full {
+	width: 100%;
+	text-align: center;
+	float: left;
+}
+
+.list_cont_full {
+	width: 99.44%;
+}
+
+.list_cont_full2 {
+	width: 99.44%;
+	float: left;
+	text-align: center;
+}
 .grid_image_box {
 	width: 40px;
 	height: 18px;

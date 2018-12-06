@@ -143,6 +143,20 @@
 </script>
 
 <script type="text/javascript">
+	var rank = ${admin.rank};
+	$(function() {
+		var period = ${admin.period};
+		if (period > 0) {
+			var c = confirm("비밀번호 변경기간이 3개월이 지났습니다. 변경하시겠습니까?");
+			if(c == true) {
+				var modal = document.getElementById('passwordModal');
+				//$('#passwordModal').modal();
+				window.open("/updatePassword.do", "팝업", "left=20, top=20, width=500, height=180");
+			}
+	    }
+		rankDisplay(rank);
+	});
+
 	$(document).ready(function(){
 		$(".gnb .gnb_ul li a").click(function(event){
 			$(".gnb .gnb_ul li a").removeClass("selected");
@@ -290,6 +304,7 @@
 		layerClean(facilityLayer);
 		clearInterval(eventM);
 		$("#west-panel").show();
+		$('#left-panel').hide();
 		if(flag == 'menu_home'){
 			layerClean(selectedImageLayer);
 			search_home();
@@ -323,6 +338,10 @@
 			changeWidth("full");
 			search_list("/include/stats_list");
 		}
+		else if(flag == 'menu_setting'){
+			$('#left-panel').show();
+			settingMenuChange('menu_adminSetting');
+		}
 	}
 	
 	
@@ -335,6 +354,7 @@
 		$('.map_btn_area').show();
 		
 		var width = $('.title_area').css('width');
+		$('#west-panel').css('left','0');
 		if(flag == 'west'){
 			
 			$('#west-panel').css('width','100%');
@@ -406,6 +426,28 @@
 		}
 		else if(flag == 'start'){
 			resizeMap('0px','100%','calc(100% - 44px)');
+		}
+		else if (flag == 'west_full') {
+			resizeMap('0px','100%','calc(100% - 44px)');
+			$('#left-panel').css('width','10%');
+			$('#west-panel').css({
+				'width': '90%',
+				'left': '10%'
+			});
+			$('.gnb_next').css('width','100%');
+			//레이어 숨기기
+			$('.layer').hide();
+			$('.layer_tool_open').removeClass("layer_tool_open").addClass("layer_tool_close");
+			var widthChange = '95%';
+			$('#menu_cont .datagrid .easyui-fluid').css('left','30px');
+			$('#menu_cont .datagrid').css('width',widthChange);
+			$('#menu_cont .datagrid-wrap').css('width',widthChange);
+			$('#menu_cont .datagrid-view').css('width',widthChange);
+			$('#menu_cont .datagrid-view2').css('width',widthChange);
+			$('#menu_cont .datagrid-view2 .datagrid-header').css('width',widthChange);
+			$('#menu_cont .datagrid-view2 .datagrid-body').css('width',widthChange);
+			$('#menu_cont .datagrid-view2 .datagrid-body').css('overflow','hidden');
+			$('#menu_cont .datagrid-view2 .datagrid-footer').css('width',widthChange);
 		}
 		else{
 			resizeMap('480px','calc(100% - 480px)','calc(100% - 44px)');
@@ -1101,12 +1143,23 @@
 			</header>
 			
         	<div class="account_area">
+				<div class="account">
+					<a href="#" id="setting_btn" onclick="javascript:menuDisplay('menu_setting')">환경설정</a>
+				</div>
 				<div class="account">${admin.USER_NM_KO}</div>
 				<div id="login_pop" class="login_pop_down"></div>
 				<span class="login_image"></span>
 			</div>
     	</div>
 	<div id="gis_layout" class="easyui-layout" style="">
+		<div id="left-panel">
+			<nav class="gnb_left">
+				<ul>
+					<li><a href="javascript:settingMenuChange('menu_adminSetting')" class="selected" id="setting_1">계정 관리</a></li>
+					<li><a href="javascript:settingMenuChange('menu_webSetting')">WEB 설정</a></li>
+				</ul>
+			</nav>
+		</div>
 		<div id="west-panel">
     		<div id="west_area" class="west_area">
     			<div class="west_cont" id="menu_cont">

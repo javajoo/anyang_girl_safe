@@ -70,6 +70,8 @@
 				, GU.GRP_NM_KO
 				, GU.AUTH_LVL_NM
 				, MIN(GU.AUTH_LVL) AUTH_LVL
+				, IF(ADDDATE(now(),INTERVAL -3 month) > LAST_PWD_UPDATE_DATE, 1, 0) period
+				, A.RANK rank
 			FROM admin A
 			LEFT JOIN (
 			SELECT A.USER_ID, A.GRP_ID, B.GRP_NM_KO , C.AUTH_LVL_NM , C.AUTH_LVL 

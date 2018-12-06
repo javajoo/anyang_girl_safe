@@ -377,3 +377,42 @@ function loadEditor(id){
     }
     CKEDITOR.replace(id, {removePlugins: "wordcount"});
 }
+
+function settingMenuChange(flag) {
+	$(".gnb_left li a").click(function(event){
+		$(".gnb_left li a").removeClass("selected");
+		$(event.target).addClass("selected");
+	});
+	
+	if(flag == 'menu_adminSetting'){
+		changeWidth("west_full");
+		changeSettingPage("/include/admin_setting");	
+	}
+	else if(flag == 'menu_webSetting') {
+		changeWidth("west_full");
+		changeSettingPage("/include/web_setting");	
+	}
+}
+function changeSettingPage(page){
+	$("#path").val(page);
+	$(".gnb_left ul").children("li").removeClass("active");
+	$(this).addClass("active");
+    $("#menu_cont").html("");
+    $("#menu_cont").load("/action/page.do", { path : page }, function() {
+    	
+    });
+}
+
+function rankDisplay(rank) {
+	if(rank >= 2) {
+		$('#topmenu_eventSearch').hide();	//이벤트 검색
+		$('#setting_btn').hide();			//환경설정
+	}
+	if(rank == 3) {
+		$('#topmenu_board').hide();			//게시판
+		$('#topmenu_userList').hide();		//가입자 관리
+		$('.update_button').hide();			//수정
+		$('.save_button').hide();			//저장
+		$('.delete_button').hide();			//삭제
+	}
+}

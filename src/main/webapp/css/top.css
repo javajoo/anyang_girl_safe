@@ -50,6 +50,44 @@
 	background: #384162;
 }
 
+.gnb_left {
+	position:absolute;
+}
+.gnb_left li {
+	float:left;
+	margin-left:34px;
+}
+.gnb_left li a {
+	position: relative;
+    display: block;
+    /* padding: 10px 3px 12px 3px; */
+    padding: 15px 15px 15px 15px;
+    font-family: 'nanum-barun-gothic-regular';
+    font-size: 15px;
+    line-height: 15px;
+    transition: all 0.3s;
+}
+.gnb_left li a:before {
+	position:absolute;
+	left:0;
+	top: 34px;
+	width:100%;
+	height:0;
+	background:#1a9df7;
+	content:"";
+	transition:all 0.3s;
+}
+.gnb_left li a:hover:before,
+.gnb_left li a:hover:focus:before,
+.gnb_left li.on a:before {height:3px;}
+.gnb_left li a.selected {
+    height: 13.5px;
+    bottom: 0px;
+	color: #fff;
+	background: #1a9df7;
+	text-weight: bold;
+}
+
 /** 소메뉴 **/
 .gnb_next {
 	position: absolute;
@@ -58,7 +96,12 @@
     background: #f8f8f8;
     left: 0;
 }
-.gnb_next li {float:left;margin-left:24px;}
+.gnb_next li {
+	float: left;
+	width: 60%;
+	padding: 0 20%;
+	text-align: center;
+}
 .gnb_next li a {
 	position: relative;
     display: block;
@@ -159,18 +202,27 @@
     top: 12px;
     right: 60px;
     z-index: 1;
-    width: 220px;
+    width: 280px;
     height: 67px;
 }
 .account {
-	position: absolute;
     line-height: 78px;
     color: #fff;
     font-size: 15px;
     font-family: 'nanum-barun-gothic-regular';
-    width: 120px;
-    right: 115px;
-    text-align: right;
+    text-align: center;
+    float: left;
+    padding: 0 0 0 33px;
+    position: absolute;
+    right: 70px;
+    width: 130px;
+    height: 50px;
+}
+.account a {
+	color: #ffffff;
+	position: absolute;
+    left: 0;
+	z-index: 1;
 }
 .login_pop_down {
 	background: url(../images/icons/arrow_down.png) no-repeat center center;
@@ -237,7 +289,7 @@ display:block;   마우스 커서 올리면 서브메뉴 보이게 하기
 	display: inline-block;
     position: absolute;
     top: 83px;
-    right: 10px;
+    right: 52px;
     background: #384162;
     height: 40px;
     width: 160px;
@@ -302,8 +354,3 @@ display:block;   마우스 커서 올리면 서브메뉴 보이게 하기
 	border-bottom: solid 1px #fff;
 	padding-bottom: 2px;
 }
-
-
-
-
-

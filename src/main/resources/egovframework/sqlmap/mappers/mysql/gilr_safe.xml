@@ -989,4 +989,159 @@
 		FROM girl_safe_user
 		WHERE PHONE_NUMBER = #{phoneNumber}
 	</select>
+	
+	<select id="getAdminList" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+				@ROWNUM := @ROWNUM + 1 AS num,
+				a.SEQ_NO as seqNo,
+				a.ID as id,
+				a.PWD as password,
+				a.NAME as name,
+				a.BIRTHDAY as birthday,
+				a.PHONE_NO as phoneNumber,
+				a.EMAIL as email,
+				a.ADDRESS as address,
+				a.RANK as rank,
+				date_format(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s')as insertDate,
+				date_format(a.UPD_DATE,'%Y-%m-%d %H:%i:%s') as updateDate 
+			FROM admin a
+	        ,(SELECT @ROWNUM := #{firstIndex}) R 
+	        WHERE 1=1
+	     ]]>
+	    <if test="userTimeS != null and userTimeS != ''">
+	    <![CDATA[
+	    	AND a.CREATE_DATE >= #{userTimeS}
+	    ]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND a.CREATE_DATE <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if>
+	</select>
+	<select id="getAdminListCnt" parameterType="map" resultType="String">
+		<![CDATA[
+	         SELECT 
+				COUNT(*)
+			FROM admin a
+			WHERE 1=1
+	     ]]>
+		<if test="userTimeS != null and userTimeS != ''">
+	    <![CDATA[
+	    	AND a.CREATE_DATE >= #{userTimeS}
+	    ]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND a.CREATE_DATE <= #{userTimeE}
+	    ]]>
+		</if>
+	</select>
+	
+	<insert id="insertAdmin" parameterType="map">
+		<![CDATA[
+		INSERT INTO admin (
+			ID,
+			PWD,
+			NAME,
+			BIRTHDAY,
+			PHONE_NO,
+			EMAIL,
+			RANK,
+			CREATE_DATE,
+			UPD_DATE
+		) VALUES (
+			#{id},
+			#{password},
+			#{name},
+			#{birthday},
+			#{phoneNumber},
+			#{email},
+			#{address},
+			#{rank},
+			NOW(),
+			NOW()
+		)
+		]]>
+	</insert>
+	
+	<update id="updateAdmin" parameterType="map">
+		<![CDATA[
+		UPDATE admin
+		SET
+		]]>
+		<if test="password != null">
+		PWD=#{password},
+		</if>
+		<![CDATA[
+		NAME=#{name},
+		BIRTHDAY=#{birthday},
+		PHONE_NO=#{phoneNumber},
+		EMAIL=#{email},
+		ADDRESS=#{address},
+		RANK=#{rank},
+		UPD_DATE=NOW()
+		WHERE SEQ_NO=#{seqNo};
+		]]>
+	</update>
+	
+	<select id="getLoginFailCount" parameterType="map" resultType="String">
+		<![CDATA[		
+	       SELECT 
+				LOGIN_FAIL_COUNT
+			FROM admin
+	        WHERE ID=#{id};
+	     ]]>
+	</select>
+	
+	<update id="updateLoginFailCount" parameterType="map">
+		<![CDATA[
+			UPDATE admin
+			SET
+			]]>
+			<if test='checkFlag == "X"'>
+			LOGIN_FAIL_COUNT=LOGIN_FAIL_COUNT+1
+			</if>
+			<if test='checkFlag == "O"'>
+			LOGIN_FAIL_COUNT=0
+			</if>
+			<![CDATA[
+			WHERE ID=#{id};
+		]]>
+	</update>
+	
+	<select id="passCheck" parameterType="map" resultType="String">
+		<![CDATA[		
+	       SELECT 
+				COUNT(*)
+			FROM admin
+			WHERE 1=1
+			AND id = #{userId}
+			AND pwd = #{orgPassword}
+			AND deleted = 'N'
+	     ]]>
+	</select>
+	
+	<update id="updatePassword" parameterType="map">
+		<![CDATA[
+			UPDATE admin
+			   SET last_pwd_update_date = DATE_FORMAT(now(),'%Y%m%d%H%i%s')
+		]]>
+		<if test='passFlag != "later"'><![CDATA[
+				, pwd = #{newPassword}
+		]]></if>
+		<![CDATA[
+			WHERE id = #{userId}
+		]]>
+		<if test='passFlag != "later"'><![CDATA[
+			AND pwd = #{orgPassword}
+		]]></if>
+		<![CDATA[
+			AND deleted = 'N'
+ 		]]>
+	</update>
 </mapper>

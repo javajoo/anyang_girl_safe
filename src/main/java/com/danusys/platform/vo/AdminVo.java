@@ -49,7 +49,7 @@ public class AdminVo {
 	private String GRP_NM_KO;
 	private String AUTH_LVL_NM;
 	
-	
+	private String period;
 
    
     public String getId() {
@@ -275,6 +275,12 @@ public class AdminVo {
     public void setAUTH_LVL_NM(String aUTH_LVL_NM) {
         AUTH_LVL_NM = aUTH_LVL_NM;
     }
+	public String getPeriod() {
+		return period;
+	}
+	public void setPeriod(String period) {
+		this.period = period;
+	}
     
     
 }

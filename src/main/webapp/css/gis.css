@@ -20,6 +20,17 @@
     left: 0px;
 }
 
+#left-panel {
+	width: 10%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    /* top: 80px; */
+	z-index: 1;
+	border: 1px solid #c4c4c4;
+	background: #ffffff;
+}
+
 #west-panel {
 	width: 480px;
     height: 100%;

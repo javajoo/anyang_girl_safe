@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.danusys.cmm.util.JsonUtil;
 import com.danusys.platform.login.service.ConfigService;
 import com.danusys.platform.login.service.LoginService;
 import com.danusys.platform.login.service.ConfigVO;
@@ -28,8 +30,10 @@ import com.danusys.platform.vo.AdminVo;
 import com.danusys.platform.web.LoginManager;
 import com.danusys.platform.west.service.LogService;
 import com.danusys.platform.west.service.LogVO;
+import com.danusys.service.BaseService;
 import com.google.gson.Gson;
 
+import egovframework.let.utl.sim.service.EgovFileScrty;
 import egovframework.rte.fdl.property.EgovPropertyService;
 
 @Controller
@@ -55,6 +59,9 @@ public class LoginController {
     @Resource(name = "propertiesService")
     protected EgovPropertyService propertiesService;
     
+    @Autowired
+    private BaseService baseService;
+    
     /**
      * 로그인을 수행한다.
      * @param request
@@ -79,43 +86,118 @@ public class LoginController {
         System.out.println( "===================  /login.do BEGIN " );
         HttpSession session = request.getSession();
         String rtn = "redirect:/main.do";
+        
+        Map<String, Object> param = new HashMap<String, Object>();
+    	param.put("id", id);
+    	
+    	/*로그인실패 카운트 체크 5번이상 실패 시 제한*/
+    	int checkCnt = Integer.parseInt(baseService.baseSelectOne("girlSafe.getLoginFailCount", param));
+        if(checkCnt >= 5) return rtn = "redirect:/loginError.do?err=3";
+        
         try{
             AdminVo lgnVO = this.loginService.login(request, id, pwd);
             LoginManager loginManager = LoginManager.getInstance();
             loginManager.setSession(session, id);
             request.getSession().setAttribute("admin", lgnVO); // 세션에 로그인 정보 바인드
             System.out.println( "===================  /login.do getUserCount >>>> " + loginManager.getUserCount() );
+            
+            /*정상 로그인 시 로그인실패 카운트 초기화*/
+            if(lgnVO != null) {
+            	param.put("checkFlag", "O");
+            	baseService.baseUpdate("girlSafe.updateLoginFailCount", param);
+            }
         }catch(NullPointerException e){
             request.getSession().removeAttribute("admin");
             request.getSession().invalidate();
             System.out.println( "===================  /login.do NullPointerException >>>> " + e.getMessage() );
             rtn = "redirect:/loginError.do";
         }catch(Exception e){
+        	/*로그인실패 시 카운트 +1*/
+        	param.put("checkFlag", "X");
+        	baseService.baseUpdate("girlSafe.updateLoginFailCount", param);
+        	
             request.getSession().removeAttribute("admin");
             request.getSession().invalidate();
             System.out.println( "===================  /login.do Exception >>>> " + e.getMessage() );
             rtn = "redirect:/loginError.do?err=2";
         }
-
-        
-        //if (lgnVO != null) {
-
-            //request.getSession().setAttribute("admin", lgnVO); // 세션에 로그인 정보 바인드
-        //} else {
-            //rtn = "/danu/com/platform/logout.do";
-            //System.out.println( "===================  /login.do " + lgnVO.toString() );
-        //}
-        
-        /*if (lgnVO != null) {
-            request.getSession().setAttribute("admin", lgnVO); // 세션에 로그인 정보 바인드
-            //rtn = "/main.do";
-        } else {
-            loginManager.setSessionCancel(session);
-            request.getSession().removeAttribute("admin");
-          //rtn = "/main.do";
-        }*/
         return rtn;
     }
+    
+    @RequestMapping(value = "/updatePassword.do")
+	public String actionGpkiRegist() throws Exception {
+		return "include/passwordModal";
+	}
+	
+	@RequestMapping("/uat/uia/passCheck.do")
+	public void checkPass(HttpServletRequest request, @ModelAttribute("passwordBoard") AdminVo passwordBoard, HttpServletResponse response, ModelMap model) throws Exception {
+		
+		String saltText = this.propertiesService.getString("Globals.SaltText").trim();
+		
+		AdminVo loginVO = (AdminVo) request.getSession().getAttribute("admin");
+		Map<String, Object> param = null;
+		
+		String resultJson;
+		
+		if (request.getParameter("param").trim().equals("") == true)
+        {
+        	param = new HashMap<String, Object>();
+        }
+        else
+        {
+            param = JsonUtil.JsonToMap(request.getParameter("param"));
+        }
+		param.put("userId",loginVO.getId());
+		
+		String password = (String) param.get("orgPassword");
+    	//String userId = (String) param.get("userId");
+		String orgPassword = EgovFileScrty.encryptPassword(password,saltText);
+    	param.put("orgPassword", orgPassword);
+		String resultDt = baseService.baseSelectOne("girlSafe.passCheck",param);
+		
+		resultJson = "{\"cnt\":\""+resultDt+"\"}";
+		response.getWriter().print(resultJson);
+	}
+	
+	@RequestMapping("/uat/uia/updatePassword.do")
+	public void updatePassword(HttpServletRequest request,  HttpServletResponse response, @ModelAttribute("passwordBoard") AdminVo passwordBoard, ModelMap model) throws Exception {
+		
+		String saltText = this.propertiesService.getString("Globals.SaltText").trim();
+		
+		AdminVo loginVO = (AdminVo) request.getSession().getAttribute("admin");
+		Map<String, Object> param = null;
+		
+		String resultCntJson;
+		
+		if (request.getParameter("param").trim().equals("") == true)
+        {
+        	param = new HashMap<String, Object>();
+        }
+        else
+        {
+            param = JsonUtil.JsonToMap(request.getParameter("param"));
+        }
+		
+		param.put("userId",loginVO.getId());
+		
+		String orgPass = (String) param.get("orgPassword");
+    	String newPass = (String) param.get("newPassword");
+    	String passFlag = (String) param.get("passFlag");
+		String orgPassword = EgovFileScrty.encryptPassword(orgPass,saltText);
+		String newPassword = EgovFileScrty.encryptPassword(newPass,saltText);
+    	param.put("orgPassword", orgPassword);
+    	param.put("newPassword", newPassword);
+    	param.put("passFlag", passFlag);
+		
+		int resultCnt = baseService.baseUpdate("girlSafe.updatePassword",param);
+		System.out.println(resultCnt);
+		
+		resultCntJson = "{\"cnt\":\""+resultCnt+"\"}";
+		response.getWriter().print(resultCntJson);
+
+		loginVO.setPeriod("0");
+		request.getSession().setAttribute("admin", loginVO);
+	}
     
     /**
      * 로그아웃을 수행한다.
@@ -191,6 +273,10 @@ public class LoginController {
             request.getSession().invalidate();
             mav.setViewName("login");
         }
+        
+        /*로그인실패 카운트 체크 5번이상 실패 시 오류페이지 이동*/
+        if(err.equals("3")) mav.setViewName("loginErrorCnt");
+        
         return mav;
     }
 	
