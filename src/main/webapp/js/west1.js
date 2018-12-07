@@ -405,7 +405,7 @@ function changeSettingPage(page){
 
 function rankDisplay(rank) {
 	if(rank >= 2) {
-		$('#topmenu_eventSearch').hide();	//이벤트 검색
+		//$('#topmenu_eventSearch').hide();	//이벤트 검색
 		$('#setting_btn').hide();			//환경설정
 	}
 	if(rank == 3) {
