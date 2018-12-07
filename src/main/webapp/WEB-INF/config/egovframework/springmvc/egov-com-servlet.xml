@@ -74,6 +74,7 @@
 	<bean id="searchLoginLogExcelView" class="com.danusys.platform.web.SearchViewExcel" />
 	<bean id="searchViewLogExcel" class="com.danusys.platform.web.SearchViewExcel" />
 	<bean id="searchFacilityMListExcel" class="com.danusys.platform.web.SearchViewExcel" />
+	<bean id="searchListExcel" class="com.danusys.platform.web.SearchViewExcel" />
 	
 	<tx:annotation-driven />
 

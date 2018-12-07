@@ -15,7 +15,11 @@
  */
 package com.danusys.platform.web;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -26,13 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.danusys.platform.service.ExcelHeaderVO;
-
 import egovframework.rte.fdl.excel.util.AbstractPOIExcelView;
-import egovframework.rte.psl.dataaccess.util.EgovMap;
 
 public class SearchViewExcel extends AbstractPOIExcelView {
 
@@ -48,16 +50,23 @@ public class SearchViewExcel extends AbstractPOIExcelView {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void buildExcelDocument(Map<String, Object> model, XSSFWorkbook wb, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	protected void buildExcelDocument(Map<String, Object> model, XSSFWorkbook wb, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		//response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		//response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		Calendar calendar = Calendar.getInstance();
+        java.util.Date date = calendar.getTime();
+        String today = (new SimpleDateFormat("yyyyMMddHHmmss").format(date));
+		String fileName = request.getParameter("fileName") + today;
+		
+        response.setHeader("Content-Disposition", "attachment; filename="+ fileName +".xlsx");
+        setContentType("application/download; utf-8");
+        
+        
         XSSFCell cell = null;
 
         log.debug("### buildExcelDocument start !!!");
 
-        XSSFSheet sheet = wb.createSheet("검색결과");
-        sheet.setColumnWidth(0, 30*256);
-        sheet.setColumnWidth(1, 30*256);
-        sheet.setColumnWidth(2, 30*256);
-        sheet.setColumnWidth(3, 30*256);
+        XSSFSheet sheet = wb.createSheet(fileName);
         
         //cell 테두리 + 가운데 정렬
         final XSSFCellStyle style = wb.createCellStyle();
@@ -67,47 +76,105 @@ public class SearchViewExcel extends AbstractPOIExcelView {
         style.setBorderTop(XSSFCellStyle.BORDER_THIN);
         style.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
         style.setWrapText(true);
+        style.setAlignment(XSSFCellStyle.ALIGN_CENTER);
         
-        List<ExcelHeaderVO> headers = (List<ExcelHeaderVO>) model.get("headerList");
+        
+        List<Map<String, String>> headers =  (List<Map<String, String>>) model.get("headerList");
+		
+		int inx = 0;
 
-        int inx = 0;
         for (int i = 0; i < headers.size(); i++) {
-			ExcelHeaderVO headerVO = headers.get(i);
-
-			if(headerVO.getHeaderUse()){
-			    cell = getCell(sheet, 0, inx++);
-			    cell.setCellStyle(style);
-				setText(cell, URLDecoder.decode(headerVO.getHeaderText(),"UTF-8"));
-			}
+            sheet.setColumnWidth(i, 30*128);
+        	Map<String, String> headerMap = headers.get(i);
+        	String headerText = headerMap.get("headerText");
+        	headerText = URLDecoder.decode(headerText,"UTF-8");
+        	System.out.println(headerMap.get("headerField"));
+        	System.out.println(headerText);
+		    cell = getCell(sheet, 0, inx++);
+		    cell.setCellStyle(style);
+			setText(cell, headerText);
 		}
         
-        log.debug("### buildExcelDocument cast");
 
-        List<?> list = (List<?>) model.get("result");
+		List<Map<String, Object>> list = (List<Map<String, Object>>) model.get("result");
 
 		for (int i = 0; i < list.size(); i++) {
 	        inx = 0;
 			
-	        EgovMap cctv = (EgovMap)list.get(i);
+	        Map<String, Object> listMap = list.get(i);
 	        
 			for (int j = 0; j < headers.size(); j++) {
-				ExcelHeaderVO headerVO = headers.get(j);
-
-				if(headerVO.getHeaderUse()){
-				    String field = headerVO.getHeaderField();
-					
-					String value = "";
-					if(cctv.get(field) != null)
-						value = cctv.get(field).toString();
-					
-					value = value.replaceAll("<br>", "\n");
-
-					cell = getCell(sheet, 1 + i, inx++);
-					cell.setCellStyle(style);
-					setText(cell, value);
+				Map<String, String> header = headers.get(j);
+			    String field = header.get("headerField");
+				
+				String value = "";
+				if(listMap.get(field) != null){
+					value = listMap.get(field).toString();
 				}
+
+				if (field.equals("smartId")) {
+					value = convertSmartId(listMap.get(field).toString());
+				} else if (field.equals("bat")) {
+					value = convertBatVal(listMap.get(field).toString());
+				}
+
+				cell = getCell(sheet, 1 + i, inx++);
+				cell.setCellStyle(style);
+				setText(cell, value);
 			}
 		}
-    }
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		wb.write(baos);
+		byte[] temp = baos.toByteArray();
+		
+        OutputStream out = response.getOutputStream();
+        out.write(temp);
+        
+		out.close();
+		baos.close();
 
+    }
+	
+	private String convertBatVal(String bat) {
+		String result = "";
+		
+		switch (bat) {
+		case "0":
+			result = "좋음";
+			break;
+		case "1":
+			result = "양호";
+			break;
+		case "2":
+			result = "나쁨";
+			break;
+		case "3":
+			result = "OFF";
+			break;
+		default:
+			result = "none";
+			break;
+		}
+		
+		return result;
+	}
+	
+	private String convertSmartId(String smartId) {
+		String result = "SA-S";
+		String id = addZero(smartId, 4);
+		
+		result += id;
+		
+		return result;
+	}
+	
+	private String addZero(String id, int length) {
+		int idLength = id.length();
+		if (length > idLength) {
+			id = "0" + id;
+			return addZero(id, length);
+		}
+		return id;
+	}
 }

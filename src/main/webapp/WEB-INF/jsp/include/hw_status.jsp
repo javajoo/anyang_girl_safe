@@ -42,6 +42,7 @@
 				</table>
 			</li>
 			<li class="btn_list">
+				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a> 
 				<a href="#" id="moveMap_button" class="eventR_button_list" onclick="moveMap()">지도 이동</a>
 			</li>
 		</ul>
@@ -49,6 +50,11 @@
 </div>
 <script>
 $(document).ready(function(){
+	$('#excel_download_btn').click(function() {
+		var url = "/excelDownload/girlSafe.getUserList/action.do";
+		var fileName = "girlSafeSensor";
+		excelDownLoad($('#hwStatus_table'), url, fileName);
+	});
 	$('#search_last_timeS').datebox({
 		requeired:true
 	});
