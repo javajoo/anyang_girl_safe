@@ -34,6 +34,7 @@
 				</table>
 			</li>
 			<li class="btn_list">
+				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a> 
 				<a href="#" id="approval_button" class="eventR_button_list" onclick="onAddAdminPopup()">추가</a>
 			</li>
 		</ul>
@@ -45,6 +46,11 @@ var selectedRow;
 var selectedData;
 
 $(document).ready(function(){
+	$('#excel_download_btn').click(function() {
+		var url = "/excelDownload/aptHouse.getAdminList/action.do";
+		var fileName = "aptHouseAdminUser";
+		excelDownLoad($('#userApprovalList_table'), url, fileName);
+	});
 	$('#search_eventR_timeS').datebox({
 		requeired:true
 	});
