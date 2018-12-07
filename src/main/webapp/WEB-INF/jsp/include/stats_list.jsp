@@ -37,6 +37,9 @@
 				<table id="statsList_table" title="" style="width:100%;height:calc(100%-129px);">
 				</table>
 			</li>
+			<li class="btn_list">
+				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a> 
+			</li>
 		</ul>
 	</div>
 </div>
@@ -149,6 +152,39 @@ var config = {
 };
 
 $(document).ready(function(){
+	$('#excel_download_btn').click(function() {
+		var type = $("#search_type_box").combobox('getValue');
+		var range = $("#search_range_box").combobox('getValue');
+		var url = "";
+		var fileName = "";
+		
+		if (type == "event") {
+			if (range == "gu") {
+				url = "excelDownload/girlSafe.getEventGuStatsList/action.do";
+				fileName = "girlSafeEventGu";
+			} else if (range == "dong") {
+				url = "excelDownload/girlSafe.getEventDongStatsList/action.do";
+				fileName = "girlSafeEventDong";
+			} else if (range == "hw") {
+				url = "excelDownload/girlSafe.getEventHwStatsList/action.do";
+				fileName = "girlSafeEventHw"
+			}
+		} else if (type == "user") {
+			if (range == "gu") {
+				url = "excelDownload/girlSafe.getUserGuStatsList/action.do";
+				fileName = "girlSafeUserGu";
+			} else if (range == "dong") {
+				url = "excelDownload/girlSafe.getUserDongStatsList/action.do";
+				fileName = "girlSafeUserDong";
+			}
+		} else if (type == "log") {
+			url = "excelDownload/girlSafe.getLogStatsList/action.do";
+			fileName = "girlSafeLog";
+		}
+		
+		excelDownLoad($('#statsList_table'), url, fileName);
+	});
+	
 	checkBrower();
 	
 	$('#search_range_box').combobox({

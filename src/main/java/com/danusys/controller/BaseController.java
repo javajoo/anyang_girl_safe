@@ -1199,9 +1199,51 @@ public class BaseController
         	logger.error(ex.toString());
         }
     }
-    
-    
-    
 
+    
+	@RequestMapping(value = "/excelDownload/{sqlid}/action.do", method = RequestMethod.POST)
+	public ModelAndView excelDownload(
+			@PathVariable("sqlid") String sqlid,
+			HttpServletRequest request, HttpServletResponse response) throws IOException,
+			ModelAndViewDefiningException {
+		response.setCharacterEncoding("UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*"); // 크로스도메인 허용
+		Map<String, Object> param = new HashMap<String, Object>();;
+		HttpSession session = request.getSession(false);
+		AdminVo user = (AdminVo) session.getAttribute("admin");
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (user != null) {
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			
+			param.put("firstIndex", 0);
+        	param.put("recordCountPerPage","-1");
+
+			System.out.println("----------------------------------------------------");
+			System.out.println(sqlid);
+			System.out.println("----------------------------------------------------");
+        	
+			list = baseService.baseSelectList(sqlid, param);
+
+	        List<Map<String, String>> headerList = new ArrayList<Map<String, String>>();
+	        int headerCnt = Integer.parseInt(request.getParameter("headerCnt"));
+	        
+	        for(int i = 0; i < headerCnt; i++){
+	            Map<String, String> header = new HashMap<String, String>();
+	            String headerText = request.getParameter("headerText"+i);
+	            String headerField = request.getParameter("headerField"+i);
+	            header.put("headerText", headerText);
+	            header.put("headerField", headerField);
+	            headerList.add(header);
+	        }
+			
+			map.put("result", list);
+			map.put("headerList", headerList);
+			System.out.println(map);
+		} else {
+			map.put("rows", "sessionOut");
+		}
+		return new ModelAndView("searchListExcel", map);
+	}
 
 }

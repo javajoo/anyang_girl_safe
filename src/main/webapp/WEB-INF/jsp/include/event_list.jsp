@@ -36,11 +36,19 @@
 				<table id="eventList_table" title="" style="width:100%;height:calc(100%-129px);">
 				</table>
 			</li>
+			<li class="btn_list">
+				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a> 
+			</li>
 		</ul>
 	</div>
 </div>
 <script>
 $(document).ready(function(){
+	$('#excel_download_btn').click(function() {
+		var url = "/excelDownload/girlSafe.getEventList/action.do";
+		var fileName = "girlSafeEvent";
+		excelDownLoad($('#eventList_table'), url, fileName);
+	});
 	$('#search_event_timeS').datebox({
 		requeired:true
 	});
