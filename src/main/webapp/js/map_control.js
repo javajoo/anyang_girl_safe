@@ -306,32 +306,40 @@ function mapCalcArea() {
 
 /*위성 map*/
 function addAirTMS() {
-	l = new OpenLayers.Layer.TMS(
-			"airLayer", // 레이어 명, 임의로 지정 가능
-			gisAir2012Url, // 레이어를 호출할 경로
-			{
-				isBaseLayer: false,
-				type: "jpeg", // 이미지 타입(일반적으로 PNG나 JPG  이용)
-				transitionEffect: 'resize', // 지도 이동시 효과
-				buffer:1,
-				getURL: function(bounds) {  // 영상 가져오는 공식 지정
-					var res = this.map.getResolution(); // 지도의 해상도 얻어오기
-					var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w)); // X의 위치
-					var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h)); // Y의 위치
-					var z = this.map.getZoom(); // 줌 레벨
-					var limit = Math.pow(2, z); // 지정 위치 이상일 때 처리위한 변수
-					if(z >= 19) {
-						return "images/blank.jpeg"; // 19레벨 이상일때 보여줄 이미지
-						}else if (y < 0 || y >= limit) { // 영역을 벗어 났을 대 이미지
-							return "images/blank.jpeg";
-						} else {
-							x = ((x % limit) + limit) % limit;
-							return this.url + z + "/" + x + "/" + y + "." + this.type;
-						}
-					}
-			});
-	map.addLayer(l); // 지도에 레이어 추가
-	l.visibility = false;
+//	l = new OpenLayers.Layer.TMS(
+//			"airLayer", // 레이어 명, 임의로 지정 가능
+//			gisAir2012Url, // 레이어를 호출할 경로
+//			{
+//				isBaseLayer: false,
+//				type: "jpeg", // 이미지 타입(일반적으로 PNG나 JPG  이용)
+//				transitionEffect: 'resize', // 지도 이동시 효과
+//				buffer:1,
+//				getURL: function(bounds) {  // 영상 가져오는 공식 지정
+//					var res = this.map.getResolution(); // 지도의 해상도 얻어오기
+//					var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w)); // X의 위치
+//					var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h)); // Y의 위치
+//					var z = this.map.getZoom(); // 줌 레벨
+//					var limit = Math.pow(2, z); // 지정 위치 이상일 때 처리위한 변수
+//					if(z >= 19) {
+//						return "images/blank.jpeg"; // 19레벨 이상일때 보여줄 이미지
+//						}else if (y < 0 || y >= limit) { // 영역을 벗어 났을 대 이미지
+//							return "images/blank.jpeg";
+//						} else {
+//							x = ((x % limit) + limit) % limit;
+//							return this.url + z + "/" + x + "/" + y + "." + this.type;
+//						}
+//					}
+//			});
+	 var air = new OpenLayers.Layer.XYZ(
+	 		  'airLayer',
+	 		  ['https://api.vworld.kr/req/wmts/1.0.0/083943BD-F834-3483-89ED-003067E0CDFE/Satellite/${z}/${y}/${x}.jpeg'],
+	 		  {
+	 		    sphericalMercator: true,
+	 		    wrapDateLine: true
+	 		  }
+		);
+	map.addLayer(air); // 지도에 레이어 추가
+	air.visibility = false;
 	//map.setBaseLayer(l); // 추가한 레이어를 기본 레이어로 설정
 }
 
@@ -360,32 +368,40 @@ function mapInfo(){
 
 /*일반 map*/
 function addBaseTMS() {
-	l = new OpenLayers.Layer.TMS(
-			"baseLayer", // 레이어 명, 임의로 지정 가능
-			gisBase2012Url, // 레이어를 호출할 경로
-			{
-				isBaseLayer: false,
-				type: "png", // 이미지 타입(일반적으로 PNG나 JPG  이용)
-				transitionEffect: 'resize', // 지도 이동시 효과
-				buffer:1,
-				getURL: function(bounds) {  // 영상 가져오는 공식 지정
-					var res = this.map.getResolution(); // 지도의 해상도 얻어오기
-					var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w)); // X의 위치
-					var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h)); // Y의 위치
-					var z = this.map.getZoom(); // 줌 레벨
-					var limit = Math.pow(2, z); // 지정 위치 이상일 때 처리위한 변수
-					if(z >= 19) {
-						return "images/blank.jpeg"; // 19레벨 이상일때 보여줄 이미지
-					}else if (y < 0 || y >= limit) { // 영역을 벗어 났을 대 이미지
-						return "images/blank.jpeg";
-					} else {
-						x = ((x % limit) + limit) % limit;
-						return this.url + z + "/" + x + "/" + y + "." + this.type;
-					}
-				}
-			});
-	map.addLayer(l); // 지도에 레이어 추가
-	map.setBaseLayer(l); // 추가한 레이어를 기본 레이어로 설정        
+//	l = new OpenLayers.Layer.TMS(
+//			"baseLayer", // 레이어 명, 임의로 지정 가능
+//			gisBase2012Url, // 레이어를 호출할 경로
+//			{
+//				isBaseLayer: false,
+//				type: "png", // 이미지 타입(일반적으로 PNG나 JPG  이용)
+//				transitionEffect: 'resize', // 지도 이동시 효과
+//				buffer:1,
+//				getURL: function(bounds) {  // 영상 가져오는 공식 지정
+//					var res = this.map.getResolution(); // 지도의 해상도 얻어오기
+//					var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w)); // X의 위치
+//					var y = Math.round((bounds.bottom - this.maxExtent.bottom) / (res * this.tileSize.h)); // Y의 위치
+//					var z = this.map.getZoom() + 1; // 줌 레벨
+//					var limit = Math.pow(2, z); // 지정 위치 이상일 때 처리위한 변수
+//					if(z >= 19) {
+//						return "images/blank.jpeg"; // 19레벨 이상일때 보여줄 이미지
+//					}else if (y < 0 || y >= limit) { // 영역을 벗어 났을 대 이미지
+//						return "images/blank.jpeg";
+//					} else {
+//						x = ((x % limit) + limit) % limit;
+//						return this.url + z + "/" + x + "/" + y + "." + this.type;
+//					}
+//				}
+//			});
+	 var base = new OpenLayers.Layer.XYZ(
+	 		  'baseLayer',
+	 		  ['https://api.vworld.kr/req/wmts/1.0.0/083943BD-F834-3483-89ED-003067E0CDFE/Base/${z}/${y}/${x}.png'],
+	 		  {
+	 		    sphericalMercator: true,
+	 		    wrapDateLine: true
+	 		  }
+		);
+	map.addLayer(base); // 지도에 레이어 추가
+	map.setBaseLayer(base); // 추가한 레이어를 기본 레이어로 설정        
 }
 
 var mapPrint=function(){

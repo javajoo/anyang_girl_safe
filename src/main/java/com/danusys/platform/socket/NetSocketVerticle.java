@@ -1,6 +1,9 @@
 package com.danusys.platform.socket;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -12,6 +15,7 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -55,8 +59,8 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	@Autowired
     private BaseService baseService;
 	private String smsServer = "58.76.192.101";//"172.20.14.6";//"211.220.152.67";
-    private int smsPort = 10031;
-    private String gisServer = "58.76.192.7";//"172.20.14.29";//"172.20.14.6";//"211.220.152.67";
+    private int smsPort = 10032;
+    private String gisServer = "58.76.192.118";//"172.20.14.41";//"172.20.14.6";//"211.220.152.67";
     private int gisPort = 9000;
     @Resource(name="smsInfoService")
     private SmsInfoService smsInfoService;
@@ -235,7 +239,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			try {
 				
 				sendSms(eventList);
-				sendGis(eventList);
+				//sendGis(eventList);
 				Map<String,Object> event = eventList.get(0);
 				JsonObject obj = new JsonObject(event);
 				//send(obj);
@@ -342,7 +346,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);*/
 				sendSms(eventList);
-				sendGis(eventList);
+				//sendGis(eventList);
 				Map<String,Object> event = eventList.get(0);
 				JsonObject obj = new JsonObject(event);
 				NetSocketVerticle.logger.info(obj
@@ -448,7 +452,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 */
-				sendGis(eventList);
+				//sendGis(eventList);
 				
 				Map<String,Object> event = eventList.get(0);
 				JsonObject obj = new JsonObject(event);
@@ -527,7 +531,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		        	socket = new Socket(smsServer , smsPort);
 		        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
 		        	msg = "SAF,"+name+","+content+","+rcvId+","+rcvMobl;
-		        	
+		        	System.out.println("asdfasdf||||||||||||||||"+msg);
 		        	oos.write(msg);
 					oos.flush();
 					oos.close();
@@ -567,7 +571,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	
 	
 	
-	 private void sendGis(List<Map<String,Object>> eventList) {
+	 private void sendGis(List<Map<String,Object>> eventList) throws Exception {
 		    ObjectMapper objectMapper = new ObjectMapper();
 		    Socket socket = null;
 		    BufferedWriter oos = null;
@@ -582,13 +586,18 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		    String name = (String) result.get("name");
 		    String phoneNumber = (String) result.get("phoneNumber");
 		    String address = (String) result.get("adres");
-		    String age = (String)result.get("birth");
+		    String birth = (String)result.get("birth");
 		    String protName = (String) result.get("sName");
         	String protPhoneNumber = (String) result.get("sPhoneNumber");
         	String protRelation = (String) result.get("realation");
+        	String picture = (String) result.get("picture");
+        	int no = (int) result.get("no");
+        	String strNo = Integer.toString(no);
+        	
         	int emergency = (int) result.get("emergency");
         	String pointX;
-        	String pointY; 
+        	String pointY;
+        	String basePicture = getBase64String(picture,"");
         	if(b > 0){
         		pointX = Double.toString((double)result.get("pointX"));
 	        	pointY = Double.toString((double)result.get("pointY"));
@@ -600,31 +609,34 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //		    String rslt = sf.format(new Date());
 		    try
 		    {
-		        	msg.put("name", name);
-		        	msg.put("phoneNumber", phoneNumber);
-		        	msg.put("address", address);
-		        	msg.put("age", age);
-		        	msg.put("serviceType", "G");
-		        	msg.put("time", rslt);
-		        	if(protPhoneNumber != null){
-			        	msg.put("protName", protName);
-			        	msg.put("protPhoneNumber", protPhoneNumber);
-			        	msg.put("protRelation", protRelation);
-		        	}
-		        	else{
-		        		msg.put("protName", " ");
-			        	msg.put("protPhoneNumber", " ");			        	
-			        	msg.put("protRelation", " ");
-		        	}
-		        	msg.put("pointX",pointX);
-		        	msg.put("pointY",pointY);
-		        	if(emergency < 1){
-		        		msg.put("endYN", "Y");
-		        	}
-		        	else{
-		        		msg.put("endYN", "N");
-		        	}
-		        	System.out.println("aaaa||||||||"+msg);
+		    	msg.put("no",strNo);
+	        	msg.put("name", name);
+	        	msg.put("phoneNumber", phoneNumber);
+	        	msg.put("address", address);
+	        	msg.put("birth", birth);
+	        	msg.put("serviceType", "G");
+	        	msg.put("time", rslt);
+	        	//msg.put("picture",basePicture);
+	        	msg.put("picture",basePicture);
+	        	if(protPhoneNumber != null){
+		        	msg.put("protName", protName);
+		        	msg.put("protPhoneNumber", protPhoneNumber);
+		        	msg.put("protRelation", protRelation);
+	        	}
+	        	else{
+	        		msg.put("protName", " ");
+		        	msg.put("protPhoneNumber", " ");
+		        	msg.put("protRelation", " ");
+	        	}
+	        	msg.put("pointX",pointX);
+	        	msg.put("pointY",pointY);
+	        	if(emergency < 1){
+	        		msg.put("endYN", "Y");
+	        	}
+	        	else{
+	        		msg.put("endYN", "N");
+	        	}
+	        	System.out.println("aaaa||||||||"+msg);
 		    	
 		      socket = new Socket(this.gisServer, this.gisPort);
 
@@ -662,6 +674,195 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		      }
 		    }
 		  }
+	 
+	 
+//	 private void sendGis(List<Map<String,Object>> eventList) throws Exception {
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		Socket socket = null;
+//		BufferedWriter oos = null;
+//		Map<String, Object> result = new HashMap<String, Object>();
+//		Map<String, Object> msg = new HashMap<String, Object>();
+//		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String rslt = sf.format(new Date());
+//		result = eventList.get(0);
+//		String a = (String) (result.get("sensorConn"));
+//		int b = Integer.parseInt(a);
+//		
+//		String name = (String) result.get("name");
+//		String phoneNumber = (String) result.get("phoneNumber");
+//		String address = (String) result.get("adres");
+//		String birth = (String)result.get("birth");
+//		String protName = (String) result.get("sName");
+//     	String protPhoneNumber = (String) result.get("sPhoneNumber");
+//     	String protRelation = (String) result.get("realation");
+//     	String picture = (String) result.get("picture");
+//     	String endYN;
+//     	int no = (int) result.get("no");
+//     	String strNo = Integer.toString(no);
+//     	
+//     	int emergency = (int) result.get("emergency");
+//     	String pointX;
+//     	String pointY;
+//     	String basePicture = getBase64String(picture,"");
+//     	String resultMsg = "";
+//     	if(b > 0){
+//     		pointX = Double.toString((double)result.get("pointX"));
+//	        	pointY = Double.toString((double)result.get("pointY"));
+//     	}
+//     	else{
+//     		pointX = Double.toString((double)result.get("mPointX"));
+//	        	pointY = Double.toString((double)result.get("mPointY"));
+//     	}
+////		    String rslt = sf.format(new Date());
+//		    try
+//		    {
+//	        	if(protPhoneNumber == null){
+//	        		protName = " ";
+//	        		protPhoneNumber = " ";
+//	        		protRelation = " ";
+//	        	}
+//	        	if(emergency < 1){
+//	        		endYN = "Y";
+//	        	}
+//	        	else{
+//	        		endYN = "N";
+//	        	}
+//	        	resultMsg = "<?xml version=\"1.0\" encoding=\"UTF-16\" ?>"+
+//	        	"<ngvms:envelope xmlns:ngvms=\"http://schema.danusys.com/ngvms/envelope\" recipient=\"0\" timestamp=\"0\">"+
+//	        	"<SET_EMERGENCY_STATE_START_REQ>"+
+//	        	"<serviceType>G</serviceType>"+
+//	        	"<pointY>"+pointY+"</pointY>"+
+//	        	"<pointX>"+pointX+"</pointX>"+
+//	        	"<picture>"+basePicture+"</picture>"+
+//	        	"<name>"+name+"</name>"+
+//	        	"<phoneNumber>"+phoneNumber+"</phoneNumber>"+
+//	        	"<address>"+address+"</address>"+
+//	        	"<birth>"+birth+"</birth>"+
+//	        	"<protName>"+protName+"</protName>"+
+//	        	"<protPhoneNumber>"+protPhoneNumber+"</protPhoneNumber>"+
+//	        	"<protRelation>"+protRelation+"</protRelation>"+
+//	        	"<time>"+rslt+"</time>"+
+//	        	"<endYN>"+endYN+"</endYN>"+
+//	        	"<no>"+strNo+"</no>"+
+//	        	"</SET_EMERGENCY_STATE_START_REQ>"+
+//	        	"</ngvms:envelope>";
+//	        	
+//	        	System.out.println("aaaa||||||||"+resultMsg);
+//		    	
+//		      socket = new Socket(this.gisServer, this.gisPort);
+//
+//		      oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));
+//
+////		      String value = objectMapper.writeValueAsString(msg);
+////		      value = new String(value.getBytes("utf-8"), "utf-8");
+//		      oos.write(resultMsg);
+//		      oos.flush();
+//		      oos.close();
+//		    } catch (Exception exx) {
+//		      exx.printStackTrace();
+//		      try
+//		      {
+//		        oos.close();
+//		      } catch (Exception localException1) {
+//		      }
+//		      try {
+//		        socket.close();
+//		      }
+//		      catch (Exception localException2)
+//		      {
+//		      }
+//		    }
+//		    finally
+//		    {
+//		      try
+//		      {
+//		        oos.close();
+//		      } catch (Exception localException3) {
+//		      }
+//		      try {
+//		        socket.close();
+//		      } catch (Exception localException4) {
+//		      }
+//		    }
+//		  }
+//	 
+	 
+	 	public static String getBase64String(String fileName,String imageString) throws Exception{
+            //String filePathName = "C:\\picture\\";
+	 		String filePathName = CommonUtil.getHomePath();
+	        if(fileName.length() > 0 )
+	        {
+//	                String fileExtName = filePathName.substring( filePathName.lastIndexOf(".") + 1);
+                FileInputStream inputStream = null;
+                ByteArrayOutputStream byteOutStream = null;
+     
+                try
+                {
+                    File file = new File(filePathName+fileName);
+     
+                    if( file.exists() )
+                    {
+                        inputStream = new FileInputStream( file );
+                        byteOutStream = new ByteArrayOutputStream();
+     
+                        int len = 0;
+                        byte[] buf = new byte[1024];
+                        while( (len = inputStream.read( buf )) != -1 ) {
+                            byteOutStream.write(buf, 0, len);
+                        }
+     
+                        byte[] fileArray = byteOutStream.toByteArray();
+                        imageString = new String(Base64.encodeBase64(fileArray));
+                    }
+	                }
+	                catch( IOException e)
+	                {
+	                    e.printStackTrace();
+	                }
+	                finally
+	                {
+	                    inputStream.close();
+	                    byteOutStream.close();
+	                }
+	            }
+	        else{
+	            FileInputStream inputStream = null;
+                ByteArrayOutputStream byteOutStream = null;
+     
+                try
+                {
+                	fileName = "default_woman.png";
+                    File file = new File(filePathName+fileName);
+     
+                    if( file.exists() )
+                    {
+                        inputStream = new FileInputStream( file );
+                        byteOutStream = new ByteArrayOutputStream();
+     
+                        int len = 0;
+                        byte[] buf = new byte[1024];
+                        while( (len = inputStream.read( buf )) != -1 ) {
+                            byteOutStream.write(buf, 0, len);
+                        }
+     
+                        byte[] fileArray = byteOutStream.toByteArray();
+                        imageString = new String(Base64.encodeBase64(fileArray));
+                    }
+                }
+                catch( IOException e)
+                {
+                    e.printStackTrace();
+                }
+                finally
+                {
+                    inputStream.close();
+                    byteOutStream.close();
+                }
+            }
+	        System.out.println("QQQQQQQQ||||||||||||||||"+imageString);
+	        return imageString;
+	    }
+
 	
 //	private Map<String, Object> sendSms(String hwId) throws IOException{
 //		Random random = new Random();

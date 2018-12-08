@@ -23,7 +23,8 @@
 			//var socket = io.connect('http://121.140.40.52:10027');
 			//var socket = io.connect('http://172.20.20.107:10027');
 			//var socket = io.connect('http://127.0.0.1:10027');
-			var socket = io.connect('http://58.76.192.101:10027');
+			//var socket = io.connect('http://58.76.192.101:10027');
+			var socket = io.connect('https://home-safety.anyang.go.kr:10027',{secure:true});
 			socket.on('response', function(evt) {
 				console.log('[EVENT] Event Received : ' + JSON.stringify(evt));
 				var sensorId = evt.sensorId; 

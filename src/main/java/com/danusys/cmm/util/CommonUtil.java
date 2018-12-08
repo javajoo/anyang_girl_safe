@@ -685,5 +685,19 @@ public class CommonUtil {
 	public static String getUuid() {
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
-
+  
+  public static String getHomePath() {
+		String os = System.getProperty("os.name").toLowerCase();
+		String userHome = System.getProperty("user.home");
+  	String path = "";
+  	
+		if (os.indexOf("win") >= 0) {
+			userHome = userHome.replaceAll("\\\\", "//");
+			path = userHome + "//girl_safe_user_picture/";
+		} else {
+			path = userHome + "/girl_safe_user_picture/";
+		}
+		
+		return path;
+	}
 }

@@ -952,6 +952,7 @@
 			a.PHONE_NUMBER as phoneNumber,
 			a.ENCRYPT_ADRES as adres,
 			a.BIRTH as birth,
+			a.PICTURE as picture,
 			b.POINT_X as pointX,
 			b.POINT_Y as pointY,
 			b.M_POINT_X as mPointX,
@@ -962,10 +963,12 @@
 			c.S_ENCRYPT_NAME as sName,
 			c.S_PHONE_NUMBER as sPhoneNumber,
 			c.RELATIONS as realation,
-			now() as time
+			now() as time,
+			MAX(d.NO) as no
 		FROM girl_safe_user a
 		JOIN girl_safe_hw b ON a.PHONE_NUMBER = b.PHONE_NUMBER
 		LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+		JOIN girl_safe_event d ON a.PHONE_NUMBER = d.PHONE_NUMBER
 		WHERE b.SENSOR_ID = #{sensorId}
 	</select>
 	
@@ -1144,4 +1147,54 @@
 			AND deleted = 'N'
  		]]>
 	</update>
+	
+	<insert id="mobileInsert" parameterType="map">
+		INSERT INTO police_mobile_list (
+			MOBILE_ID,
+			MOBILE_TYPE,
+			MAC_ADDRESS,
+			DESCRIPTION,
+			IP_DOMAIN,
+			UPDATE_DATE
+		) VALUES (
+			#{mobileID},
+			#{mobileType},
+			#{macAddress},
+			#{description},
+			#{ipDomain},
+			NOW()
+		)
+		ON DUPLICATE KEY UPDATE
+			MOBILE_ID = #{mobileID},
+			MOBILE_TYPE = #{mobileType},
+			MAC_ADDRESS = #{macAddress},
+			DESCRIPTION = #{description},
+			IP_DOMAIN = #{ipDomain},
+			UPDATE_DATE = NOW()
+	</insert>
+	
+	<insert id="eventResult" parameterType="map">
+		INSERT INTO police_mobile_list (
+			MOBILE_ID,
+			MOBILE_TYPE,
+			MAC_ADDRESS,
+			DESCRIPTION,
+			IP_DOMAIN,
+			UPDATE_DATE
+		) VALUES (
+			#{mobileID},
+			#{mobileType},
+			#{macAddress},
+			#{description},
+			#{ipDomain},
+			NOW()
+		)
+		ON DUPLICATE KEY UPDATE
+			MOBILE_ID = #{mobileID},
+			MOBILE_TYPE = #{mobileType},
+			MAC_ADDRESS = #{macAddress},
+			DESCRIPTION = #{description},
+			IP_DOMAIN = #{ipDomain},
+			UPDATE_DATE = NOW()
+	</insert>
 </mapper>

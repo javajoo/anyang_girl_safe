@@ -38,7 +38,11 @@ public class WebSocketVerticle extends DefaultEmbeddableVerticle {
 							e.getMessage() });
 			this.websocket_port = 10027;
 		}
-		HttpServer server = vertx.createHttpServer();
+		
+		HttpServer server = vertx.createHttpServer()
+				.setSSL(true)
+				.setKeyStorePath("/var/lib/tomcat8-2/conf/STAR.anyang.go.kr.jks")
+				.setKeyStorePassword("aycctv!5501");
 		logger.info(" ==== WebSocket Server Start ==== {}",
 				new Object[] { Integer.valueOf(this.websocket_port) });
 		this.io = new DefaultSocketIOServer(vertx, server);
