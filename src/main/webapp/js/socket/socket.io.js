@@ -84,7 +84,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
     var options = {
         host: uri.host
       , secure: 'https' == uri.protocol
-      , port: uri.port || ('https' == uri.protocol ? 443 : 80)
+      , port: uri.port || ('https' == uri.protocol ? 7001 : 80)
       , query: uri.query || ''
     };
 
@@ -161,12 +161,12 @@ var io = ('undefined' === typeof module ? {} : module.exports);
     if ('document' in global) {
       host = host || document.domain;
       port = port || (protocol == 'https'
-        && document.location.protocol !== 'https:' ? 443 : document.location.port);
+        && document.location.protocol !== 'https:' ? 7001 : document.location.port);
     } else {
       host = host || 'localhost';
 
       if (!port && protocol == 'https') {
-        port = 443;
+        port = 7001;
       }
     }
 
@@ -1875,7 +1875,7 @@ var io = ('undefined' === typeof module ? {} : module.exports);
   Socket.prototype.isXDomain = function () {
 
     var port = global.location.port ||
-      ('https:' == global.location.protocol ? 443 : 80);
+      ('https:' == global.location.protocol ? 7001 : 80);
 
     return this.options.host !== global.location.hostname 
       || this.options.port != port;

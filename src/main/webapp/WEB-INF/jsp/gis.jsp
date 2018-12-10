@@ -203,13 +203,16 @@
 	});
 	
 	var map;        
-	var gisBase2012Url = "http://xdworld.vworld.kr:8080/2d/Base/201612/"; // 기본지도(TMS) 경로
+	//var gisBase2012Url = "http://xdworld.vworld.kr:8080/2d/Base/201612/"; // 기본지도(TMS) 경로
+	var gisBase2012Url = "http://api.vworld.kr/req/tms/1.0.0/083943BD-F834-3483-89ED-003067E0CDFE/Base/";
 	var gisAir2012Url = "http://xdworld.vworld.kr:8080/2d/Satellite/201612/"; // 기본지도(TMS) 경로
 	
 	var gisDFMSUrl = "${config.gisDfmsUrl}";
 	var gisDFMSWFSUrl = "${config.gisDfmswfsUrl}";
 	
 	var maxExtent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34);
+	//var maxExtent = new OpenLayers.Bounds(13886285, 3883489, 14695249, 4666659);
+	
 	
 	var eventLayer;		//이벤트 표출
 	var facilityLayer;	//시설물 표출

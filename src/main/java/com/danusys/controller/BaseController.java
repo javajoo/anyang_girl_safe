@@ -12,6 +12,7 @@ import com.danusys.exception.BaseException;
 import com.danusys.cmm.util.CommonUtil;
 import com.danusys.cmm.util.JsonUtil;
 import com.danusys.platform.vo.AdminVo;
+import com.danusys.platform.web.JSONResult;
 import com.danusys.service.BaseService;
 
 import egovframework.com.cmm.ComDefaultVO;
@@ -31,12 +32,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -49,7 +59,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.danusys.sms.service.SmsInfoService;
-import com.danusys.cmm.util.AES128;
 
 /*
 //  클래스  명 : BaseController
@@ -1244,4 +1253,247 @@ public class BaseController
 		return new ModelAndView("searchListExcel", map);
 	}
 
+//    @RequestMapping(value="/com/danusys/platform/mobileXml.do", method = RequestMethod.POST)
+//    public @ResponseBody JSONResult receiveNodeInfo(HttpServletRequest request,  HttpSession session) {
+//        Map<String , String> map = new HashMap<String , String>();
+//        Map<String , Object> xmlData = new HashMap<String , Object>();
+//        try {
+////            LOGGER.debug("receiveNodeInfo.do!!! nodeInfo:" + request);
+//        	
+//            InputStream is = request.getInputStream();
+////        	InputStream inputStream = request.getInputStream();
+////        	Reader reader = new InputStreamReader(inputStream,"UTF-8");
+////        	InputSource is = new InputSource(reader);
+////        	is.setEncoding("UTF-8");
+//        	StringBuffer buffer = new StringBuffer();
+//            byte[] b = new byte[4096];
+//            int a;
+//            while( (a = is.read(b)) != -1){
+//            	buffer.append(new String(b, 0, a));
+//            }
+//            String str = buffer.toString();
+////            System.out.println(str);
+//            /*BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+//            String thisLine = null;
+//            while ((thisLine = br.readLine()) != null) {
+//                System.out.println(thisLine);
+//             }*/
+//            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+////            Document doc = dBuilder.parse(is);
+//            InputStream istream = new ByteArrayInputStream(str.getBytes("utf-8"));
+//            Document doc = dBuilder.parse(istream);
+//            
+//            //doc.getDocumentElement().normalize();
+//            
+////            NodeList streamNodeList = doc.getElementsByTagName("MobileInfo");
+//            Element order = doc.getDocumentElement();
+//            order.normalize();
+//            NodeList Info = order.getElementsByTagName("MobileInfo");
+//            NodeList MobileIDList = order.getElementsByTagName("MobileID");
+//            NodeList MobileTypeList = order.getElementsByTagName("MobileType");
+//            NodeList MacAddressList = order.getElementsByTagName("MacAddress");
+//            NodeList DescriptionList = order.getElementsByTagName("Description");
+//            NodeList IpDomainList = order.getElementsByTagName("IpDomain");
+//            for(int i=0;i<Info.getLength();i++){
+//            	Node MobileIDNode = MobileIDList.item(i);
+//                Node MobileTypeNode = MobileTypeList.item(i);
+//                Node MacAddressNode = MacAddressList.item(i);
+//                Node DescriptionNode = DescriptionList.item(i);
+//                Node IpDomainNode = IpDomainList.item(i);
+//                Node MobileIDText = MobileIDNode.getFirstChild();
+//                Node MobileTypeText = MobileTypeNode.getFirstChild();
+//                Node MacAddressText = MacAddressNode.getFirstChild();
+//                Node DescriptionText = DescriptionNode.getFirstChild();
+//                Node IpDomainText = IpDomainNode.getFirstChild();
+//                String MobileIDString = MobileIDText.getNodeValue();
+//                String MobileTypeString = MobileTypeText.getNodeValue();
+//                String MacAddressString = MacAddressText.getNodeValue();
+//                String DescriptionString;
+//                String IpDomainString;
+//                if(DescriptionText == null){
+//                	DescriptionString = "";
+//                }
+//                else{
+//                	DescriptionString = DescriptionText.getNodeValue();
+//                }
+//                if(IpDomainText == null){
+//                	IpDomainString = "";
+//                }
+//                else{
+//                	IpDomainString = IpDomainText.getNodeValue();
+//                }
+//                xmlData.put("mobileID",MobileIDString);
+//                xmlData.put("mobileType",MobileTypeString);
+//                xmlData.put("macAddress",MacAddressString);
+//                xmlData.put("description",DescriptionString);
+//                xmlData.put("ipDomain",IpDomainString);
+//                baseService.baseInsert("girlSafe.mobileInsert", xmlData);
+//            }
+//            
+//            
+////            StreamNodeLoop : for (int i=0 ; i<streamNodeList.getLength() ; i++) {
+////                Node streamNode = streamNodeList.item(i);
+////                NamedNodeMap nodeMap = streamNode.getAttributes();
+////                FacilityVO vo = new FacilityVO(); 
+////                for (int j=0 ; j<nodeMap.getLength() ; j++) {       
+//////                    if (null==nodeMap.item(j).getNodeValue() || "".equals(nodeMap.item(j).getNodeValue())
+//////                            || "0".equals(nodeMap.item(j).getNodeValue())) {
+//////                        continue StreamNodeLoop;
+//////                    }
+////////                    LOGGER.debug(nodeMap.item(j).getNodeName()+":"+nodeMap.item(j).getNodeValue());
+////                    switch (nodeMap.item(j).getNodeName()) {
+////                        case "MobileID" : 
+////                        	xmlData.put("mobileId", nodeMap.item(j).getNodeValue());
+////                            break;
+////                        case "MobileType" : 
+////                        	xmlData.put("mobileType", nodeMap.item(j).getNodeValue());
+////                            break;
+////                        case "MacAddress" : 
+////                        	xmlData.put("macAddress", nodeMap.item(j).getNodeValue());
+////                            break;
+////                        case "Description" :
+////                        	xmlData.put("description", nodeMap.item(j).getNodeValue());
+////                            break;
+////                        case "IpDomain" :
+////                        	xmlData.put("ipDomain", nodeMap.item(j).getNodeValue());
+////                            break;
+////                    }
+//////                    // System.out.println("receiveNodeInfo.do!!! "+ nodeMap.item(j));
+////                }
+////                vo.setInstId("SYSTEM");
+////                facilityService.insertFacilityDuplicateUpdate(vo);
+////            }
+//            map.put("stat", "node info receive success");
+//            return new JSONResult("OK", "", map);
+//        } catch(Exception e) {
+//            System.out.println("error : "+e);
+//            map.put("stat", e.toString());
+//            return new JSONResult("Error", map);
+//        }
+//    }
+    
+    /* 중계서버로 부터 카메라 정보를 받는 API */
+    @RequestMapping(value="/com/danusys/platform/mobileXml.do", method = RequestMethod.POST)
+    public @ResponseBody JSONResult receiveNodeInfoTest(HttpServletRequest request, HttpSession session) {
+    	 Map<String , String> map = new HashMap<String , String>();
+         Map<String , Object> xmlData = new HashMap<String , Object>();
+         try {
+//             LOGGER.debug("receiveNodeInfo.do!!! nodeInfo:" + request);
+         	
+             InputStream is = request.getInputStream();
+//         	InputStream inputStream = request.getInputStream();
+//         	Reader reader = new InputStreamReader(inputStream,"UTF-8");
+//         	InputSource is = new InputSource(reader);
+//         	is.setEncoding("UTF-8");
+         	StringBuffer buffer = new StringBuffer();
+             byte[] b = new byte[4096];
+             int a;
+             while( (a = is.read(b)) != -1){
+             	buffer.append(new String(b, 0, a));
+             }
+             String preStr = buffer.toString();
+             
+             int idx = preStr.indexOf("</ngvms:envelope>");
+             String str = preStr.substring(0, idx+17);
+             System.out.println(str);
+//             System.out.println(str);
+             /*BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+             String thisLine = null;
+             while ((thisLine = br.readLine()) != null) {
+                 System.out.println(thisLine);
+              }*/
+             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+//             Document doc = dBuilder.parse(is);
+             InputStream istream = new ByteArrayInputStream(str.getBytes("utf-8"));
+             Document doc = dBuilder.parse(istream);
+             
+             //doc.getDocumentElement().normalize();
+             
+//             NodeList streamNodeList = doc.getElementsByTagName("MobileInfo");
+             Element order = doc.getDocumentElement();
+             order.normalize();
+             NodeList EventNOList = order.getElementsByTagName("EventNO");
+             NodeList EventTypeList = order.getElementsByTagName("EventType");
+             NodeList ResultList = order.getElementsByTagName("Result");
+             NodeList AppendixList = order.getElementsByTagName("Appendix");
+             
+             Node EventNONode = EventNOList.item(0);
+             Node EventTypeNode = EventTypeList.item(0);
+             Node ResultNode = ResultList.item(0);
+             Node AppendixNode = AppendixList.item(0);
+             
+             Node EventNOText = EventNONode.getFirstChild();
+             Node EventTypeText = EventTypeNode.getFirstChild();
+             Node ResultText = ResultNode.getFirstChild();
+             Node AppendixText = AppendixNode.getFirstChild();
+             
+             String EventNOString;
+             String ResultString;
+             String AppendixString;
+             if(EventNOText == null){
+            	 EventNOString = "";
+             }
+             else{
+            	 EventNOString = EventNOText.getNodeValue();
+             }
+             if(ResultText == null){
+            	 ResultString = "";
+             }
+             else{
+            	 ResultString = ResultText.getNodeValue();
+             }
+             if(AppendixText == null){
+            	 AppendixString = "";
+             }
+             else{
+            	 AppendixString = AppendixText.getNodeValue();
+             }
+             xmlData.put("eventNO",EventNOString);
+             xmlData.put("result",ResultString);
+             xmlData.put("appendix",AppendixString);
+             System.out.println(xmlData);
+             //baseService.baseInsert("girlSafe.eventResult", xmlData);
+             
+//             StreamNodeLoop : for (int i=0 ; i<streamNodeList.getLength() ; i++) {
+//                 Node streamNode = streamNodeList.item(i);
+//                 NamedNodeMap nodeMap = streamNode.getAttributes();
+//                 FacilityVO vo = new FacilityVO(); 
+//                 for (int j=0 ; j<nodeMap.getLength() ; j++) {       
+////                     if (null==nodeMap.item(j).getNodeValue() || "".equals(nodeMap.item(j).getNodeValue())
+////                             || "0".equals(nodeMap.item(j).getNodeValue())) {
+////                         continue StreamNodeLoop;
+////                     }
+//////                     LOGGER.debug(nodeMap.item(j).getNodeName()+":"+nodeMap.item(j).getNodeValue());
+//                     switch (nodeMap.item(j).getNodeName()) {
+//                         case "MobileID" : 
+//                         	xmlData.put("mobileId", nodeMap.item(j).getNodeValue());
+//                             break;
+//                         case "MobileType" : 
+//                         	xmlData.put("mobileType", nodeMap.item(j).getNodeValue());
+//                             break;
+//                         case "MacAddress" : 
+//                         	xmlData.put("macAddress", nodeMap.item(j).getNodeValue());
+//                             break;
+//                         case "Description" :
+//                         	xmlData.put("description", nodeMap.item(j).getNodeValue());
+//                             break;
+//                         case "IpDomain" :
+//                         	xmlData.put("ipDomain", nodeMap.item(j).getNodeValue());
+//                             break;
+//                     }
+////                     // System.out.println("receiveNodeInfo.do!!! "+ nodeMap.item(j));
+//                 }
+//                 vo.setInstId("SYSTEM");
+//                 facilityService.insertFacilityDuplicateUpdate(vo);
+//             }
+             map.put("stat", "node info receive success");
+             return new JSONResult("OK", "", map);
+         } catch(Exception e) {
+             System.out.println("error : "+e);
+             map.put("stat", e.toString());
+             return new JSONResult("Error", map);
+         }
+    }
 }
