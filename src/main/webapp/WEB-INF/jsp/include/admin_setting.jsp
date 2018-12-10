@@ -47,9 +47,13 @@ var selectedData;
 
 $(document).ready(function(){
 	$('#excel_download_btn').click(function() {
-		var url = "/excelDownload/aptHouse.getAdminList/action.do";
+		var url = "/excelDownload/girlSafe.getAdminList/action.do";
 		var fileName = "aptHouseAdminUser";
-		excelDownLoad($('#userApprovalList_table'), url, fileName);
+		var data ={
+				userTimeS : $("#search_eventR_timeS").datebox('getValue').replace(/\//g, ''),
+				userTimeE : $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '')	
+		};
+		excelDownLoad($('#userApprovalList_table'), url, fileName, data);
 	});
 	$('#search_eventR_timeS').datebox({
 		requeired:true
