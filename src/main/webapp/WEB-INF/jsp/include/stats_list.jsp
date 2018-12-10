@@ -157,6 +157,10 @@ $(document).ready(function(){
 		var range = $("#search_range_box").combobox('getValue');
 		var url = "";
 		var fileName = "";
+
+		var data ={
+			year : $("#search_year_box").combobox('getValue')
+		};
 		
 		if (type == "event") {
 			if (range == "gu") {
@@ -182,7 +186,7 @@ $(document).ready(function(){
 			fileName = "girlSafeLog";
 		}
 		
-		excelDownLoad($('#statsList_table'), url, fileName);
+		excelDownLoad($('#statsList_table'), url, fileName, data);
 	});
 	
 	checkBrower();

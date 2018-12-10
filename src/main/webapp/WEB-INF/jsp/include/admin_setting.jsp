@@ -48,7 +48,7 @@ var selectedData;
 $(document).ready(function(){
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getAdminList/action.do";
-		var fileName = "aptHouseAdminUser";
+		var fileName = "girlSafeAdminUser";
 		var data ={
 				userTimeS : $("#search_eventR_timeS").datebox('getValue').replace(/\//g, ''),
 				userTimeE : $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '')	

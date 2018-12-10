@@ -634,13 +634,13 @@
 		FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME)
 		AS dt
 		LEFT JOIN (
-		SELECT
-		u.ENCRYPT_ADRES,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
+			SELECT
+			u.ENCRYPT_ADRES,
+			u.PHONE_NUMBER,
+			u.INSERT_DATE
+			FROM girl_safe_user u
+			JOIN girl_safe_hw b
+			on u.PHONE_NUMBER = b.PHONE_NUMBER
 		LEFT JOIN (
 		select *
 		from girl_safe_user_sub LIMIT 1) c
@@ -661,8 +661,15 @@
 	<select id="getUserGuStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(d.ENCRYPT_GU_NAME)
-		FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME) AS d
+			COUNT(a.ENCRYPT_ADRES)
+		FROM (
+			SELECT
+		    	u.ENCRYPT_ADRES
+		    FROM girl_safe_user u
+		    JOIN district d
+		    ON u.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
+		    GROUP BY d.ENCRYPT_GU_NAME
+		) AS a
 	</select>
 
 	<select id="getUserDongStatsList" parameterType="map"
@@ -691,13 +698,13 @@
 		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 12 THEN 1 ELSE 0 END) AS m12
 		FROM district AS dt
 		LEFT JOIN (
-		SELECT
-		u.ENCRYPT_ADRES,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
+			SELECT
+			u.ENCRYPT_ADRES,
+			u.PHONE_NUMBER,
+			u.INSERT_DATE
+			FROM girl_safe_user u
+			JOIN girl_safe_hw b
+			on u.PHONE_NUMBER = b.PHONE_NUMBER
 		LEFT JOIN (
 		select *
 		from girl_safe_user_sub LIMIT 1) c
@@ -718,8 +725,15 @@
 	<select id="getUserDongStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(ENCRYPT_DONG_NAME)
-		FROM district
+			COUNT(a.ENCRYPT_ADRES)
+		FROM (
+			SELECT
+		    	u.ENCRYPT_ADRES
+		    FROM girl_safe_user u
+		    JOIN district d
+		    ON u.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
+		    GROUP BY d.ENCRYPT_DONG_NAME
+		) AS a
 	</select>
 
 	<select id="getEventGuStatsList" parameterType="map" resultType="HashMap">
@@ -763,8 +777,15 @@
 	<select id="getEventGuStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(d.ENCRYPT_GU_NAME)
-		FROM (SELECT ENCRYPT_GU_NAME FROM district GROUP BY ENCRYPT_GU_NAME) AS d
+			COUNT(a.ENCRYPT_ADRES)
+		FROM (
+			SELECT
+		    	e.ENCRYPT_ADRES
+		    FROM girl_safe_event e
+		    JOIN district d
+		    ON e.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
+		    GROUP BY d.ENCRYPT_GU_NAME
+		) AS a
 	</select>
 
 	<select id="getEventDongStatsList" parameterType="map"
@@ -808,8 +829,15 @@
 	<select id="getEventDongStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(ENCRYPT_DONG_NAME)
-		FROM district
+			COUNT(a.ENCRYPT_ADRES)
+		FROM (
+			SELECT
+		    	e.ENCRYPT_ADRES
+		    FROM girl_safe_event e
+		    JOIN district d
+		    ON e.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
+		    GROUP BY d.ENCRYPT_DONG_NAME
+		) AS a
 	</select>
 
 	<select id="getEventHwStatsList" parameterType="map" resultType="HashMap">
