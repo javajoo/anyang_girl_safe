@@ -12,17 +12,15 @@
 				</div>
 			</li>
 			<li class="list">
-				<div class="list_cont">
-					<em>검색 조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
-					</select>
-				</div>
 				<div id="end_yn_box_wrap" class="list_cont">
 					<em>종료여부 : </em>
 					<select id="end_yn_box" style="width: 90px; height: 27px; display: none;">
 					</select>
 				</div>
-				<div class="list_cont2">
+				<div class="list_cont">
+					<em>검색 조건 : </em>
+					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
+					</select>
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 				</div>
@@ -47,7 +45,14 @@ $(document).ready(function(){
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getEventList/action.do";
 		var fileName = "girlSafeEvent";
-		excelDownLoad($('#eventList_table'), url, fileName);
+		var data = {
+				eventTimeS : $("#search_event_timeS").datebox('getValue').replace(/\//g, ''),
+				eventTimeE : $("#search_event_timeE").datebox('getValue').replace(/\//g, ''),
+				searchType : $("#search_type_box").combobox('getValue'),
+				totSearch : $("#search_eventR_tot").val(),
+				endYN : $("#end_yn_box").combobox('getValue')
+		};
+		excelDownLoad($('#eventList_table'), url, fileName, data);
 	});
 	$('#search_event_timeS').datebox({
 		requeired:true
@@ -69,7 +74,7 @@ $(document).ready(function(){
 	    },
 	    {
 	    	label: '생년월일',
-	    	value: 'age'
+	    	value: 'birth'
 	    },
 	    {
 	    	label: '번호',
@@ -77,7 +82,7 @@ $(document).ready(function(){
 	    },
 	    {
 	    	label: '주소',
-	    	value: 'address'
+	    	value: 'adres'
 	    },
 	    {
 	    	label: '단말기번호',
@@ -114,8 +119,8 @@ function reload(){
 	const jsonObj = {};
 	jsonObj.eventTimeS = $("#search_event_timeS").datebox('getValue').replace(/\//g, '');
 	jsonObj.eventTimeE = $("#search_event_timeE").datebox('getValue').replace(/\//g, '');
-	jsonObj.totSearch = $("#search_eventR_tot").val();
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
+	jsonObj.totSearch = $("#search_eventR_tot").val();
 	jsonObj.endYN = $("#end_yn_box").combobox('getValue');
 	$('#eventList_table').datagrid({
 	    url:'/selectList/girlSafe.getEventList/action.do',

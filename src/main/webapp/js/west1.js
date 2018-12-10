@@ -410,18 +410,17 @@ function rankDisplay(rank) {
 	}
 	if(rank == 3) {
 		$('#topmenu_board').hide();			//게시판
-		$('#topmenu_userList').hide();		//가입자 관리
+		$('#topmenu_approvalList').hide();	//가입자 관리
 		$('.update_button').hide();			//수정
 		$('.save_button').hide();			//저장
 		$('.delete_button').hide();			//삭제
 	}
 }
 
-function excelDownLoad(table_obj, path, fileName) {
+function excelDownLoad(table_obj, path, fileName, data) {
 	var url = path;
 	
-	var data = {
-	};
+	var data = data;
 
 	var opts = $(table_obj).datagrid("getColumnFields");
 	var cnt = 0;

@@ -13,11 +13,6 @@
 			</li>
 			<li class="list">
 				<div class="list_cont">
-					<em>검색 조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
-					</select>
-				</div>
-				<div class="list_cont">
 					<em>배터리 상태 : </em>
 					<select id="bat_status_box" style="width: 90px; height: 27px; display: none;">
 					</select>
@@ -27,7 +22,10 @@
 					<select id="hw_status_box" style="width: 90px; height: 27px; display: none;">
 					</select>
 				</div>
-				<div class="list_cont2">
+				<div class="list_cont">
+					<em>검색 조건 : </em>
+					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
+					</select>
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 				</div>

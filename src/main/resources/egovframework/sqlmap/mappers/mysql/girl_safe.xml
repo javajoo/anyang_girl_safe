@@ -40,48 +40,34 @@
 				date_format(a.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as updateDate,
 				c.S_PHONE_NUMBER as sPhoneNumber
 			FROM girl_safe_user a
-	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
-	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
+	        JOIN girl_safe_hw b
+	        ON a.PHONE_NUMBER = b.PHONE_NUMBER
+	        LEFT JOIN girl_safe_user_sub c
+	        ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
-	     ]]>
+		]]>
 		<if test="emergency != null and emergency != ''">
 			AND b.EMERGENCY = #{emergency}
-		</if>
-		<if test="approval != null and approval != ''">
-			AND a.APPROVAL = #{approval}
-		</if>
-		<if test="batStatus != null and batStatus != ''">
-			AND b.BAT = #{batStatus}
 		</if>
 		<if test="hwStatus != null and hwStatus != ''">
 			AND b.STATUS = #{hwStatus}
 		</if>
+		<if test="batStatus != null and batStatus != ''">
+			AND b.BAT = #{batStatus}
+		</if>
 		<if test="userTimeS != null and userTimeS != ''">
-	    <![CDATA[
-	    	AND a.INSERT_DATE >= #{userTimeS}
-	    ]]>
+		<![CDATA[
+			AND date_format(a.INSERT_DATE,'%Y-%m-%d') >= #{userTimeS}
+		]]>
 		</if>
 		<if test="userTimeE != null and userTimeE != ''">
 	    <![CDATA[
-	    	AND a.INSERT_DATE <= #{userTimeE}
-	    ]]>
-		</if>
-		<if test="lastTimeS != null and lastTimeS != ''">
-	    <![CDATA[
-	    	AND a.UPDATE_DATE >= #{lastTimeS}
-	    ]]>
-		</if>
-		<if test="lastTimeE != null and lastTimeE != ''">
-	    <![CDATA[
-	    	AND a.UPDATE_DATE <= #{lastTimeE}
+	    	AND date_format(a.INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
 	    ]]>
 		</if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
-				<when test="searchType == 'sensor'">
-					AND b.SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
-				</when>
 				<when test="searchType == 'name'">
 					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
@@ -94,10 +80,20 @@
 				<when test="searchType == 'phon'">
 					AND a.PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<otherwise>
-					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
-				</otherwise>
+				<when test="searchType == 'sensor'">
+					AND b.SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
 			</choose>
+		</if>
+		<if test="lastTimeS != null and lastTimeS != ''">
+	    <![CDATA[
+	    	AND a.UPDATE_DATE >= #{lastTimeS}
+	    ]]>
+		</if>
+		<if test="lastTimeE != null and lastTimeE != ''">
+	    <![CDATA[
+	    	AND a.UPDATE_DATE <= #{lastTimeE}
+	    ]]>
 		</if>
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
@@ -112,27 +108,24 @@
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	        WHERE 1=1
-	     ]]>
+		]]>
 		<if test="emergency != null and emergency != ''">
 			AND b.EMERGENCY = #{emergency}
-		</if>
-		<if test="approval != null and approval != ''">
-			AND a.APPROVAL = #{approval}
-		</if>
-		<if test="batStatus != null and batStatus != ''">
-			AND b.BAT = #{batStatus}
 		</if>
 		<if test="hwStatus != null and hwStatus != ''">
 			AND b.STATUS = #{hwStatus}
 		</if>
+		<if test="batStatus != null and batStatus != ''">
+			AND b.BAT = #{batStatus}
+		</if>
 		<if test="userTimeS != null and userTimeS != ''">
-	    <![CDATA[
-	    	AND a.INSERT_DATE >= #{userTimeS}
-	    ]]>
+		<![CDATA[
+			AND date_format(a.INSERT_DATE,'%Y-%m-%d') >= #{userTimeS}
+		]]>
 		</if>
 		<if test="userTimeE != null and userTimeE != ''">
 	    <![CDATA[
-	    	AND a.INSERT_DATE <= #{userTimeE}
+	    	AND date_format(a.INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
 	    ]]>
 		</if>
 		<if test="searchType != null and searchType != ''">
@@ -149,12 +142,21 @@
 				<when test="searchType == 'phon'">
 					AND a.PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<otherwise>
-					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
-				</otherwise>
+				<when test="searchType == 'sensor'">
+					AND b.SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
 			</choose>
 		</if>
-
+		<if test="lastTimeS != null and lastTimeS != ''">
+	    <![CDATA[
+	    	AND a.UPDATE_DATE >= #{lastTimeS}
+	    ]]>
+		</if>
+		<if test="lastTimeE != null and lastTimeE != ''">
+	    <![CDATA[
+	    	AND a.UPDATE_DATE <= #{lastTimeE}
+	    ]]>
+		</if>
 	</select>
 	
 	<select id="getUser" parameterType="map" resultType="HashMap">
@@ -344,21 +346,18 @@
 	        ,(SELECT @ROWNUM := #{firstIndex}) R 
 	        WHERE 1=1
 	    ]]>
-		<if test="phoneNumber != null and phoneNumber != ''">
-			AND PHONE_NUMBER = #{phoneNumber}
-		</if>
-		<if test="endYN != null and endYN != ''">
-			AND END_YN = #{endYN}
-		</if>
-		<if test="eventTimeS != null and eventTimeS != ''">
+	    <if test="eventTimeS != null and eventTimeS != ''">
 	    <![CDATA[
-	    	AND INSERT_DATE >= #{eventTimeS}
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') >= #{eventTimeS}
 	    ]]>
 		</if>
 		<if test="eventTimeE != null and eventTimeE != ''">
 	    <![CDATA[
-	    	AND INSERT_DATE <= #{eventTimeE}
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{eventTimeE}
 	    ]]>
+		</if>
+		<if test="endYN != null and endYN != ''">
+			AND END_YN = #{endYN}
 		</if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
@@ -368,18 +367,15 @@
 				<when test="searchType == 'birth'">
 					AND BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'adres'">
-					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
-				</when>
 				<when test="searchType == 'phon'">
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'adres'">
+					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<otherwise>
-					AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
-				</otherwise>
 			</choose>
 		</if>
 		ORDER BY INSERT_DATE DESC
@@ -394,19 +390,19 @@
 				COUNT(*)
 			FROM girl_safe_event a
 	        WHERE 1=1
-	     ]]>
-		<if test="endYN != null and endYN != ''">
-			AND END_YN = #{endYN}
-		</if>
+		]]>
 		<if test="eventTimeS != null and eventTimeS != ''">
 	    <![CDATA[
-	    	AND INSERT_DATE >= #{eventTimeS}
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') >= #{eventTimeS}
 	    ]]>
 		</if>
 		<if test="eventTimeE != null and eventTimeE != ''">
 	    <![CDATA[
-	    	AND INSERT_DATE <= #{eventTimeE}
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{eventTimeE}
 	    ]]>
+		</if>
+		<if test="endYN != null and endYN != ''">
+			AND END_YN = #{endYN}
 		</if>
 		<if test="searchType != null and searchType != ''">
 			<choose>
@@ -416,21 +412,17 @@
 				<when test="searchType == 'birth'">
 					AND BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'adres'">
-					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
-				</when>
 				<when test="searchType == 'phon'">
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'adres'">
+					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<otherwise>
-					AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
-				</otherwise>
 			</choose>
 		</if>
-
 	</select>
 	
 	<select id="getLastEvent" parameterType="map" resultType="HashMap">

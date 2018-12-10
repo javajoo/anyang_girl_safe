@@ -10,35 +10,26 @@ import com.my.space.util.EncryptUtil;
 */
 import com.danusys.exception.BaseException;
 import com.danusys.cmm.util.CommonUtil;
-import com.danusys.sms.api.ApiClass;
-import com.danusys.sms.api.ApiResult;
 import com.danusys.cmm.util.JsonUtil;
 import com.danusys.platform.vo.AdminVo;
-import com.danusys.platform.west.service.GirlSafeVO;
 import com.danusys.service.BaseService;
 
 import egovframework.com.cmm.ComDefaultVO;
 import egovframework.rte.fdl.property.EgovPropertyService;
-import egovframework.rte.psl.dataaccess.util.EgovMap;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +39,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -1208,7 +1200,7 @@ public class BaseController
 			ModelAndViewDefiningException {
 		response.setCharacterEncoding("UTF-8");
 		response.setHeader("Access-Control-Allow-Origin", "*"); // 크로스도메인 허용
-		Map<String, Object> param = new HashMap<String, Object>();;
+		Map<String, Object> param = new HashMap<String, Object>();
 		HttpSession session = request.getSession(false);
 		AdminVo user = (AdminVo) session.getAttribute("admin");
 
@@ -1218,6 +1210,12 @@ public class BaseController
 			
 			param.put("firstIndex", 0);
         	param.put("recordCountPerPage","-1");
+        	
+        	Enumeration enu = request.getParameterNames();
+			while (enu.hasMoreElements()) {
+				String key = (String)enu.nextElement() ;
+				param.put(key, URLDecoder.decode(request.getParameter(key),"UTF-8"));
+			}
 
 			System.out.println("----------------------------------------------------");
 			System.out.println(sqlid);

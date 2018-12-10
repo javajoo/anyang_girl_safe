@@ -12,15 +12,7 @@
 			<li class="list">
 				<div id="search_type_box_wrap" class="list_cont">
 					<em>검색 조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 90px; height: 27px;">
-					</select>
-				</div>
-				<div id="approval_box_wrap" class="list_cont" style="display: inline;">
-					<em>승인여부 : </em>
-					<select id="approval_box" style="width: 80px; height: 27px; display: none;">
-					</select>
-				</div>
-				<div class="list_cont2">
+					<select id="search_type_box" class="easyui-combobox" style="width: 90px; height: 27px;"></select>
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 				</div>
@@ -49,7 +41,13 @@ $(document).ready(function(){
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getUserList/action.do";
 		var fileName = "girlSafeUser";
-		excelDownLoad($('#userApprovalList_table'), url, fileName);
+		var data ={
+				userTimeS : $("#search_eventR_timeS").datebox('getValue').replace(/\//g, ''),
+				userTimeE : $("#search_eventR_timeE").datebox('getValue').replace(/\//g, ''),
+				searchType : $("#search_type_box").combobox('getValue'),
+				totSearch : $("#search_eventR_tot").val()
+		};
+		excelDownLoad($('#userApprovalList_table'), url, fileName, data);
 	});
 	$('#search_eventR_timeS').datebox({
 		requeired:true
@@ -75,7 +73,7 @@ $(document).ready(function(){
 	    },
 	    {
 	    	label: '주소',
-	    	value: 'address'
+	    	value: 'adres'
 	    },
 	    {
 	    	label: '번호',
@@ -86,23 +84,6 @@ $(document).ready(function(){
 	    	value: 'sensor'
 	    }]
 	});
-	
-	/* $("#approval_box").combobox({
-		valueField:'value',
-	    textField:'label',
-	    data: [{
-	    	label: '전체',
-	    	value: ''
-	    },
-	    {
-	    	label: '승인',
-	    	value: 'Y'
-	    },
-	    {
-	    	label: '미승인',
-	    	value: 'N'
-	    }]
-	}); */
 	
 	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
 	$('.datebox').removeClass("datebox").addClass("datebox-black");
@@ -243,11 +224,10 @@ function setStationId(rows) {
 
 function reload(){
 	const jsonObj = {};
-	jsonObj.eventDeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
-	jsonObj.eventDeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
-	jsonObj.totSearch = $("#search_eventR_tot").val();
+	jsonObj.userTimeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
+	jsonObj.userTimeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
-	// jsonObj.approval = $("#approval_box").combobox('getValue');
+	jsonObj.totSearch = $("#search_eventR_tot").val();
 	$('#userApprovalList_table').datagrid({
 	    url:'/selectList/girlSafe.getUserList/action.do',
 	    pagination:true,
@@ -261,12 +241,12 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'birth',title:'생년월일',width:'5%',align:'center'},
+			{field:'birth',title:'생년월일',width:'10%',align:'center'},
 			{field:'phoneNumber',width:'15%',title:'번호',align:'center'},
 			{field:'address',title:'주소',width:'20%',align:'center'},
 			{field:'sensorId',title:'센서번호',width:'15%',align:'center'},
-			{field:'smartId',title:'스테이션번호',width:'15%',align:'center'},
-			{field:'approval',title:'승인여부',width:'15%',align:'center'}
+			{field:'smartId',title:'스테이션번호',width:'10%',align:'center'},
+			{field:'insertDate',title:'가입일',width:'15%',align:'center'}
 	    ]],
 	    onDblClickRow:function(index, row) {
 	    	onUserDetailPopup(row);
