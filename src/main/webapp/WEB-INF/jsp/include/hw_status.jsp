@@ -51,7 +51,15 @@ $(document).ready(function(){
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getUserList/action.do";
 		var fileName = "girlSafeSensor";
-		excelDownLoad($('#hwStatus_table'), url, fileName);
+		var data ={
+				lastTimeS : $("#search_last_timeS").datebox('getValue').replace(/\//g, ''),
+				lastTimeE : $("#search_last_timeE").datebox('getValue').replace(/\//g, ''),
+				totSearch : $("#search_eventR_tot").val(),
+				searchType : $("#search_type_box").combobox('getValue'),
+				batStatus : $("#bat_status_box").combobox('getValue'),
+				hwStatus : $("#hw_status_box").combobox('getValue')
+		};
+		excelDownLoad($('#hwStatus_table'), url, fileName, data);
 	});
 	$('#search_last_timeS').datebox({
 		requeired:true
