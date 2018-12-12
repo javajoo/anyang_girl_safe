@@ -9,18 +9,7 @@
 				<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'">
 			</li>
 			<li class="list">
-				<!-- <div id="search_type_box_wrap" class="list_cont">
-					<em>검색 조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 90px; height: 27px;">
-					</select>
-				</div>
-				<div id="approval_box_wrap" class="list_cont" style="display: inline;">
-					<em>승인여부 : </em>
-					<select id="approval_box" style="width: 80px; height: 27px; display: none;">
-					</select>
-				</div> -->
 				<div class="list_cont2">
-					<!-- <input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/> -->
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 				</div>
 			</li>
@@ -62,52 +51,6 @@ $(document).ready(function(){
 		requeired:true
 	});
 	
-	/* $('#search_type_box').combobox({
-	    valueField:'value',
-	    textField:'label',
-	    data: [{
-	    	label: '전체',
-	    	value: ''
-	    },
-	    {
-	    	label: '이름',
-	    	value: 'name'
-	    },
-	    {
-	    	label: '나이',
-	    	value: 'age'
-	    },
-	    {
-	    	label: '주소',
-	    	value: 'address'
-	    },
-	    {
-	    	label: '번호',
-	    	value: 'phon'
-	    },
-	    {
-	    	label: '단말기번호',
-	    	value: 'sensor'
-	    }]
-	}); */
-	
-	/* $("#approval_box").combobox({
-		valueField:'value',
-	    textField:'label',
-	    data: [{
-	    	label: '전체',
-	    	value: ''
-	    },
-	    {
-	    	label: '승인',
-	    	value: 'Y'
-	    },
-	    {
-	    	label: '미승인',
-	    	value: 'N'
-	    }]
-	}); */
-	
 	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
 	$('.datebox').removeClass("datebox").addClass("datebox-black");
 	$('.datebox-calendar-inner').parent().addClass("datebox-calendar-div");
@@ -137,7 +80,7 @@ function onAddAdminPopup() {
     $('#popup_area').dialog({
         title: '계정 신규 등록',
         width: 400,
-        height: 400,
+        height: 450,
         closed: false,
         cache: false,
         modal: true,
@@ -188,7 +131,6 @@ function approval(){
 }
 
 function onAdminDetailPopup(row, data) {
-	debugger;
 	var page = '/popup/admin_popup'; 
     $("#popup_area").html("");
     $("#popup_area").load("/action/page.do", { path : page }, function() {
@@ -216,7 +158,7 @@ function onAdminDetailPopup(row, data) {
             $('#popup_area').dialog({
                 title: '계정 상세 정보',
                 width: 400,
-                height: 400,
+                height: 450,
                 closed: false,
                 cache: false,
                 modal: true,
@@ -238,9 +180,7 @@ function reload(){
 	const jsonObj = {};
 	jsonObj.userTimeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
 	jsonObj.userTimeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
-	//jsonObj.totSearch = $("#search_eventR_tot").val();
-	//jsonObj.searchType = $("#search_type_box").combobox('getValue');
-	// jsonObj.approval = $("#approval_box").combobox('getValue');
+	
 	$('#userApprovalList_table').datagrid({
 	    url:'/selectList/girlSafe.getAdminList/action.do',
 	    pagination:true,
@@ -269,7 +209,6 @@ function reload(){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');
-					//location.href="/";
 					closeWindow();
 				}
 			}

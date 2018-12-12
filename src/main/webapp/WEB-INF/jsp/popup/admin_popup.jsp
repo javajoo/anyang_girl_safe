@@ -23,6 +23,15 @@
 			</li>
 			<li class="list">
 				<div class="popup_list_title">
+					<em>패스워드 확인</em>
+				</div>
+				<div class="popup_list_cont">
+					<input type="password" id="admin_password2_box" class="easyui-textbox" 
+						placeholder="내용을 입력해 주세요."/>
+				</div>
+			</li>
+			<li class="list">
+				<div class="popup_list_title">
 					<em>이름</em>
 				</div>
 				<div class="popup_list_cont">
@@ -104,7 +113,6 @@ $(document).ready(function(){
 });
 
 function setAdminDetailData(row, data) {
-	debugger;
 	var row = data[row];
 	
 	$('#admin_id_box').attr('disabled', true);
@@ -129,10 +137,19 @@ function closePopup() {
 
 function updateAdmin() {
 	const jsonObj = {};
-	jsonObj.singleInsertSid = "GirlSafe.updateAdmin";
+	
+	var password = $('#admin_password_box').val();
+	var password2 = $('#admin_password2_box').val();
+	if(password != '') {
+		if(password != password2) {
+			alert("비밀번호가 일치 하지 않습니다.");
+			return false;
+		}
+		else jsonObj.password = $('#admin_password_box').val();
+	}
+	jsonObj.singleInsertSid = "girlSafe.updateAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
     jsonObj.name = $('#admin_name_box').val();
-    if($('#admin_password_box').val() != '') jsonObj.password = $('#admin_password_box').val();
 	jsonObj.birthday = $('#admin_birthday_box').val();
 	jsonObj.phoneNumber = $('#admin_phoneNumber_box').val();
 	jsonObj.email = $('#admin_email_box').val();
@@ -169,10 +186,20 @@ function updateAdmin() {
 
 function saveAdmin() {
 	const jsonObj = {};
+	
+	var password = $('#admin_password_box').val();
+	var password2 = $('#admin_password2_box').val();
+	if(password != '') {
+		if(password != password2) {
+			alert("비밀번호가 일치 하지 않습니다.");
+			return false;
+		}
+		else jsonObj.password = $('#admin_password_box').val();
+	}
+	
 	jsonObj.singleInsertSid = "girlSafe.insertAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
     jsonObj.name = $('#admin_name_box').val();
-    if($('#admin_password_box').val() != '') jsonObj.password = $('#admin_password_box').val();
 	jsonObj.birthday = $('#admin_birthday_box').val();
 	jsonObj.phoneNumber = $('#admin_phoneNumber_box').val();
 	jsonObj.email = $('#admin_email_box').val();

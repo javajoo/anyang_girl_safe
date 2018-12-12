@@ -16,6 +16,7 @@ import com.danusys.platform.web.JSONResult;
 import com.danusys.service.BaseService;
 
 import egovframework.com.cmm.ComDefaultVO;
+import egovframework.let.utl.sim.service.EgovFileScrty;
 import egovframework.rte.fdl.property.EgovPropertyService;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
@@ -31,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1054,6 +1054,13 @@ public class BaseController
 		String multiInsertsqlmapid = (String) param.get("multiInsertsqlmapid");
 		String multiUpdatesqlmapid = (String) param.get("multiUpdatesqlmapid");
 		String multiDeletesqlmapid = (String) param.get("multiDeletesqlmapid");
+		
+		String saltText = this.propertiesService.getString("Globals.SaltText").trim();
+		String password = (String) param.get("password");
+		if(password != null && !password.isEmpty()) {
+			String encryptPassword = EgovFileScrty.encryptPassword(password,saltText);
+			param.put("password", encryptPassword);
+		}
 		
 		if(singleInsertSid != null && !singleInsertSid.isEmpty())
 		{
