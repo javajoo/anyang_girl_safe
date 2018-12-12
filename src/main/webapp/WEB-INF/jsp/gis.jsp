@@ -191,7 +191,7 @@
 			search_pop('EVENT_STATE_4');	//상황처리 리스트 초기화
 		});
 		
-		$("#map_addr_search_text").textbox({
+		/* $("#map_addr_search_text").textbox({
 			inputEvents: $.extend({}, $.fn.textbox.defaults.inputEvents,{
 				keyup: function(event){
 					if (event.keyCode == 13) {
@@ -199,7 +199,7 @@
 					}
 				}
 			})
-		});
+		}); */
 	});
 	
 	var map;        
@@ -550,15 +550,9 @@
 
 		addAirTMS(); // TMS 기본지도 추가
 		addBaseTMS(); // TMS 기본지도 추가
-
-		//map.setCenter(new OpenLayers.LonLat(14119381.7398256, 4530853.78757956), 15);
-		//위경도 시
-		// var centerLonlat = new OpenLayers.LonLat(128.980592, 35.21242);
-		//var centerLonlat = new OpenLayers.LonLat(127.099098, 37.411375);
 		
 		var centerLonlat = new OpenLayers.LonLat(126.959082, 37.390032);
-		centerLonlat.transform(new OpenLayers.Projection("EPSG:4326"),
-				new OpenLayers.Projection("EPSG:900913"));
+		centerLonlat.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
 		map.setCenter(centerLonlat, 14);
 
 		map.addControl(new OpenLayers.Control.MousePosition());
@@ -1146,9 +1140,7 @@
 			</header>
 			
         	<div class="account_area">
-				<div class="account">
-					<a href="#" id="setting_btn" onclick="javascript:menuDisplay('menu_setting')">환경설정</a>
-				</div>
+        		<a href="#" id="setting_btn" onclick="javascript:menuDisplay('menu_setting')">환경설정</a>
 				<div class="account">${admin.USER_NM_KO}</div>
 				<div id="login_pop" class="login_pop_down"></div>
 				<span class="login_image"></span>
@@ -1197,13 +1189,13 @@
 				    <a href="#" id="map_base" class="easyui-linkbutton btn_ty" data-options="iconCls:'icon-normal',toggle:true">일반</a>
 				    <a href="#" id="map_air" class="easyui-linkbutton" data-options="iconCls:'icon-satellite',toggle:true">위성</a>
 				</li>
-				<li>
+				<!-- <li>
 					<div class="map_search_box">
 						<label>검색</label>
 						<input class="easyui-textbox map_addr_search_text" id="map_addr_search_text" onenter="" data-options="prompt:'지번 ,도로명 또는 건물명, 시설명', width:'250px', height:'23px', margin:'0'"/>
 						<a href="#" id="map_addr_search_btn" onclick="addr_search()" class="easyui-linkbutton" data-options="iconCls:'icon-search',toggle:false">검색</a>
 					</div>
-				</li>
+				</li> -->
 			</ul>
 		</div>
 		
