@@ -81,9 +81,9 @@
 				</div>
 				<div class="popup_list_cont">
 					<select class="easyui-combobox" id="admin_rank_box">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
+						<option value="1">최고 관리자</option>
+						<option value="2">관리 담당자</option>
+						<option value="3">운영자</option>
 					</select>
 				</div>
 			</li>

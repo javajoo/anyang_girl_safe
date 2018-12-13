@@ -19,10 +19,10 @@
 				</div>
 				<div class="list_cont">
 					<em>검색 조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
-					</select>
-					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
+					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;"></select>
+					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;" onkeypress="if(event.keyCode==13){reload();}"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
+					<a href="#" class="eventR_button_list" onclick="searchInit()">초기화</a>
 				</div>
 			</li>
 		</ul>
@@ -41,19 +41,7 @@
 	</div>
 </div>
 <script>
-$(document).ready(function(){
-	$('#excel_download_btn').click(function() {
-		var url = "/excelDownload/girlSafe.getEventList/action.do";
-		var fileName = "girlSafeEvent";
-		var data = {
-				eventTimeS : $("#search_event_timeS").datebox('getValue').replace(/\//g, ''),
-				eventTimeE : $("#search_event_timeE").datebox('getValue').replace(/\//g, ''),
-				searchType : $("#search_type_box").combobox('getValue'),
-				totSearch : $("#search_eventR_tot").val(),
-				endYN : $("#end_yn_box").combobox('getValue')
-		};
-		excelDownLoad($('#eventList_table'), url, fileName, data);
-	});
+function searchInit() {
 	$('#search_event_timeS').datebox({
 		requeired:true
 	});
@@ -65,12 +53,9 @@ $(document).ready(function(){
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
-	    	label: '전체',
-	    	value: ''
-	    },
-	    {
 	    	label: '이름',
-	    	value: 'name'
+	    	value: 'name',
+	    	"selected":true
 	    },
 	    {
 	    	label: '생년월일',
@@ -106,6 +91,25 @@ $(document).ready(function(){
 	    	value: 'Y'
 	    }]
 	});
+	
+	$('#search_eventR_tot').val('');
+}
+
+$(document).ready(function(){
+	$('#excel_download_btn').click(function() {
+		var url = "/excelDownload/girlSafe.getEventList/action.do";
+		var fileName = "girlSafeEvent";
+		var data = {
+				eventTimeS : $("#search_event_timeS").datebox('getValue').replace(/\//g, ''),
+				eventTimeE : $("#search_event_timeE").datebox('getValue').replace(/\//g, ''),
+				searchType : $("#search_type_box").combobox('getValue'),
+				totSearch : $("#search_eventR_tot").val(),
+				endYN : $("#end_yn_box").combobox('getValue')
+		};
+		excelDownLoad($('#eventList_table'), url, fileName, data);
+	});
+	
+	searchInit();
 	
 	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
 	$('.datebox').removeClass("datebox").addClass("datebox-black");

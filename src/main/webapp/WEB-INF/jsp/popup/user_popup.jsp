@@ -110,7 +110,7 @@ function setUserDetailData(data) {
 	$('#user_sensor_box').val(row.sensorId);
 	$('#user_smart_box').val(smartId);
 	$('#user_name_box').val(row.name);
-	$('#user_birth_box').val(row.birth);
+	$('#user_birth_box').val((row.birth).replace(/\//g,''));
 	$('#user_address_box').val(row.address);
 	$('#user_phone_box').val(row.phoneNumber);
 	$('#user_update_btn').css('display', 'inline-block');

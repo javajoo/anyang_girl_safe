@@ -13,18 +13,17 @@
 			</li>
 			<li class="list">
 				<div class="list_cont">
-					<em>검색조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
-					</select>
-				</div>
-				<div class="list_cont">
 					<em>푸시여부 : </em>
 					<select id="push_yn_box" class="easyui-combobox" style="width: 80px; height: 27px;">
 					</select>
 				</div>
-				<div class="list_cont2">
-					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
+				<div class="list_cont">
+					<em>검색조건 : </em>
+					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;">
+					</select>
+					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;" onkeypress="if(event.keyCode==13){reload();}"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
+					<a href="#" class="eventR_button_list" onclick="searchInit()">초기화</a>
 				</div>
 			</li>
 		</ul>
@@ -49,170 +48,172 @@
 	</div>
 </div>
 <script>
-	$(document).ready(function(){
-		$('#search_board_timeS').datebox({
-			requeired:true
-		});
-		$('#search_board_timeE').datebox({
-			requeired:true
-		});
-		
-		$('#search_type_box').combobox({
-		    valueField:'value',
-		    textField:'label',
-		    data: [{
-		    	label: '전체',
-		    	value: ''
-		    },
-		    {
-		    	label: '제목',
-		    	value: 'title'
-		    },
-		    {
-		    	label: '내용',
-		    	value: 'cont'
-		    }]
-		});
-
-		$('#push_yn_box').combobox({
-		    valueField:'value',
-		    textField:'label',
-		    data: [{
-		    	label: '전체',
-		    	value: ''
-		    },
-		    {
-		    	label: 'Y',
-		    	value: 'Y'
-		    },
-		    {
-		    	label: 'N',
-		    	value: 'N'
-		    }]
-		});
-		
-		$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
-		$('.datebox').removeClass("datebox").addClass("datebox-black");
-		$('.datebox-calendar-inner').parent().addClass("datebox-calendar-div");
-		$('.datebox-calendar-inner').parent().parent().addClass("datebox-calendar-panel");
-		
-		reload();
+function searchInit() {
+	$('#search_board_timeS').datebox({
+		requeired:true
+	});
+	$('#search_board_timeE').datebox({
+		requeired:true
 	});
 	
-	$("#write_button").off("click").on(
-	        {
-	            "click": function ()
-	            {
-	            	const path = "include/board_write";
-	                console.log(path);
-	                common.openDialogPopPosition("", "글쓰기", "1024", "470", "true", "/action/page.do", {path: path}, path.split("/")[1]);
-	            }
-	        });
+	$('#search_type_box').combobox({
+	    valueField:'value',
+	    textField:'label',
+	    data: [{
+	    	label: '제목',
+	    	value: 'title',
+	    	"selected":true
+	    },
+	    {
+	    	label: '내용',
+	    	value: 'cont'
+	    }]
+	});
+
+	$('#push_yn_box').combobox({
+	    valueField:'value',
+	    textField:'label',
+	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    {
+	    	label: 'Y',
+	    	value: 'Y'
+	    },
+	    {
+	    	label: 'N',
+	    	value: 'N'
+	    }]
+	});
 	
-	function getBoardOne(row, data) {
-		var url = "/select/girlSafe.getBoardOne/action.do";
-		const path = "include/board_detail";
-		const id = path.split("/")[1];
-		const jsonObj = {};
-		jsonObj.no = data.no;
-		jsonObj.path = path;
-        common.openDialogPopPosition(id, "상세보기", "1024", "470", true, "/action/page.do", jsonObj, id);
+	$('#search_eventR_tot').val('');
+}
+
+$(document).ready(function(){
+	searchInit();
+	
+	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
+	$('.datebox').removeClass("datebox").addClass("datebox-black");
+	$('.datebox-calendar-inner').parent().addClass("datebox-calendar-div");
+	$('.datebox-calendar-inner').parent().parent().addClass("datebox-calendar-panel");
+	
+	reload();
+});
+
+$("#write_button").off("click").on({
+	"click": function (){
+		const path = "include/board_write";
+		console.log(path);
+		common.openDialogPopPosition("", "글쓰기", "1024", "470", "true", "/action/page.do", {path: path}, path.split("/")[1]);
 	}
+});
+
+function getBoardOne(row, data) {
+	var url = "/select/girlSafe.getBoardOne/action.do";
+	const path = "include/board_detail";
+	const id = path.split("/")[1];
+	const jsonObj = {};
+	jsonObj.no = data.no;
+	jsonObj.path = path;
+       common.openDialogPopPosition(id, "상세보기", "1024", "470", true, "/action/page.do", jsonObj, id);
+}
+
+function updateCount(row, data) {
+	var url = "/ajax/update/girlSafe.updateBoard/action.do";
+	const jsonObj = {};
+	jsonObj.no = data.no;
+	jsonObj.count = "count";
+	$.ajax({
+		type : "POST"
+		, url : url
+		, dataType : "json"
+		, data : {"param" : JSON.stringify(jsonObj)}
+		, success:function(data)
+		{
+			console.log(data);
+		}
+		, error:function(e){
+			alert(e.responseText);
+		}
+	});
+}
+
+function pushBoard() {
+	var row = $('#boardList_table').datagrid('getSelected');
+	var url = "";
 	
-	function updateCount(row, data) {
-		var url = "/ajax/update/girlSafe.updateBoard/action.do";
-		const jsonObj = {};
-		jsonObj.no = data.no;
-		jsonObj.count = "count";
-		$.ajax({
-			type : "POST"
-			, url : url
-			, dataType : "json"
-			, data : {"param" : JSON.stringify(jsonObj)}
-			, success:function(data)
-			{
-				console.log(data);
-			}
-			, error:function(e){
-				alert(e.responseText);
-			}
-		});
-	}
+	const jsonObj = {};
 	
-	function pushBoard() {
-		var row = $('#boardList_table').datagrid('getSelected');
-		var url = "";
-		
-		const jsonObj = {};
-		
-		jsonObj.no = row.no;
-		
-		$.ajax({
-			type : "POST"
-			, url : url
-			, dataType : "json"
-			, data : {"param" : JSON.stringify(jsonObj)}
-			, success:function(data)
-			{
-				console.log(data);
-			}
-			, error:function(e){
-				alert(e.responseText);
-			}
-		});
-	}
+	jsonObj.no = row.no;
 	
-	function reload(){
-		const jsonObj = {};
-		jsonObj.boardInsertTimeS = $("#search_board_timeS").datebox('getValue').replace(/\//g, '');
-		jsonObj.boardInsertTimeE = $("#search_board_timeE").datebox('getValue').replace(/\//g, '');
-		jsonObj.totSearch = $("#search_eventR_tot").val();
-		jsonObj.searchType = $("#search_type_box").combobox('getValue');
-		jsonObj.pushYN = $("#push_yn_box").combobox('getValue');
-		$('#boardList_table').datagrid({
-		    url:'/selectList/girlSafe.getBoardList/action.do',
-		    pagination:true,
-		    pageSize:12,
-		    pageNumber:1,
-		    queryParams : {
-		    	param : JSON.stringify(jsonObj),
-				pageSize : 12,
-				state: '0',
-		    },
-		    columns:[[
-		        {field:'num',title:'No',width:'5%',align:'center'},
-				{field:'title',title:'제목',width:'65%',align:'center'},
-				{field:'insertDate',title:'등록일',width:'20%',align:'center'},
-				{field:'pushYN',title:'푸시',width:'5%',align:'center'},
-				{field:'count',title:'조회수',width:'5%',align:'center'},
-				{field:'no',title:'번호',hidden:true}
-		    ]],
-		    onSelect:function(index, row) {
-				$('#push_button').css('display', 'inline-block');
-		    },
-		    onUnselect:function(index, row) {
-				$('#push_button').css('display', 'none');
-		    },
-		    onDblClickRow: function(row, data) {
-		    	updateCount(row, data);
-		    	getBoardOne(row, data);
-		    },
-		    onLoadSuccess:function(data){
-				if($('#boardList_table').datagrid('getData').rows=='sessionOut'){
-					sCnt++;
-					if(sCnt == 1){
-						alert('세션아웃 됐습니다.');
-						//location.href="/";
-						closeWindow();
-					}
+	$.ajax({
+		type : "POST"
+		, url : url
+		, dataType : "json"
+		, data : {"param" : JSON.stringify(jsonObj)}
+		, success:function(data)
+		{
+			console.log(data);
+		}
+		, error:function(e){
+			alert(e.responseText);
+		}
+	});
+}
+
+function reload(){
+	const jsonObj = {};
+	jsonObj.boardInsertTimeS = $("#search_board_timeS").datebox('getValue').replace(/\//g, '');
+	jsonObj.boardInsertTimeE = $("#search_board_timeE").datebox('getValue').replace(/\//g, '');
+	jsonObj.searchType = $("#search_type_box").combobox('getValue');
+	jsonObj.totSearch = $("#search_eventR_tot").val();
+	jsonObj.pushYN = $("#push_yn_box").combobox('getValue');
+	$('#boardList_table').datagrid({
+	    url:'/selectList/girlSafe.getBoardList/action.do',
+	    pagination:true,
+	    pageSize:12,
+	    pageNumber:1,
+	    queryParams : {
+	    	param : JSON.stringify(jsonObj),
+			pageSize : 12,
+			state: '0',
+	    },
+	    columns:[[
+	        {field:'num',title:'No',width:'5%',align:'center'},
+			{field:'title',title:'제목',width:'65%',align:'center'},
+			{field:'insertDate',title:'등록일',width:'20%',align:'center'},
+			{field:'pushYN',title:'푸시',width:'5%',align:'center'},
+			{field:'count',title:'조회수',width:'5%',align:'center'},
+			{field:'no',title:'번호',hidden:true}
+	    ]],
+	    onSelect:function(index, row) {
+			$('#push_button').css('display', 'inline-block');
+	    },
+	    onUnselect:function(index, row) {
+			$('#push_button').css('display', 'none');
+	    },
+	    onDblClickRow: function(row, data) {
+	    	updateCount(row, data);
+	    	getBoardOne(row, data);
+	    	reload();
+	    },
+	    onLoadSuccess:function(data){
+			if($('#boardList_table').datagrid('getData').rows=='sessionOut'){
+				sCnt++;
+				if(sCnt == 1){
+					alert('세션아웃 됐습니다.');
+					//location.href="/";
+					closeWindow();
 				}
-				if(data && data.total > 0) {			
-					$('#push_button').css('display', 'none');	
-					selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
-					$(this).datagrid('selectRow',0);
-				}
 			}
-		});	
-	}
+			if(data && data.total > 0) {			
+				$('#push_button').css('display', 'none');	
+				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
+				//$(this).datagrid('selectRow',0);
+			}
+		}
+	});	
+}
 </script>
 

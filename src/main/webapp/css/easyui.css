@@ -1359,6 +1359,14 @@ margin:2px 1px;
 	left: 0;
 	top: 10px;
 }
+.cont_inner .datagrid .datagrid-pager .pagination-first,
+.cont_inner .datagrid .datagrid-pager .pagination-prev,
+.cont_inner .datagrid .datagrid-pager .pagination-next,
+.cont_inner .datagrid .datagrid-pager .pagination-last {
+	left: 0;
+	top: 2px;
+}
+
 .datagrid .datagrid-pager .pagination-load {
 	top: 11px;
 }

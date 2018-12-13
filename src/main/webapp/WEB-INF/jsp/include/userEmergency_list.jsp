@@ -1,14 +1,14 @@
 <!-- 이벤트내역 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <div class="cont_area">
-	<div id="public_trans" title="" style="height:100%; width:100%">
+	<div id="" title="" style="height:100%; width:100%">
 		<ul class="list_condi">
 			<li class="list">
 				<em>검색조건 : </em>
 				<select id="user_flag_box" class="easyui-combobox" style="width: 80px; height: 27px;">
 				</select>
 				<div class="list_cont">
-					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;"/>
+					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;" onkeypress="if(event.keyCode==13){reload();}"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 				</div>
 			</li>
@@ -33,12 +33,9 @@ $(document).ready(function(){
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
-	    	label: '전체',
-	    	value: ''
-	    },
-	    {
 	    	label: '이름',
-	    	value: 'name'
+	    	value: 'name',
+	    	"selected":true
 	    },
 	    {
 	    	label: '생년월일',

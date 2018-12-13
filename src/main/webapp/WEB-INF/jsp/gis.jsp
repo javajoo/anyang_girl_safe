@@ -286,7 +286,6 @@
 	
 	/* 대메뉴선택 */
 	function menuDisplay(flag){
-		
 		mapMoveControl();
 		$('.combo-p').remove();
 		
@@ -308,6 +307,7 @@
 		clearInterval(eventM);
 		$("#west-panel").show();
 		$('#left-panel').hide();
+		$('#layer_area').hide();
 		if(flag == 'menu_home'){
 			layerClean(selectedImageLayer);
 			search_home();
@@ -315,6 +315,7 @@
 			
 			mapInfo();
 			search_list("/include/userEmergency_list");	
+			$('#layer_area').show();
 		}
 		else if(flag == 'menu_userList') {
 			

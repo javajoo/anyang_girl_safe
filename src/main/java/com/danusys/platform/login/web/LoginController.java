@@ -90,11 +90,11 @@ public class LoginController {
         Map<String, Object> param = new HashMap<String, Object>();
     	param.put("id", id);
     	
-    	/*로그인실패 카운트 체크 5번이상 실패 시 제한*/
-    	int checkCnt = Integer.parseInt(baseService.baseSelectOne("girlSafe.getLoginFailCount", param));
-        if(checkCnt >= 5) return rtn = "redirect:/loginError.do?err=3";
-        
         try{
+        	/*로그인실패 카운트 체크 5번이상 실패 시 제한*/
+        	int checkCnt = Integer.parseInt(baseService.baseSelectOne("girlSafe.getLoginFailCount", param));
+            if(checkCnt >= 5) return rtn = "redirect:/loginError.do?err=3";
+            
             AdminVo lgnVO = this.loginService.login(request, id, pwd);
             LoginManager loginManager = LoginManager.getInstance();
             loginManager.setSession(session, id);

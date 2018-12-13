@@ -270,7 +270,7 @@ function mapMoveControl(){
 
 /*전체영역*/
 function mapFullExtent(){
-	map.setCenter(new OpenLayers.LonLat(128.980592,35.21242).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 14); 
+	map.setCenter(new OpenLayers.LonLat(126.959082, 37.390032).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 14); 
 }
 
 /*지도확장*/
