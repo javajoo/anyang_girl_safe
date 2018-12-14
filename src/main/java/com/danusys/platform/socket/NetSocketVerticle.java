@@ -239,7 +239,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			try {
 				
 				sendSms(eventList);
-				//sendGis(eventList);
+				sendGis(eventList);
 				Map<String,Object> event = eventList.get(0);
 				JsonObject obj = new JsonObject(event);
 				//send(obj);
@@ -346,7 +346,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);*/
 				sendSms(eventList);
-				//sendGis(eventList);
+				sendGis(eventList);
 				Map<String,Object> event = eventList.get(0);
 				JsonObject obj = new JsonObject(event);
 				NetSocketVerticle.logger.info(obj
@@ -452,7 +452,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
 						.baseSelectList("girlSafe.getHwInfo",map);
 */
-				//sendGis(eventList);
+				sendGis(eventList);
 				
 				Map<String,Object> event = eventList.get(0);
 				JsonObject obj = new JsonObject(event);
@@ -831,7 +831,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
      
                 try
                 {
-                	fileName = "default_woman.png";
+                	fileName = "default_woman.jpg";
                     File file = new File(filePathName+fileName);
      
                     if( file.exists() )
