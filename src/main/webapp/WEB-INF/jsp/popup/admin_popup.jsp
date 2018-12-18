@@ -125,6 +125,7 @@ function setAdminDetailData(row, data) {
 	$('#admin_phoneNumber_box').val(data.phoneNumber);
 	$('#admin_email_box').val(data.email);
 	$('#admin_address_box').val(data.address);
+	$('#admin_rank_box').val(data.rank);
 	$('#admin_update_btn').css('display', 'inline-block');
 	$('#admin_save_btn').css('display', 'none');
 }

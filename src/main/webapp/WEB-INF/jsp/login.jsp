@@ -9,7 +9,6 @@
 <title>여성안심서비스 로그인</title>
 <link rel="stylesheet" type="text/css" href="/css/login.css">
 <script src="/js/jquery.min.js"></script>
-<!-- <script src="js/jquery.easyui.min.js"></script> -->
 
 <script src="/js/custom/packages.js"></script>
 <script src="/js/custom/main.js"></script>
@@ -37,25 +36,28 @@
 </script>
 </head>
 <body class="login_bg">
-<img src="/images/login/login_bg.png" id="bg" />
-<div class="login_area_black">
-    <!-- <h1 class="login_logo">안심귀가관리시스템</h1> -->
-    <div class="login_cont_black" id="cont">
-    	<span class="login_logo_black"></span>
-    	<!-- <h1 class="login_title_black">안전지키미 관리시스템</h1> -->
-    	<input type="hidden" name="message" id="message" value="${message}"/>
-        <form name="loginForm" id="loginForm" action ="<c:url value='/danu/com/platform/login.do'/>" method="post">
-            <fieldset>
-            	<h1 class="login_title_black">여성 안심서비스</h1>
-                <div class="login_box_black">
-                <input type="text" id="id" name="id" placeholder="Username">
-                <input type="password" id="password" name="pwd" placeholder="*********">
-                  
-                </div>
-                <a href="#" class="btn_login_black" id="login">LOGIN</a>
-            </fieldset>
-        </form>	
-    </div>
-</div>
+	<div class="bg_area">
+		<span class="title_1"></span>
+		<span class="title_2"></span>
+	</div>
+	
+	<div class="login_area">
+	    <div class="login_cont">
+	    	<span class="login_logo"></span>
+	    	
+	    	<input type="hidden" name="message" id="message" value="${message}"/>
+	        <form name="loginForm" id="loginForm" class="login_form" action ="<c:url value='/danu/com/platform/login.do'/>" method="post">
+	            <fieldset>
+	                <div class="login_box">
+		                <input type="text" id="id" name="id" placeholder="Login ID">
+		                <input type="password" id="password" name="pwd" placeholder="Password">
+	                </div>
+	                <a href="#" class="btn_login" id="login"></a>
+	            </fieldset>
+	        </form>	
+	    </div>
+	</div>
+	
+	<div class="footer"></div>
 </body>
 </html>
