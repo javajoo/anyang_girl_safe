@@ -49,7 +49,7 @@
 			</li>
 			<li class="list">
 				<div class="popup_list_title">
-					<em>번호</em>
+					<em>연락처</em>
 				</div>
 				<div class="popup_list_cont">
 					<input type="text" id="user_phone_box" class="easyui-textbox"

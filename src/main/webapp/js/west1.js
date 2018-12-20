@@ -425,14 +425,14 @@ function excelDownLoad(table_obj, path, fileName, data) {
 	var opts = $(table_obj).datagrid("getColumnFields");
 	var cnt = 0;
 	for (i = 0; i < opts.length; i++) {
-		var flag = $(table_obj).datagrid(
-				"getColumnOption", opts[i]).hidden;
-		if (!flag) {
+//		var flag = $(table_obj).datagrid(
+//				"getColumnOption", opts[i]).hidden;
+//		if (!flag) {
 			data["headerField" + cnt] = opts[i];
 			data["headerText" + cnt] = $(table_obj).datagrid(
 					"getColumnOption", opts[i]).title;
 			cnt++;
-		}
+//		}
 	}
 	
 	data["headerCnt"] = cnt;

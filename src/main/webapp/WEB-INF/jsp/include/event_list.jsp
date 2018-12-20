@@ -41,6 +41,21 @@
 	</div>
 </div>
 <script>
+function setStationId(rows) {
+	var length = rows.length;
+	var maxLength = 4;
+	
+	for (var i = 0; i < length; i++) {
+		var smartId = rows[i].smartId;
+		var idLength = maxLength - smartId.length;
+		for (var j = 0; j < idLength; j++) {
+			smartId = '0' + smartId;
+		}
+		rows[i].smartId = 'SA-S' + smartId;
+		$('#eventList_table').datagrid('refreshRow', i);
+	}
+}
+
 function searchInit() {
 	$('#search_event_timeS').datebox({
 		requeired:true
@@ -62,7 +77,7 @@ function searchInit() {
 	    	value: 'birth'
 	    },
 	    {
-	    	label: '번호',
+	    	label: '연락처',
 	    	value: 'phon'
 	    },
 	    {
@@ -70,9 +85,14 @@ function searchInit() {
 	    	value: 'adres'
 	    },
 	    {
-	    	label: '단말기번호',
+	    	label: '센서번호',
 	    	value: 'sensor'
-	    }]
+	    },
+	    {
+	    	label: '스테이션번호',
+	    	value: 'smart'
+	    }
+	    ]
 	});
 	
 	$("#end_yn_box").combobox({
@@ -139,23 +159,33 @@ function reload(){
 	    },
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
+	        {field:'no',title:'이벤트',hidden:true},
 			{field:'name',title:'이름',width:'10%',align:'center'},
 			{field:'birth',title:'생년월일',width:'5%',align:'center'},
 			{field:'phoneNumber',title:'번호',width:'10%',align:'center'},
-			{field:'address',title:'주소',width:'30%',align:'center'},
+			{field:'address',title:'주소',width:'25%',align:'center'},
 			{field:'startTime',title:'발생일',width:'15%',align:'center'},
 			{field:'endTime',title:'종료일',width:'15%',align:'center'},
 			{field:'endYN',title:'종료여부',width:'5%',align:'center'},
-			{field:'sensorId',title:'단말기번호',width:'5%',align:'center'}
+			{field:'sensorId',title:'센서번호',width:'5%',align:'center'},
+			{field:'smartId',title:'스테이션번호',width:'5%',align:'center'},
+			{field:'remark',title:'종료사유',hidden:true},
+			{field:'reason',title:'추가정보',hidden:true}
 	    ]],
+	    onDblClickRow:function(index, row) {
+	    	onEventDetailPopup(row);
+	    },
 	    onLoadSuccess:function(data){
+	    	var rows = $('#eventList_table').datagrid('getRows');
 			if($('#eventList_table').datagrid('getData').rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');
 					//location.href="/";
 					closeWindow();
-				}
+				}			
+		    } else {
+				setStationId(rows);
 			}
 			if(data && data.total > 0) {				
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
@@ -163,6 +193,65 @@ function reload(){
 			}
 		}
 	});	
+}
+
+
+
+
+function onEventDetailPopup(row) {
+	var page = '/popup/event_popup'; 
+    $("#popup_area").html("");
+    $("#popup_area").load("/action/page.do", { path : page }, function() {
+    	
+    });
+
+	const jsonObj = {};
+    jsonObj.phoneNumber = (row.phoneNumber).replace(/-/g,"");
+    jsonObj.no = row.no;
+
+    $.ajax(
+        {
+            type       : "POST",
+            url        : "/select/girlSafe.getEventDetail/action.do",
+            dataType   : "json",
+            data       : {
+                "param" : JSON.stringify(jsonObj)
+            },
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (data) {
+        	selectedData = data;
+            $('#popup_area').dialog({
+                title: '이벤트 상세 정보',
+                width: 400,
+                height: 540,
+                closed: false,
+                cache: false,
+                modal: true,
+        		onClose: function() {
+        			selectedData = '';
+        			clearPopup();
+        		}
+            });
+            $('#popup_area').dialog('open');
+    }).fail(function (xhr) {
+        alert("수정 실패");
+    }).always(function() {
+
+    });
+}
+
+function clearPopup() {
+	$('#user_sensor_box').val('');
+	$('#user_smart_box').val('');
+	$('#user_name_box').val('');
+	$('#user_birth_box').val('');
+	$('#user_address_box').val('');
+	$('#user_phone_box').val('');
+	$('#user_remark_box').val('');
+	$('#user_reason_box').val('');
 }
 </script>
 

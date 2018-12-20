@@ -18,7 +18,7 @@
 					</select>
 				</div>
 				<div class="list_cont">
-					<em>단말기 상태 : </em>
+					<em>센서 상태 : </em>
 					<select id="hw_status_box" style="width: 90px; height: 27px; display: none;">
 					</select>
 				</div>
@@ -33,7 +33,7 @@
 		</ul>
 		<ul class="list_ty_full" style="width:100%;height:200px;">
 			<li class="table_title">
-				<em>단말기 상태 리스트</em>
+				<em>센서 상태 리스트</em>
 			</li>
 			<li>
 				<table id="hwStatus_table" title="" style="width:100%;height:calc(100%-129px);" data-options="onClickRow:selectEeventMGIS">
@@ -47,6 +47,21 @@
 	</div>
 </div>
 <script>
+function setStationId(rows) {
+	var length = rows.length;
+	var maxLength = 4;
+	
+	for (var i = 0; i < length; i++) {
+		var smartId = rows[i].smartId;
+		var idLength = maxLength - smartId.length;
+		for (var j = 0; j < idLength; j++) {
+			smartId = '0' + smartId;
+		}
+		rows[i].smartId = 'SA-S' + smartId;
+		$('#eventList_table').datagrid('refreshRow', i);
+	}
+}
+
 function searchInit() {
 	$('#search_last_timeS').datebox({
 		requeired:true
@@ -59,8 +74,13 @@ function searchInit() {
 	    valueField:'value',
 	    textField:'label',
 	    data: [{
-	    	label: '단말기번호',
+	    	label: '센서번호',
 	    	value: 'sensor'
+	    },
+	    {
+	    	label: '스테이션번호',
+	    	value: 'smart',
+	    	"selected":true
 	    },
 	    {
 	    	label: '이름',
@@ -68,7 +88,7 @@ function searchInit() {
 	    	"selected":true
 	    },
 	    {
-	    	label: '번호',
+	    	label: '연락처',
 	    	value: 'phon'
 	    },
 	    {
@@ -182,15 +202,17 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 	        {field:'sensorId',title:'센서번호',width:'10%',align:'center'},
+	        {field:'smartId',title:'스테이션번호',width:'10%',align:'center'},
 	        {field:'name',title:'이름',width:'10%',align:'center'},
-	        {field:'phoneNumber',title:'번호',width:'10%',align:'center'},
-	        {field:'address',title:'주소',width:'35%',align:'center'},
+	        {field:'phoneNumber',title:'연락처',width:'10%',align:'center'},
+	        {field:'address',title:'주소',width:'25%',align:'center'},
 			{field:'updateDate',title:'최종접속체크일',width:'20%',align:'center'},
 			{field:'bat',title:'배터리',width:'5%',align:'center'},
 			{field:'status',title:'상태',width:'5%',align:'center'},
 			{field:'krBat',hidden:true,align:'center'}
 	    ]],
 	    onLoadSuccess:function(data){
+	    	var rows = $('#hwStatus_table').datagrid('getRows');
 			if($('#hwStatus_table').datagrid('getData').rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
@@ -198,6 +220,9 @@ function reload(){
 					//location.href="/";
 					closeWindow();
 				}
+			}
+		 	else {
+				setStationId(rows);
 			}
 			if(data && data.total > 0) {
 				setBatIcons();

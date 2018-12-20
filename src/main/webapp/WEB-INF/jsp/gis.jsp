@@ -1131,7 +1131,7 @@
 					    	<!-- <li><a id="topmenu_userList" href="javascript:menuDisplay('menu_userList')">가입자 현황</a></li> -->
 					    	<li><a id="topmenu_approvalList" href="javascript:menuDisplay('menu_approvalList')">가입자 관리</a></li>
 							<li><a id="topmenu_evnetList" href="javascript:menuDisplay('menu_evnetList')">이벤트 검색</a></li>
-							<li><a id="topmenu_hwStatus" href="javascript:menuDisplay('menu_hwStatus')">단말 상태 체크</a></li>
+							<li><a id="topmenu_hwStatus" href="javascript:menuDisplay('menu_hwStatus')">센서 상태 체크</a></li>
 							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
 							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li>
 							<!-- <li><a id="topmenu_system" href="javascript:menuDisplay('menu_system')">시스템설정</a></li> -->

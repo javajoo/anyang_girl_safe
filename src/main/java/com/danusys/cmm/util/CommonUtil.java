@@ -693,7 +693,7 @@ public class CommonUtil {
   	
 		if (os.indexOf("win") >= 0) {
 			userHome = userHome.replaceAll("\\\\", "//");
-			path = userHome + "//girl_safe_user_picture/";
+			path = userHome + "\\/girl_safe_user_picture\\";
 		} else {
 			path = userHome + "/girl_safe_user_picture/";
 		}

@@ -60,7 +60,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
     private BaseService baseService;
 	private String smsServer = "58.76.192.101";//"172.20.14.6";//"211.220.152.67";
     private int smsPort = 10032;
-    private String gisServer = "58.76.192.118";//"172.20.14.41";//"172.20.14.6";//"211.220.152.67";
+    private String gisServer = "172.20.14.41";//"58.76.192.118";//"172.20.14.6";//"211.220.152.67";
     private int gisPort = 9000;
     @Resource(name="smsInfoService")
     private SmsInfoService smsInfoService;
@@ -583,7 +583,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		    String a = (String) (result.get("sensorConn"));
         	int b = Integer.parseInt(a);
         	
-		    String name = (String) result.get("name");
+        	String name = (String) result.get("name");
 		    String phoneNumber = (String) result.get("phoneNumber");
 		    String address = (String) result.get("adres");
 		    String birth = (String)result.get("birth");
@@ -597,6 +597,9 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
         	int emergency = (int) result.get("emergency");
         	String pointX;
         	String pointY;
+        	if(picture == null || "".equals(picture)){
+        		picture="empty";
+        	}
         	String basePicture = getBase64String(picture,"");
         	if(b > 0){
         		pointX = Double.toString((double)result.get("pointX"));
@@ -607,6 +610,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	        	pointY = Double.toString((double)result.get("mPointY"));
         	}
 //		    String rslt = sf.format(new Date());
+        	if(name != null){
 		    try
 		    {
 		    	msg.put("no",strNo);
@@ -673,6 +677,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		      } catch (Exception localException4) {
 		      }
 		    }
+        	}
 		  }
 	 
 	 
@@ -790,7 +795,9 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	 	public static String getBase64String(String fileName,String imageString) throws Exception{
             //String filePathName = "C:\\picture\\";
 	 		String filePathName = CommonUtil.getHomePath();
-	        if(fileName.length() > 0 )
+	 		System.out.println(filePathName);
+	 		System.out.println(fileName.length());
+	        if(!"empty".equals(fileName))
 	        {
 //	                String fileExtName = filePathName.substring( filePathName.lastIndexOf(".") + 1);
                 FileInputStream inputStream = null;
@@ -824,7 +831,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	                    inputStream.close();
 	                    byteOutStream.close();
 	                }
-	            }
+	        }
 	        else{
 	            FileInputStream inputStream = null;
                 ByteArrayOutputStream byteOutStream = null;
