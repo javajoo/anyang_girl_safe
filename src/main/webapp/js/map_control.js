@@ -597,7 +597,7 @@ function mapLateChange(){
 		addWMS(s); 
 	}, 1000);
 	
-	$('.tree-icon').hide();
+	$('.icon-tree-folder').hide();
 	$('.easyui-tree > li:nth-of-type(3) .tree-checkbox').removeClass('tree-checkbox');
 }
 

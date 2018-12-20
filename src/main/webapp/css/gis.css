@@ -669,7 +669,7 @@ input::-ms-input-placeholder {
 }
 
 .icon_CCTV_1 {
-	background: url(../images/icons/CCTV_1.png) no-repeat center center;
+	background: url(../images/template/tree_icons_right.png) no-repeat center center;
 }
 .icon_CCTV_2 {
 	background: url(../images/icons/CCTV_2.png) no-repeat center center;
@@ -699,7 +699,7 @@ input::-ms-input-placeholder {
 	background: url(../images/icons/SENSOR_1.png) no-repeat center center;
 }
 .icon_EVENT_1 {
-	background: url(../images/icons/EVENT_TYPE_1_S.png) no-repeat center center;
+	background: url(../images/template/tree_icons_right.png) no-repeat center center;
 }
 .icon_EVENT_2 {
 	background: url(../images/icons/EVENT_TYPE_2_S.png) no-repeat center center;
