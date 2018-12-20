@@ -302,25 +302,18 @@
 .selectM_button_list,
 .facilityM_button_list {
 	padding: 0 15px;
-    /* background: url(../images/icons/inquiry_btn.png) no-repeat center center; */
     top: 6px;
-    /* position: absolute; */
-    background: -moz-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
-    background: -webkit-gradient(linear, 280deg, color-stop(0, 64A2C7), color-stop(66%, 2183B3));
-    background: -webkit-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
-    background: -o-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
-    background: -ms-linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1301FE', endColorstr='#F4F60C', GradientType='1');
-    background: linear-gradient(280deg, #64A2C7 0, #2183B3 66%);
     color: #fff;
     font-size: 12px;
-    /* margin-top: 4px; */
     vertical-align: middle;
     height: 25px;
     display: inline-block;
     line-height: 27px;
     min-width: ;
     border: 1px solid #2183b3;
+	background: #3667b1;
+    border-radius: 5px;
 }
 .eventM_button_list {
 	background: url(../images/icons/handling_btn.png) no-repeat center center;
@@ -940,7 +933,6 @@
 .facility_dtl td {
     border: 1px solid #e1e1e1;
 }
-
 .list_title, .list_title_full {
 	background-color: #555555;
 	text-align: center;
@@ -986,18 +978,4 @@
 	width: 99.44%;
 	float: left;
 	text-align: center;
-}
-.grid_image_box {
-	width: 40px;
-	height: 18px;
-	background-size: 40px;
-	background-repeat: no-repeat;
-	display: inline-block;
-	padding: 0 5px;
-	position: relative;
-	top: 5px;
-}
-
-.grid_image_text_box {
-	line-height: 25px;
 }

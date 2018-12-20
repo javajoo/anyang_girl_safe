@@ -12,7 +12,7 @@
 .gnb {
 	position:absolute;
 	/* top:35px; */
-	top: -46px;
+	top: 18px;
 }
 .gnb li {
 	float:left;
@@ -32,7 +32,7 @@
 .gnb li a:before {
 	position:absolute;
 	left:0;
-	top: 34px;
+	top: 38px;
 	width:100%;
 	height:0;
 	background:#1a9df7;
@@ -45,9 +45,10 @@
 .gnb li a.selected {
     /* border-bottom-color: #1a9df7;
     border-bottom-style: solid; */
-    height: 13.5px;
+    height: 8px;
     bottom: 0px;
-	background: #384162;
+	/* background: #384162; */
+    border-bottom: 3px solid;
 }
 
 .gnb_left {
@@ -133,7 +134,8 @@
 
 /* 상단공간 */
 .title_area{
-	background-color: #395378;
+	/* background-color: #395378; */
+	background: url(../images/main/top_bg.png) no-repeat left center;
     overflow: hidden;
     height: 78px !important;
     width: 100% !important;
@@ -141,16 +143,17 @@
     position: absolute;
     left: 0px;
     top: 0px;
-    border-bottom: 2px solid #394053;
+    /* border-bottom: 2px solid #394053; */
 }
 
 /* 로고 */
 .logo_tit {
 	height: 80px;
-    width: 120px;
-    background: url(../images/layout/logo.png) no-repeat left center;
+    width: 250px;
+    background: url(../images/main/top_logo.png) no-repeat left center;
+    float: left;
 }
-.logo_tit_text{
+/* .logo_tit_text{
     padding-left: 60px;
     color: #fff;
     font-family: 'nanum-barun-gothic-regular';
@@ -159,7 +162,7 @@
     top: 34px;
     position: absolute;
 	left: 100px;
-}
+} */
 .logo_tit_control{
 	height: 80px;
     width: 284px;
@@ -199,61 +202,67 @@
 /* 계정 */
 .account_area {
 	position: absolute;
-    top: 12px;
-    right: 60px;
+    top: 0;
+    right: 0;
     z-index: 1;
-    width: 280px;
-    height: 67px;
+    /* width: 280px; */
+    height: 100%;
+	float: right;
+	right: 110px;
+}
+.login_image {
+	position: relative;
+    background: url(../images/main/admin_icon.png) no-repeat center center;
+    display: block;
+    width: 41px;
+    height: 40px;
+    bottom: 10px;
+    left: 0px;
+    top: 20px;
+    float: left;
 }
 .account {
-    line-height: 78px;
+	line-height: 80px;
     color: #fff;
     font-size: 15px;
     font-family: 'nanum-barun-gothic-regular';
     text-align: right;
     float: left;
-    position: absolute;
-    right: 115px;
-    height: 50px;
-    width: 100px;
+    position: relative;
+    /* left: 21px; */
+    height: 77px;
     overflow: hidden;
 }
-.account_area a {
-	line-height: 78px;
-    color: #fff;
-    font-size: 15px;
-    font-family: 'nanum-barun-gothic-regular';
-    text-align: center;
-    float: left;
-    position: absolute;
-    height: 50px;
-}
+
 .login_pop_down {
 	background: url(../images/icons/arrow_down.png) no-repeat center center;
-    position: absolute;
+    position: relative;
     width: 20px;
     height: 20px;
-    top: 28px;
-    right: 90px;
+    top: 29px;
+    /* left: 23px; */
     cursor: pointer;
+    float: left;
 }
 .login_pop_up {
 	background: url(../images/icons/arrow_up.png) no-repeat center center;
-    position: absolute;
+	position: relative;
     width: 20px;
     height: 20px;
-    top: 28px;
-    right: 90px;
+    top: 30px;
+    /* left: 23px; */
     cursor: pointer;
+    float: left;
 }
-.login_image {
-	position: absolute;
-    background: url(../images/icons/admin.png) no-repeat center center;
-    display: block;
-    width: 41px;
-    height: 40px;
-    bottom: 10px;
-    right: 40px;
+
+.setting_btn {
+    float: left;
+    position: absolute;
+    background: url(../images/main/setting.png) no-repeat left center;
+    width: 28px;
+    height: 28px;
+    top: 25px;
+    right: 75px;
 }
 
 /*.account_drop_area ul {
@@ -293,7 +302,7 @@ display:block;   마우스 커서 올리면 서브메뉴 보이게 하기
 	display: inline-block;
     position: absolute;
     top: 83px;
-    right: 52px;
+    right: 10px;
     background: #384162;
     height: 40px;
     width: 160px;

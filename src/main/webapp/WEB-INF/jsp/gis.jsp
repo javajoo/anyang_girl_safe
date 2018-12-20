@@ -1119,10 +1119,6 @@
 	</form>
 	<div class="title_area" data-options="region:'north'">
         	<div class="logo_tit"></div>
-        	<h2 class="logo_tit_text">
-        		여성 안심서비스
-        	</h2>
-        	
         	<header>
 				<div class="cont">
 					<nav class="gnb">
@@ -1141,11 +1137,11 @@
 			</header>
 			
         	<div class="account_area">
-        		<a href="#" id="setting_btn" onclick="javascript:menuDisplay('menu_setting')">환경설정</a>
+        		<span class="login_image"></span>
 				<div class="account">${admin.USER_NM_KO}</div>
 				<div id="login_pop" class="login_pop_down"></div>
-				<span class="login_image"></span>
 			</div>
+			<a href="#" id="setting_btn" class="setting_btn" onclick="javascript:menuDisplay('menu_setting')"></a>
     	</div>
 	<div id="gis_layout" class="easyui-layout" style="">
 		<div id="left-panel">
@@ -1202,7 +1198,9 @@
 		
 		<div id="layer_area">
 			<div class="layer">
-				<h2>레이어관리2</h2>
+				<div class="layer_top">
+					<span class="layer_logo"></span>
+				</div>
 				<div id="layer_tree" class="easyui-tree" 
 					data-options="animate:true,
 					checkbox:true,
