@@ -165,16 +165,17 @@
 }
 
 .footer {
-	width: 100% !important;
-    position: absolute;
+	position: fixed;
+	width: 1920px;
+	height: 23px;
     bottom: 0px;
     z-index: 2;
     background: url(../images/layout/footer.png) no-repeat center center;
     background-color: #f4f4f6;
     background-size:100%;
-    padding: 10px;
-    height: 23px;
+    padding: 10px 0 10px 0;
     border: 1px solid #979797;
+    border-width: 1px 0;
 }
 
 .datebox-black{
