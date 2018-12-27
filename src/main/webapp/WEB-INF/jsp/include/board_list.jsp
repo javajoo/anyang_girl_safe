@@ -141,11 +141,12 @@ function updateCount(row, data) {
 
 function pushBoard() {
 	var row = $('#boardList_table').datagrid('getSelected');
-	var url = "";
+	var url = "/boardPush.do";
 	
 	const jsonObj = {};
 	
 	jsonObj.no = row.no;
+	jsonObj.pushYN = "Y";
 	
 	$.ajax({
 		type : "POST"
@@ -155,6 +156,19 @@ function pushBoard() {
 		, success:function(data)
 		{
 			console.log(data);
+			$.ajax({
+				type : "POST"
+				, url : "/ajax/update/girlSafe.updateBoard/action.do"
+				, dataType : "json"
+				, data : {"param" : JSON.stringify(jsonObj)}
+				, success:function(data)
+				{
+					console.log(data);
+				}
+				, error:function(e){
+					alert(e.responseText);
+				}
+			});
 		}
 		, error:function(e){
 			alert(e.responseText);

@@ -11,6 +11,7 @@ import com.my.space.util.EncryptUtil;
 import com.danusys.exception.BaseException;
 import com.danusys.cmm.util.CommonUtil;
 import com.danusys.cmm.util.JsonUtil;
+import com.danusys.platform.socket.NetSocketVerticle;
 import com.danusys.platform.vo.AdminVo;
 import com.danusys.platform.web.JSONResult;
 import com.danusys.service.BaseService;
@@ -71,6 +72,8 @@ public class BaseController
 
     @Autowired
     private BaseService baseService;
+    @Autowired
+    private NetSocketVerticle netSocketVerticle;
     /** EgovPropertyService */
     @Resource(name = "propertiesService")
     protected EgovPropertyService propertiesService;
@@ -1502,5 +1505,52 @@ public class BaseController
              map.put("stat", e.toString());
              return new JSONResult("Error", map);
          }
+    }
+    
+    @RequestMapping(value = "/boardPush.do", method = RequestMethod.POST)
+    public void oneStopPush(HttpServletRequest request, HttpServletResponse response,  Locale locale, Model model) throws IOException  {
+    	PrintWriter out = null;
+        
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Access-Control-Allow-Origin","*"); // 크로스도메인 허용
+        Map<String, Object> param = null;        
+		HttpSession session = request.getSession(false);
+		AdminVo user = (AdminVo) session.getAttribute("admin");
+		System.out.println("세션아이디 :: "+session.getId());
+				
+        if (request.getParameter("param").trim().equals("") == true)
+        {
+           param = new HashMap<String, Object>();
+        }
+        else
+        {
+            param = JsonUtil.JsonToMap(request.getParameter("param"));
+        }
+        if(user!=null){
+        	        	
+        String noticeNo;
+        String resultMsg;
+        String pushMsg = null;
+        try
+        {
+        	
+        	noticeNo = String.valueOf(param.get("no"));
+        	
+        	
+        	pushMsg = "W,N,"+noticeNo; 
+        	netSocketVerticle.sendApp(pushMsg);
+        	
+        	resultMsg = "{\"cnt\":\""+noticeNo+"\"}"; 
+        	System.out.println(resultMsg);
+            out = response.getWriter();
+            out.write(resultMsg); // Ajax Retun Json String
+        }
+        catch (Exception ex)
+        {
+            logger.error(ex.toString());
+        }
+        }
+    	
+    	
     }
 }

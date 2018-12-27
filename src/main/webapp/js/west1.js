@@ -108,13 +108,21 @@ function createFeature(data){
 		pointY = data.mPointY;
 		
 			//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
-			if(data.emergency < 1){
-				iconcls = 'images/icons/woman_nor.png';
-			}
-			else{
-				iconcls = 'images/icons/woman_emr.png';
-				setEmergencyControl(data);
-			}
+			
+				if(data.emergency < 1){
+					if(data.smartConn < 1){
+						iconcls = 'images/icons/woman_stat_dis.png';
+					}
+					else{
+						iconcls = 'images/icons/woman_stat_nor.png';
+					}
+				}
+				else{
+					iconcls = 'images/icons/woman_stat_emr.png';
+					setEmergencyControl(data);
+				}
+				
+			
 		
 	}
 

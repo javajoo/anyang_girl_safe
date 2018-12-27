@@ -60,8 +60,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
     private BaseService baseService;
 	private String smsServer = "58.76.192.101";//"172.20.14.6";//"211.220.152.67";
     private int smsPort = 10032;
-    private String gisServer = "172.20.14.41";//"58.76.192.118";//"172.20.14.6";//"211.220.152.67";
+    private String gisServer = "58.76.192.118";//"172.20.14.41";//"172.20.14.6";//"211.220.152.67";
     private int gisPort = 9000;
+    private String appHostname = "58.76.192.101";//"49.236.137.134";//"172.20.14.6";//"211.220.152.67";
+    private int appPort = 10024;
     @Resource(name="smsInfoService")
     private SmsInfoService smsInfoService;
 
@@ -994,5 +996,29 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 //		      }
 //		    }
 //		  }
+	 	
+	 	public void sendApp(String msg){
+			Socket socket = null;
+	    	BufferedWriter oos = null;
+	    	try{ // 서버가 가동되지 않는 환경에서는 막아둘 것
+	    		
+	        	socket = new Socket(appHostname , appPort);
+	        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
+	        	
+				oos.write(msg);
+				oos.flush();
+				oos.close();
+	    	}catch(Exception exx){
+	    		exx.printStackTrace();
+	    	}finally{
+	    		try{
+	    			oos.close();
+	    		}catch(Exception e){}
+
+	    		try{
+	    			socket.close();
+	    		}catch(Exception e){}
+	    	}
+	    }
 
 }

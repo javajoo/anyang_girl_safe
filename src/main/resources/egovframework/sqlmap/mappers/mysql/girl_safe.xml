@@ -12,14 +12,18 @@
 		FROM
 		(
 	       SELECT 
-				a.ENCRYPT_NAME as name,
+	    ]]>
+	   			CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+	    <![CDATA[
 				date_format(a.BIRTH,'%Y/%m/%d') as birth,
 				CASE LENGTH(a.PHONE_NUMBER)
 					WHEN 11 THEN CONCAT(SUBSTR(a.PHONE_NUMBER,1,3),'-',SUBSTR(a.PHONE_NUMBER,4,4),'-',SUBSTR(a.PHONE_NUMBER,8,4))
 					WHEN 10 THEN CONCAT(SUBSTR(a.PHONE_NUMBER,1,3),'-',SUBSTR(a.PHONE_NUMBER,4,3),'-',SUBSTR(a.PHONE_NUMBER,7,4))
 					ELSE a.PHONE_NUMBER
 				END phoneNumber,
-				a.ENCRYPT_ADRES as address,
+				]]>
+				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				<![CDATA[
 				CASE a.APPROVAL
 					WHEN 'N' THEN '비승인'
 					WHEN 'Y' THEN '승인'
@@ -47,10 +51,10 @@
 				b.M_POINT_Y as mPointY,
 				date_format(a.INSERT_DATE,'%Y-%m-%d %H:%i:%s')as insertDate,
 				date_format(a.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as updateDate,
-				CASE LENGTH(c.S_PHONE_NUMBER)
-					WHEN 11 THEN CONCAT(SUBSTR(c.S_PHONE_NUMBER,1,3),'-',SUBSTR(c.S_PHONE_NUMBER,4,4),'-',SUBSTR(c.S_PHONE_NUMBER,8,4))
-					WHEN 10 THEN CONCAT(SUBSTR(c.S_PHONE_NUMBER,1,3),'-',SUBSTR(c.S_PHONE_NUMBER,4,3),'-',SUBSTR(c.S_PHONE_NUMBER,7,4))
-					ELSE c.S_PHONE_NUMBER
+				CASE LENGTH(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR))
+					WHEN 11 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,4),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),8,4))
+					WHEN 10 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),7,4))
+					ELSE CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR)
 				END sPhoneNumber
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b
@@ -81,14 +85,14 @@
 		<if test="searchType != null and searchType != ''">
 			<choose>
 				<when test="searchType == 'name'">
-					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch},
+					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 				<when test="searchType == 'birth'">
 					AND a.BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND a.ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch},
+					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 				<when test="searchType == 'phon'">
@@ -141,6 +145,7 @@
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	       ]]>
+	       WHERE 1=1
 		<if test="emergency != null and emergency != ''">
 			AND b.EMERGENCY = #{emergency}
 		</if>
@@ -163,14 +168,14 @@
 		<if test="searchType != null and searchType != ''">
 			<choose>
 				<when test="searchType == 'name'">
-					AND a.ENCRYPT_NAME LIKE CONCAT('%', #{totSearch},
+					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 				<when test="searchType == 'birth'">
 					AND a.BIRTH LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND a.ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch},
+					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 				<when test="searchType == 'phon'">
@@ -206,12 +211,16 @@
 	</select>
 
 	<select id="getUser" parameterType="map" resultType="HashMap">
-		<![CDATA[		
+		<![CDATA[
 	       SELECT 
-				a.ENCRYPT_NAME as name,
+	       ]]>
+				AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+				<![CDATA[
 				date_format(a.BIRTH,'%Y/%m/%d') as birth,
 				a.PHONE_NUMBER as phoneNumber,
-				a.ENCRYPT_ADRES as address,
+				]]>	
+				AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				<![CDATA[
 				CASE a.APPROVAL
 					WHEN 'N' THEN '비승인'
 					WHEN 'Y' THEN '승인'
@@ -238,7 +247,7 @@
 				b.M_POINT_Y as mPointY,
 				date_format(a.INSERT_DATE,'%Y-%m-%d %H:%i:%s')as insertDate,
 				date_format(a.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as updateDate,
-				c.S_PHONE_NUMBER as sPhoneNumber
+				CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR) as sPhoneNumber
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
@@ -261,8 +270,8 @@
 		) VALUES (
 		#{phoneNumber},
 		#{birth},
-		#{name},
-		#{address},
+		HEX(AES_ENCRYPT(#{name},'aycctv!1808')),
+		HEX(AES_ENCRYPT(#{address},'aycctv!1808')),
 		'N',
 		'',
 		NOW(),
@@ -271,8 +280,8 @@
 		ON DUPLICATE KEY UPDATE
 		PHONE_NUMBER = #{phoneNumber},
 		BIRTH = #{birth},
-		ENCRYPT_NAME = #{name},
-		ENCRYPT_ADRES = #{address},
+		ENCRYPT_NAME = HEX(AES_ENCRYPT(#{name},'aycctv!1808')),
+		ENCRYPT_ADRES = HEX(AES_ENCRYPT(#{address},'aycctv!1808')),
 		UPDATE_DATE = NOW()
 	</insert>
 
@@ -280,8 +289,7 @@
 		SELECT
 		a.PHONE_NUMBER as phoneNumber,
 		b.SMART_ID as smartId,
-		b.SENSOR_ID as
-		sensorId,
+		b.SENSOR_ID as sensorId,
 		b.EMERGENCY as emergency,
 		b.SENSOR_CONN as sensorConn,
 		b.SMART_CONN as smartConn,
@@ -292,8 +300,7 @@
 		FROM girl_safe_user a
 		JOIN girl_safe_hw b on a.PHONE_NUMBER = b.PHONE_NUMBER
 		WHERE 1=1
-		AND
-		b.SENSOR_ID = #{sensorId}
+		AND	b.SENSOR_ID = #{sensorId}
 	</select>
 
 	<insert id="insertHw" parameterType="map">
@@ -308,6 +315,7 @@
 		SENSOR_CONN,
 		STATUS_TIME,
 		SENSOR_ACTION,
+		SMART_ACTION,
 		INSERT_DATE,
 		UPDATE_DATE
 		) VALUES (
@@ -320,6 +328,7 @@
 		0,
 		0,
 		10,
+		1,
 		1,
 		NOW(),
 		NOW()
@@ -382,9 +391,13 @@
 					WHEN 10 THEN CONCAT(SUBSTR(PHONE_NUMBER,1,3),'-',SUBSTR(PHONE_NUMBER,4,3),'-',SUBSTR(PHONE_NUMBER,7,4))
 					ELSE PHONE_NUMBER
 				END phoneNumber,
-				ENCRYPT_NAME as name,
+				]]>
+				CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+				<![CDATA[
 				date_format(BIRTH,'%Y/%m/%d') as birth,
-				ENCRYPT_ADRES as address,
+				]]>
+				CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				<![CDATA[
 				SMART_ID as smartId,
 				SENSOR_ID as sensorId,
 				DIVISION as division,
@@ -419,7 +432,7 @@
 		<if test="searchType != null and searchType != ''">
 			<choose>
 				<when test="searchType == 'name'">
-					AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'birth'">
 					AND BIRTH LIKE CONCAT('%', #{totSearch}, '%')
@@ -428,8 +441,7 @@
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch},
-					'%')
+					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
@@ -468,7 +480,7 @@
 		<if test="searchType != null and searchType != ''">
 			<choose>
 				<when test="searchType == 'name'">
-					AND ENCRYPT_NAME LIKE CONCAT('%', #{totSearch}, '%')
+					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'birth'">
 					AND BIRTH LIKE CONCAT('%', #{totSearch}, '%')
@@ -477,8 +489,7 @@
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND ENCRYPT_ADRES LIKE CONCAT('%', #{totSearch},
-					'%')
+					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
@@ -497,9 +508,11 @@
 					ELSE PHONE_NUMBER
 				END phoneNumber,
 				NO as no,
-				ENCRYPT_NAME as name,
+				]]>
+				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				<![CDATA[
 				date_format(BIRTH,'%Y/%m/%d') as birth,
-				ENCRYPT_ADRES as address,
 				SMART_ID as smartId,
 				SENSOR_ID as sensorId,
 				DIVISION as division,
@@ -537,9 +550,9 @@
 		END_TIME, INSERT_DATE)
 		SELECT
 		a.PHONE_NUMBER,
-		a.ENCRYPT_NAME,
+		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
 		a.BIRTH,
-		a.ENCRYPT_ADRES,
+		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
 		b.SENSOR_ID,
 		b.SMART_ID,
 		'SENSOR',
@@ -741,7 +754,7 @@
 		AS dt
 		LEFT JOIN (
 		SELECT
-		u.ENCRYPT_ADRES,
+		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
 		u.PHONE_NUMBER,
 		u.INSERT_DATE
 		FROM girl_safe_user u
@@ -773,10 +786,10 @@
 		COUNT(a.ENCRYPT_ADRES)
 		FROM (
 		SELECT
-		u.ENCRYPT_ADRES
+		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
 		FROM girl_safe_user u
 		JOIN district d
-		ON u.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
+		ON CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
 		GROUP BY d.ENCRYPT_GU_NAME
 		) AS a
 	</select>
@@ -820,7 +833,7 @@
 		FROM district AS dt
 		LEFT JOIN (
 		SELECT
-		u.ENCRYPT_ADRES,
+		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
 		u.PHONE_NUMBER,
 		u.INSERT_DATE
 		FROM girl_safe_user u
@@ -852,10 +865,10 @@
 		COUNT(a.ENCRYPT_ADRES)
 		FROM (
 		SELECT
-		u.ENCRYPT_ADRES
+		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
 		FROM girl_safe_user u
 		JOIN district d
-		ON u.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
+		ON CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
 		GROUP BY d.ENCRYPT_DONG_NAME
 		) AS a
 	</select>
@@ -898,11 +911,10 @@
 		FROM (SELECT ENCRYPT_GU_NAME FROM district
 		GROUP BY ENCRYPT_GU_NAME)
 		AS dt
-		LEFT JOIN (SELECT ENCRYPT_ADRES,
+		LEFT JOIN (SELECT CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
 		PHONE_NUMBER, INSERT_DATE FROM
 		girl_safe_event) a
-		ON a.ENCRYPT_ADRES
-		LIKE CONCAT('%', dt.ENCRYPT_GU_NAME, '%')
+		ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_GU_NAME, '%')
 		<if test="year != null and year != ''">
 			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
 		</if>
@@ -920,10 +932,10 @@
 		COUNT(a.ENCRYPT_ADRES)
 		FROM (
 		SELECT
-		e.ENCRYPT_ADRES
+		CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
 		FROM girl_safe_event e
 		JOIN district d
-		ON e.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
+		ON CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
 		GROUP BY d.ENCRYPT_GU_NAME
 		) AS a
 	</select>
@@ -966,10 +978,9 @@
 		12 THEN 1 ELSE 0 END) AS m12
 		FROM district AS dt
 		LEFT JOIN (SELECT
-		ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM
+		CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM
 		girl_safe_event) a
-		ON
-		a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_DONG_NAME, '%')
+		ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_DONG_NAME, '%')
 		<if test="year != null and year != ''">
 			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
 		</if>
@@ -987,10 +998,10 @@
 		COUNT(a.ENCRYPT_ADRES)
 		FROM (
 		SELECT
-		e.ENCRYPT_ADRES
+		CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
 		FROM girl_safe_event e
 		JOIN district d
-		ON e.ENCRYPT_ADRES LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
+		ON CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
 		GROUP BY d.ENCRYPT_DONG_NAME
 		) AS a
 	</select>
@@ -1143,9 +1154,9 @@
 
 	<select id="smsUser" parameterType="map" resultType="HashMap">
 		SELECT
-		a.ENCRYPT_NAME as name,
-		c.S_ENCRYPT_NAME as sName,
-		c.S_PHONE_NUMBER as sPhoneNumber,
+		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+		CAST(AES_DECRYPT(UNHEX(c.S_ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as sName,
+		CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR) as sPhoneNumber,
 		b.SENSOR_CONN as sensorConn,
 		b.SMART_CONN as smartConn
 		FROM girl_safe_user a
@@ -1158,9 +1169,9 @@
 
 	<select id="getEvent" parameterType="map" resultType="HashMap">
 		SELECT
-		a.ENCRYPT_NAME as name,
+		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as adres,
 		a.PHONE_NUMBER as phoneNumber,
-		a.ENCRYPT_ADRES as adres,
 		a.BIRTH as birth,
 		a.PICTURE as picture,
 		b.POINT_X as pointX,
@@ -1170,11 +1181,11 @@
 		b.SENSOR_CONN as sensorConn,
 		b.SMART_CONN as smartConn,
 		b.EMERGENCY as emergency,
-		c.S_ENCRYPT_NAME as sName,
-		c.S_PHONE_NUMBER as sPhoneNumber,
+		CAST(AES_DECRYPT(UNHEX(c.S_ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as sName,
+		CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR) as sPhoneNumber,
 		c.RELATIONS as realation,
 		now() as time,
-		MAX(d.NO) as no
+		d.NO as no
 		FROM girl_safe_user a
 		JOIN girl_safe_hw b ON a.PHONE_NUMBER =
 		b.PHONE_NUMBER
@@ -1182,7 +1193,9 @@
 		c.PHONE_NUMBER
 		JOIN girl_safe_event d ON a.PHONE_NUMBER =
 		d.PHONE_NUMBER
-		WHERE b.SENSOR_ID = #{sensorId}
+		WHERE 1=1 
+		AND b.SENSOR_ID = #{sensorId}
+		AND END_YN='N'
 	</select>
 
 	<select id="isSensorId" parameterType="map" resultType="HashMap">
@@ -1331,9 +1344,9 @@
 	</update>
 
 	<select id="passCheck" parameterType="map" resultType="String">
-		<![CDATA[		
-	       SELECT 
-				COUNT(*)
+		<![CDATA[
+	       SELECT
+	       		COUNT(*)
 			FROM admin
 			WHERE 1=1
 			AND id = #{userId}
