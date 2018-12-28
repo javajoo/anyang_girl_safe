@@ -214,12 +214,12 @@
 		<![CDATA[
 	       SELECT 
 	       ]]>
-				AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
 				<![CDATA[
 				date_format(a.BIRTH,'%Y/%m/%d') as birth,
 				a.PHONE_NUMBER as phoneNumber,
 				]]>	
-				AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
 				<![CDATA[
 				CASE a.APPROVAL
 					WHEN 'N' THEN '비승인'
@@ -441,7 +441,7 @@
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
+					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
@@ -509,8 +509,8 @@
 				END phoneNumber,
 				NO as no,
 				]]>
-				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
-				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+				CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
 				<![CDATA[
 				date_format(BIRTH,'%Y/%m/%d') as birth,
 				SMART_ID as smartId,
