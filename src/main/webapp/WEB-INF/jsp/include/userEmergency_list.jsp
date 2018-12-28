@@ -78,7 +78,7 @@ function reload(){
 			{field:'sensorId',title:'단말기번호',width:70,align:'center'}
 	    ]],
 	    onLoadSuccess:function(data){
-			if($('#userEmergencyList_table').datagrid('getData').rows=='sessionOut'){
+			if(data.rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');

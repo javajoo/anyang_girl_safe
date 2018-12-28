@@ -370,7 +370,7 @@ function setStatsDatagrid(urlType, year, title) {
 			{field: 'total', title: '총계', width: "50%",align: 'center'}
 	    ]],
 	    onLoadSuccess: function(data){
-			if($('#statsList_table').datagrid('getData').rows == 'sessionOut'){
+			if(data.rows == 'sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');

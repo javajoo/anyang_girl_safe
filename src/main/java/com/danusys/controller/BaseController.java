@@ -319,42 +319,43 @@ public class BaseController
 
         HttpSession session = request.getSession();
         AdminVo lgnVO = (AdminVo) session.getAttribute("admin");
-        String adminId = lgnVO.getId();
-        String adminNm = lgnVO.getName();
-        
-		InetAddress local = null;
-		try {
-			local = InetAddress.getLocalHost();
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		}
-        
-        Map<String, Object> param = new HashMap<String, Object>();
-		String ip = local.getHostAddress();
-
-		param.put("sessionId", request.getSession().getId());
-		param.put("adminId", adminId);
-		param.put("adminNm", adminNm);
-		param.put("ip", ip);
-		param.put("logType", "ACCESSPAGE");
-		param.put("content", request.getParameter("path"));
-        
-		try {
-	        baseService.baseInsert("log.insertLog", param);
-		} catch (Exception ex) {
-            logger.error(ex.toString());
-		}
         
         ModelAndView mav = new ModelAndView();
         
-        Enumeration params = request.getParameterNames();
-        while (params.hasMoreElements()) {
-			String name = (String) params.nextElement();
-			mav.addObject(name, request.getParameter(name));
-		}
-        
-        mav.setViewName(request.getParameter("path"));
+        if(lgnVO != null) {
+        	String adminId = lgnVO.getId();
+            String adminNm = lgnVO.getName();
+            
+    		InetAddress local = null;
+    		try {
+    			local = InetAddress.getLocalHost();
+    		} catch (UnknownHostException e1) {
+    			e1.printStackTrace();
+    		}
+            
+            Map<String, Object> param = new HashMap<String, Object>();
+    		String ip = local.getHostAddress();
 
+    		param.put("sessionId", request.getSession().getId());
+    		param.put("adminId", adminId);
+    		param.put("adminNm", adminNm);
+    		param.put("ip", ip);
+    		param.put("logType", "ACCESSPAGE");
+    		param.put("content", request.getParameter("path"));
+            
+    		try {
+    	        baseService.baseInsert("log.insertLog", param);
+    		} catch (Exception ex) {
+                logger.error(ex.toString());
+    		}
+            
+            Enumeration params = request.getParameterNames();
+            while (params.hasMoreElements()) {
+    			String name = (String) params.nextElement();
+    			mav.addObject(name, request.getParameter(name));
+    		}
+        }
+        mav.setViewName(request.getParameter("path"));
 		return mav;
     }
 

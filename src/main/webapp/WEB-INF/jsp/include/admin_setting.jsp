@@ -205,7 +205,7 @@ function reload(){
 	    	onAdminDetailPopup(row, data);
 	    },
 	    onLoadSuccess:function(data){
-			if($('#userApprovalList_table').datagrid('getData').rows=='sessionOut'){
+			if(data.rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');

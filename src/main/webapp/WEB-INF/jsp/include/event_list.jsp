@@ -177,7 +177,7 @@ function reload(){
 	    },
 	    onLoadSuccess:function(data){
 	    	var rows = $('#eventList_table').datagrid('getRows');
-			if($('#eventList_table').datagrid('getData').rows=='sessionOut'){
+			if(data.rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
 					alert('세션아웃 됐습니다.');
