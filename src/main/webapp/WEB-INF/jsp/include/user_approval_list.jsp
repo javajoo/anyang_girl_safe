@@ -21,7 +21,7 @@
 		</ul>
 		<ul class="list_ty_full" style="width:100%;height:200px;">
 			<li class="table_title">
-				<em>가입자 승인 리스트</em>
+				<em>가입자 리스트</em>
 			</li>
 			<li>
 				<table id="userApprovalList_table" title="" style="width:100%;height:calc(100%-129px);">

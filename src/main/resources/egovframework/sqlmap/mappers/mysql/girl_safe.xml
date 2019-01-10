@@ -315,7 +315,6 @@
 		SENSOR_CONN,
 		STATUS_TIME,
 		SENSOR_ACTION,
-		SMART_ACTION,
 		INSERT_DATE,
 		UPDATE_DATE
 		) VALUES (
@@ -328,7 +327,6 @@
 		0,
 		0,
 		10,
-		1,
 		1,
 		NOW(),
 		NOW()

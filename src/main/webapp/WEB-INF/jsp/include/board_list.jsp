@@ -163,7 +163,7 @@ function pushBoard() {
 				, data : {"param" : JSON.stringify(jsonObj)}
 				, success:function(data)
 				{
-					console.log(data);
+					alert("푸쉬발송 완료");
 				}
 				, error:function(e){
 					alert(e.responseText);
