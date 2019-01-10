@@ -7,8 +7,7 @@
 					<em>Sensor ID</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_sensor_box" class="easyui-textbox" value="SA-I"
-						placeholder="내용을 입력해 주세요."/>
+					<input type="text" id="user_sensor_box" class="easyui-textbox" value="SA-I" placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
 			<li class="list">
@@ -16,8 +15,7 @@
 					<em>Station ID</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_smart_box" class="easyui-textbox" value="SA-S"
-						placeholder="내용을 입력해 주세요."/>
+					<input type="text" id="user_smart_box" class="easyui-textbox" value="SA-S" placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
 			<li class="list">
@@ -25,8 +23,7 @@
 					<em id="user_name_title">이름</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_name_box" class="easyui-textbox" 
-						placeholder="내용을 입력해 주세요."/>
+					<input type="text" id="user_name_box" class="easyui-textbox" placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
 			<li class="list" id="user_birth_area">
@@ -34,8 +31,7 @@
 					<em>생년월일</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_birth_box" class="easyui-textbox"
-						placeholder="내용을 입력해 주세요."/>
+					<input type="date" id="user_birth_box" class="easyui-textbox" min="1900-01-01" max="9999-12-31"/>
 				</div>
 			</li>
 			<li class="list">
@@ -43,8 +39,7 @@
 					<em>주소</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_address_box" class="easyui-textbox"
-						placeholder="내용을 입력해 주세요."/>
+					<input type="text" id="user_address_box" class="easyui-textbox" placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
 			<li class="list">
@@ -52,8 +47,7 @@
 					<em>연락처</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_phone_box" class="easyui-textbox"
-						placeholder="내용을 입력해 주세요."/>
+					<input type="text" id="user_phone_box" class="easyui-textbox" placeholder="내용을 입력해 주세요."/>
 				</div>
 			</li>
 		</ul>
@@ -110,7 +104,7 @@ function setUserDetailData(data) {
 	$('#user_sensor_box').val(row.sensorId);
 	$('#user_smart_box').val(smartId);
 	$('#user_name_box').val(row.name);
-	$('#user_birth_box').val((row.birth).replace(/\//g,''));
+	$('#user_birth_box').val(row.birth);
 	$('#user_address_box').val(row.address);
 	$('#user_phone_box').val(row.phoneNumber);
 	$('#user_update_btn').css('display', 'inline-block');
@@ -273,7 +267,7 @@ function checkPhoneNumber() {
 	return flag;
 }
 
-function checkBirth() {
+/* function checkBirth() {
 	var birth = $('#user_birth_box').val();
 	var flag = false;
 	var pattern = /\d{8}$/;
@@ -285,7 +279,7 @@ function checkBirth() {
 	}
 	
 	return flag;
-}
+} */
 
 function checkNull(val) {
 	var flag = false;
@@ -317,9 +311,9 @@ function modifyUser() {
 		return;
 	}
 	
-	if (!checkBirth()) {
+	/* if (!checkBirth()) {
 		return;
-	}
+	} */
 	
 	if (!checkNull(name)) {
 		alert("이름을 입력해 주십시오.");
@@ -340,11 +334,12 @@ function modifyUser() {
 	
 	const jsonObj = {};
 
+	debugger;
     jsonObj.rowStatus = "C";
 	jsonObj.sensorId = sensorId;
 	jsonObj.smartId = smartId;
 	jsonObj.name = name;
-	jsonObj.birth = birth;
+	jsonObj.birth = birth.replace(/-/g,'');
 	jsonObj.address = address;
     jsonObj.phoneNumber = phoneNumber;
     

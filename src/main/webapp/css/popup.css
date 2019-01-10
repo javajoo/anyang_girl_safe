@@ -530,6 +530,7 @@
 	height: -webkit-calc(26px);
 	height: -moz-calc(26px);
 	text-align: center;
+	font-family: 'nanum-barun-gothic-regular';
 }
 
 .popup_list_cont_full2 input[type="text"] {

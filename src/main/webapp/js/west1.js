@@ -89,8 +89,7 @@ function createFeature(data){
 	if(eventLayer == null){
 		return;;
 	}
-	 
-
+	
 	if(data.sensorConn > 0){
 		pointX = data.pointX;
 		pointY = data.pointY;
@@ -107,30 +106,25 @@ function createFeature(data){
 		pointX = data.mPointX;
 		pointY = data.mPointY;
 		
-			//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
-			
-				if(data.emergency < 1){
-					if(data.smartConn < 1){
-						iconcls = 'images/icons/woman_stat_dis.png';
-					}
-					else{
-						iconcls = 'images/icons/woman_stat_nor.png';
-					}
-				}
-				else{
-					iconcls = 'images/icons/woman_stat_emr.png';
-					setEmergencyControl(data);
-				}
-				
-			
-		
+		//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
+		if(data.emergency < 1){
+			if(data.smartConn < 1){
+				iconcls = 'images/icons/woman_stat_dis.png';
+			}
+			else{
+				iconcls = 'images/icons/woman_stat_nor.png';
+			}
+		}
+		else{
+			iconcls = 'images/icons/woman_stat_emr.png';
+			setEmergencyControl(data);
+		}
 	}
-
 	
 	if(pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
 	            new OpenLayers.Geometry.Point(pointX,pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-	            {sensorId:data.sensorId, name:data.name, birth:data.birth, gpsX:pointX, gpsY:pointY, 
+	            {sensorId:data.sensorId, name:data.name, birthAge:data.birthAge, gpsX:pointX, gpsY:pointY, 
 	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
 	            	bat: data.bat, emergency: data.emergency
 	            } ,
@@ -138,7 +132,6 @@ function createFeature(data){
 	            );
 		eventLayer.addFeatures(feature);
 		//eventLayer.removeFeatures(feature);
-		
 	}
 }
 
@@ -199,7 +192,7 @@ function selectEeventMGIS(row, data){
 function setEmergencyPopup(data) {
 	
 	var name = data.name;
-	var birth = data.birth;
+	var birthAge = data.birthAge;
 	var phoneNumber = data.phoneNumber;
 	var address = data.address;
 	var sPhoneNumber = data.sPhoneNumber;
@@ -212,8 +205,8 @@ function setEmergencyPopup(data) {
 	info += "<table class=\"event_popup_table\">";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + name + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + birth + "</div></td></tr>";
+	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일(나이)</div></td>";
+	info += "<td><div class=\"event_popup_col\">" + birthAge + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + phoneNumber + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";

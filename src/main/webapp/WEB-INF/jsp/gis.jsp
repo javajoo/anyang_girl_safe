@@ -317,10 +317,10 @@
 			search_list("/include/userEmergency_list");	
 			$('#layer_area').show();
 		}
-		else if(flag == 'menu_userList') {
+		/* else if(flag == 'menu_userList') {
 			
 			search_list("/include/user_list");	
-		}
+		} */
 		else if(flag == 'menu_approvalList') {
 			changeWidth("full");
 			search_list("/include/user_approval_list");	
@@ -714,7 +714,7 @@
 		}
 		
 		var name = data.name;
-		var birth = data.birth;
+		var birthAge = data.birthAge;
 		var phoneNumber = data.phoneNumber;
 		var address = data.address;
 		var sPhoneNumber = data.sPhoneNumber;
@@ -749,8 +749,8 @@
 		info += "<table class=\"event_popup_table\">";
 		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
 		info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
-		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
-	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + birth + "</div></td></tr>";
+		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일(나이)</div></td>";
+	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + birthAge + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_phoneNumber\">" + phoneNumber + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";

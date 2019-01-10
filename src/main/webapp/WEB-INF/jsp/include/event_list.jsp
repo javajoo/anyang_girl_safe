@@ -73,8 +73,8 @@ function searchInit() {
 	    	"selected":true
 	    },
 	    {
-	    	label: '생년월일',
-	    	value: 'birth'
+	    	label: '나이',
+	    	value: 'age'
 	    },
 	    {
 	    	label: '연락처',
@@ -160,8 +160,8 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 	        {field:'no',title:'이벤트',hidden:true},
-			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'birth',title:'생년월일',width:'5%',align:'center'},
+			{field:'name',title:'이름',width:'5%',align:'center'},
+			{field:'birthAge',title:'생년월일(나이)',width:'10%',align:'center'},
 			{field:'phoneNumber',title:'번호',width:'10%',align:'center'},
 			{field:'address',title:'주소',width:'25%',align:'center'},
 			{field:'startTime',title:'발생일',width:'15%',align:'center'},
@@ -195,9 +195,6 @@ function reload(){
 	});	
 }
 
-
-
-
 function onEventDetailPopup(row) {
 	var page = '/popup/event_popup'; 
     $("#popup_area").html("");
@@ -225,8 +222,8 @@ function onEventDetailPopup(row) {
         	selectedData = data;
             $('#popup_area').dialog({
                 title: '이벤트 상세 정보',
-                width: 400,
-                height: 540,
+                width: 410,
+                height: 450,
                 closed: false,
                 cache: false,
                 modal: true,

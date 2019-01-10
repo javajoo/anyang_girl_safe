@@ -7,7 +7,7 @@
 					<em id="user_name_title">이름</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_name_box" />
+					<input type="text" id="user_name_box" disabled/>
 				</div>
 			</li>
 			<li class="list" id="user_birth_area">
@@ -15,7 +15,7 @@
 					<em>생년월일</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_birth_box" />
+					<input type="date" id="user_birth_box" min="1900-01-01" max="9999-12-31" disabled/>
 				</div>
 			</li>
 			<li class="list">
@@ -23,7 +23,7 @@
 					<em>연락처</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_phone_box" />
+					<input type="text" id="user_phone_box" disabled/>
 				</div>
 			</li>
 			<li class="list">
@@ -31,7 +31,7 @@
 					<em>주소</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_address_box" />
+					<input type="text" id="user_address_box" disabled/>
 				</div>
 			</li>
 			<li class="list">
@@ -39,7 +39,7 @@
 					<em>Sensor ID</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_sensor_box" />
+					<input type="text" id="user_sensor_box" disabled/>
 				</div>
 			</li>
 			<li class="list">
@@ -47,7 +47,7 @@
 					<em>Station ID</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_smart_box" />
+					<input type="text" id="user_smart_box" disabled/>
 				</div>
 			</li>
 			<li class="list">
@@ -55,7 +55,7 @@
 					<em>종료사유</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_remark_box" />
+					<input type="text" id="user_remark_box" disabled/>
 				</div>
 			</li>
 			<li class="list">
@@ -63,7 +63,7 @@
 					<em>추가정보</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_reason_box" />
+					<input type="text" id="user_reason_box" disabled/>
 				</div>
 			</li>
 		</ul>
@@ -98,7 +98,7 @@ function setUserDetailData(data) {
 	$('#user_sensor_box').val(row.sensorId);
 	$('#user_smart_box').val(smartId);
 	$('#user_name_box').val(row.name);
-	$('#user_birth_box').val((row.birth).replace(/\//g,''));
+	$('#user_birth_box').val(row.birth);
 	$('#user_address_box').val(row.address);
 	$('#user_phone_box').val(row.phoneNumber);
 	$('#user_remark_box').val(row.remark);

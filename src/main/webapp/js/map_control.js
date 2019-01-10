@@ -80,7 +80,7 @@ function setEventPopupValues(obj, phoneNumber) {
 		var featurePhone = data.phoneNumber;
 		if (featurePhone == phoneNumber) {
 			$('#event_popup_event_name').text(data.name);
-			$('#event_popup_event_age').text(data.age);
+			$('#event_popup_event_age').text(data.birthAge);
 			$('#event_popup_event_phoneNumber').text(data.phoneNumber);
 			$('#event_popup_event_address').text(data.address);
 			$('#event_popup_event_sPhoneNumber').text(data.sPhoneNumber);

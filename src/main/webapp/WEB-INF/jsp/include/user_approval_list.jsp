@@ -55,8 +55,8 @@ function searchInit() {
 	    	"selected":true
 	    },
 	    {
-	    	label: '생년월일',
-	    	value: 'birth'
+	    	label: '나이',
+	    	value: 'age'
 	    },
 	    {
 	    	label: '주소',
@@ -122,7 +122,7 @@ function onAddUserPopup() {
     
     $('#popup_area').dialog({
         title: '사용자 신규 등록',
-        width: 400,
+        width: 410,
         height: 340,
         closed: false,
         cache: false,
@@ -198,7 +198,7 @@ function onUserDetailPopup(row) {
         	selectedData = data;
             $('#popup_area').dialog({
                 title: '사용자 상세 정보',
-                width: 400,
+                width: 410,
                 height: 340,
                 closed: false,
                 cache: false,
@@ -250,7 +250,7 @@ function reload(){
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'birth',title:'생년월일',width:'10%',align:'center'},
+			{field:'birthAge',title:'생년월일(나이)',width:'10%',align:'center'},
 			{field:'phoneNumber',width:'15%',title:'연락처',align:'center'},
 			{field:'address',title:'주소',width:'20%',align:'center'},
 			{field:'sensorId',title:'센서번호',width:'15%',align:'center'},
