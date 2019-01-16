@@ -130,6 +130,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			result = msg;
 			sensorEvent(result, netSocket);
 		}
+		else if(msg.contains("TEST")){
+			result = msg;
+			testEvent(result, netSocket);
+		}
 		else if(msg.contains("CLEAR")){
 			result = msg;
 			eventClear(result, netSocket);
@@ -439,6 +443,53 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		}
 	}
 	
+	public void testEvent(String msg, NetSocket netSocket) {
+		msg.replaceAll("\\r|\\n", "");
+		String[] msgArray = msg.split(",");
+		Map<String,Object> map = new HashMap<String,Object>();
+		String sensorId = msgArray[1];
+		
+		map.put("sensorId", sensorId);
+		List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+				.baseSelectList("girlSafe.getEvent",map);
+		if (msgArray.length == 5) {
+			try {
+				map.put("emergency", "2");
+				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+						.baseSelectList("girlSafe.getHwInfo",map);*/
+				sendGis(eventList);
+				Map<String,Object> event = eventList.get(0);
+				JsonObject obj = new JsonObject(event);
+				NetSocketVerticle.logger.info(obj
+						.toString());
+
+				NetSocketVerticle.this.webSocketVerticle
+						.getIo().sockets()
+						.emit("response", obj);
+
+//				netSocket.write("00000");
+//				netSocket.write("\n");
+				NetSocketVerticle.logger
+						.info("received socket message 4: OK");
+			}  catch (Exception e) {
+//				netSocket.write("11111");
+//				netSocket.write("\n");
+				NetSocketVerticle.logger
+						.info("received socket message 6: ERROR"
+								+ e.getMessage());
+				NetSocketVerticle.logger.error(
+						"handle Exception : {} ",
+						new Object[] { e.getMessage() });
+			}
+		}
+		else {
+//			netSocket.write("11111");
+//			netSocket.write("\n");
+			NetSocketVerticle.logger
+					.info("received socket message 7: ERROR");
+		}
+	}
+	
 	
 	public void eventClear(String msg, NetSocket netSocket) {
 		msg.replaceAll("\\r|\\n", "");
@@ -585,6 +636,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		    String a = (String) (result.get("sensorConn"));
         	int b = Integer.parseInt(a);
         	
+        	String type;
         	String name = (String) result.get("name");
 		    String phoneNumber = (String) result.get("phoneNumber");
 		    String address = (String) result.get("adres");
@@ -597,6 +649,12 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
         	String strNo = Integer.toString(no);
         	
         	int emergency = (int) result.get("emergency");
+        	if(emergency > 1){
+        		type = "테스트";
+        	}
+        	else{
+        		type = "응급상황";
+        	}
         	String pointX;
         	String pointY;
         	if(picture == null || "".equals(picture)){
@@ -620,6 +678,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	        	msg.put("phoneNumber", phoneNumber);
 	        	msg.put("address", address);
 	        	msg.put("birth", birth);
+	        	msg.put("type", type);
 	        	msg.put("serviceType", "G");
 	        	msg.put("time", rslt);
 	        	//msg.put("picture",basePicture);

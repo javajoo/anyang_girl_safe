@@ -146,7 +146,7 @@
 	        LEFT JOIN girl_safe_user_sub c ON a.PHONE_NUMBER = c.PHONE_NUMBER
 	       ]]>
 	       WHERE 1=1
-		<if test="emergency != null and emergency != '' and totSearch != ''">
+		<if test="emergency != null and emergency != ''">
 			AND b.EMERGENCY = #{emergency}
 		</if>
 		<if test="hwStatus != null and hwStatus != ''">
@@ -165,7 +165,7 @@
 	    	AND date_format(a.INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
 	    ]]>
 		</if>
-		<if test="searchType != null and searchType != ''">
+		<if test="searchType != null and searchType != '' and totSearch != ''">
 			<choose>
 				<when test="searchType == 'name'">
 					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
