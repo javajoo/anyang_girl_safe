@@ -1309,7 +1309,9 @@
 			BIRTHDAY,
 			PHONE_NO,
 			EMAIL,
+			ADDRESS,
 			RANK,
+			LOGIN_FAIL_COUNT,
 			CREATE_DATE,
 			UPD_DATE
 		) VALUES (
@@ -1321,6 +1323,7 @@
 			#{email},
 			#{address},
 			#{rank},
+			0,
 			NOW(),
 			NOW()
 		)

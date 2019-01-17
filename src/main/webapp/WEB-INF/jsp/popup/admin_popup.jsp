@@ -84,6 +84,7 @@
 						<option value="1">최고 관리자</option>
 						<option value="2">관리 담당자</option>
 						<option value="3">운영자</option>
+						<option value="4">게스트</option>
 					</select>
 				</div>
 			</li>
@@ -200,6 +201,7 @@ function saveAdmin() {
 	
 	jsonObj.singleInsertSid = "girlSafe.insertAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
+	jsonObj.id = $('#admin_id_box').val();
     jsonObj.name = $('#admin_name_box').val();
 	jsonObj.birthday = $('#admin_birthday_box').val();
 	jsonObj.phoneNumber = $('#admin_phoneNumber_box').val();

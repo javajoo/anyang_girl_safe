@@ -406,7 +406,6 @@ function changeSettingPage(page){
 
 function rankDisplay(rank) {
 	if(rank >= 2) {
-		//$('#topmenu_eventSearch').hide();	//이벤트 검색
 		$('#setting_btn').hide();			//환경설정
 	}
 	if(rank == 3) {
@@ -415,6 +414,13 @@ function rankDisplay(rank) {
 		$('.update_button').hide();			//수정
 		$('.save_button').hide();			//저장
 		$('.delete_button').hide();			//삭제
+	}
+	if(rank == 4) {
+		$('#topmenu_evnetList').hide();		//이벤트 검색
+		$('#topmenu_hwStatus').hide();		//센서 상태 체크
+		$('#topmenu_stats').hide();			//통계자료
+		$('#topmenu_board').hide();			//게시판
+		$('#setting_btn').hide();			//환경설정
 	}
 }
 

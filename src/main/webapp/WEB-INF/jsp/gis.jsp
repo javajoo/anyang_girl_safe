@@ -1138,7 +1138,7 @@
 			
         	<div class="account_area">
         		<span class="login_image"></span>
-				<div class="account">${admin.USER_NM_KO}</div>
+				<div class="account">${admin.name}</div>
 				<div id="login_pop" class="login_pop_down"></div>
 			</div>
 			<a href="#" id="setting_btn" class="setting_btn" onclick="javascript:menuDisplay('menu_setting')"></a>
