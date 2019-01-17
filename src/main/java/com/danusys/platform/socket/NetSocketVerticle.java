@@ -498,7 +498,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		String sensorId = msgArray[0];
 		map.put("sensorId", sensorId);
 		List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
-				.baseSelectList("girlSafe.getEvent",map);
+				.baseSelectList("girlSafe.getClearEvent",map);
 		if (msgArray.length == 3) {
 			try {
 				map.put("emergency", "0");
