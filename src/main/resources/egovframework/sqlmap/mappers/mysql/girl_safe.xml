@@ -284,6 +284,19 @@
 		ENCRYPT_ADRES = HEX(AES_ENCRYPT(#{address},'aycctv!1808')),
 		UPDATE_DATE = NOW()
 	</insert>
+	
+	<delete id="deleteUser" parameterType="map">
+		DELETE FROM girl_safe_user
+		 WHERE PHONE_NUMBER=#{phoneNumber};
+	</delete>
+	<delete id="deleteHw" parameterType="map">
+		DELETE FROM girl_safe_hw
+		 WHERE PHONE_NUMBER=#{phoneNumber};
+	</delete>
+	<delete id="deleteUserSub" parameterType="map">
+		DELETE FROM girl_safe_user_sub
+		 WHERE PHONE_NUMBER=#{phoneNumber};
+	</delete>
 
 	<select id="getHwInfo" parameterType="map" resultType="HashMap">
 		SELECT

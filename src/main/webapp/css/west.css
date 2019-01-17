@@ -303,18 +303,31 @@
 .facilityM_button_list {
 	padding: 0 15px;
     top: 6px;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1301FE', endColorstr='#F4F60C', GradientType='1');
     color: #fff;
     font-size: 12px;
     vertical-align: middle;
     height: 25px;
     display: inline-block;
     line-height: 27px;
-    min-width: ;
     border: 1px solid #2183b3;
 	background: #3667b1;
     border-radius: 5px;
 }
+
+.delete_button {
+	padding: 0 15px;
+    top: 6px;
+    color: #fff;
+    font-size: 12px;
+    vertical-align: middle;
+    height: 25px;
+    display: inline-block;
+    line-height: 27px;
+    border: 1px solid #9c5932;
+    background: #e23c2a;
+    border-radius: 5px;
+}
+
 .eventM_button_list {
 	background: url(../images/icons/handling_btn.png) no-repeat center center;
     top: 2px;

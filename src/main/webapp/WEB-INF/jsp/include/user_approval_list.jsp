@@ -28,7 +28,8 @@
 				</table>
 			</li>
 			<li class="btn_list">
-				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a> 
+				<a href="#" id="delete_button" class="delete_button" onclick="deleteUser()">삭제</a>
+				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a>
 				<a href="#" id="approval_button" class="eventR_button_list" onclick="onAddUserPopup()">추가</a>
 			</li>
 		</ul>
@@ -231,6 +232,51 @@ function setStationId(rows) {
 	}
 }
 
+function deleteUser() {
+	var row = $('#userApprovalList_table').datagrid('getSelected');
+	
+	const jsonArray1 = [];
+	const jsonArray2 = [];
+	const jsonArray3 = [];
+	const jsonArray4 = [];
+	
+	const jsonObj = {};
+    jsonObj.rowStatus = "D";
+    jsonObj.phoneNumber = row.phoneNumber.replace(/-/g,'');
+    
+    jsonArray1[0] = jsonObj;
+    jsonArray2[0] = jsonObj;
+    jsonArray3[0] = jsonObj;
+
+    $.ajax({
+            type       : "POST",
+            url        : "/multiTransaction/girlSafe.deleteUser/girlSafe.deleteHw/girlSafe.deleteUserSub/sqlid4/action.do",
+            dataType   : "json",
+            data       : {
+            	"param1" : JSON.stringify(jsonArray1),
+                "param2" : JSON.stringify(jsonArray2),
+                "param3" : JSON.stringify(jsonArray3),
+                "param4" : JSON.stringify(jsonArray4)
+            },
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (result) {
+        if (result == "SUCCESS") {
+            $('#userApprovalList_table').datagrid('reload');
+            alert("삭제 완료");
+        }
+        else {
+            alert("삭제 실패");
+        }
+    }).fail(function (xhr) {
+        alert("삭제 실패");
+    }).always(function() {
+
+    });
+}
+
 function reload(){
 	const jsonObj = {};
 	jsonObj.userTimeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
@@ -257,10 +303,18 @@ function reload(){
 			{field:'smartId',title:'스테이션번호',width:'10%',align:'center'},
 			{field:'insertDate',title:'가입일',width:'15%',align:'center'}
 	    ]],
+	    onSelect:function(index, row) {
+			$('#delete_button').css('display', 'inline-block');
+	    },
+	    onUnselect:function(index, row) {
+			$('#delete_button').css('display', 'none');
+	    },
 	    onDblClickRow:function(index, row) {
 	    	onUserDetailPopup(row);
 	    },
 	    onLoadSuccess:function(data){
+	    	$('#delete_button').css('display', 'none');
+	    	
 	    	var rows = $('#userApprovalList_table').datagrid('getRows');
 			if(data.rows=='sessionOut'){
 				sCnt++;

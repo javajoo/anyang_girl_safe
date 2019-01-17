@@ -78,7 +78,7 @@ function onUserUpdatePopup() {
 	$('#user_name_box').attr('disabled', false);
 	$('#user_birth_box').attr('disabled', false);
 	$('#user_address_box').attr('disabled', false);
-	$('#user_phone_box').attr('disabled', false);
+//	$('#user_phone_box').attr('disabled', false);
 	
 	$('#user_update_btn').css('display', 'none');
 	$('#user_save_btn').css('display', 'inline-block');
