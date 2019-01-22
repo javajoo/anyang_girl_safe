@@ -151,6 +151,7 @@ function updateAdmin() {
 	}
 	jsonObj.singleInsertSid = "girlSafe.updateAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
+	jsonObj.id = $('#admin_id_box').val();
     jsonObj.name = $('#admin_name_box').val();
 	jsonObj.birthday = $('#admin_birthday_box').val();
 	jsonObj.phoneNumber = $('#admin_phoneNumber_box').val();
