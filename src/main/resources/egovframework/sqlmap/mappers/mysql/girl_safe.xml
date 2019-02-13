@@ -316,6 +316,101 @@
 		AND	b.SENSOR_ID = #{sensorId}
 	</select>
 
+	<select id="getAlarmList" parameterType="map" resultType="HashMap">
+		<![CDATA[
+	       SELECT
+	       @ROWNUM := @ROWNUM + 1 AS num, 
+	    ]]>
+	   			CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
+	    <![CDATA[
+	    		CASE LENGTH(a.PHONE_NUMBER)
+					WHEN 11 THEN CONCAT(SUBSTR(PHONE_NUMBER,1,3),'-',SUBSTR(PHONE_NUMBER,4,4),'-',SUBSTR(PHONE_NUMBER,8,4))
+					WHEN 10 THEN CONCAT(SUBSTR(PHONE_NUMBER,1,3),'-',SUBSTR(PHONE_NUMBER,4,3),'-',SUBSTR(PHONE_NUMBER,7,4))
+					ELSE a.PHONE_NUMBER
+				END phoneNumber,
+				SMART_ID as smartId,
+				SENSOR_ID as sensorId,
+				date_format(START_TIME,'%Y-%m-%d %H:%i:%s')as startTime,
+				date_format(END_TIME,'%Y-%m-%d %H:%i:%s') as endTime,
+				CASE END_YN
+					WHEN 'Y' THEN '미작동'
+					WHEN 'N' THEN '작동중'
+				END as endYN
+			FROM girl_safe_alarm_event a
+			,(SELECT @ROWNUM := #{firstIndex}) R
+	        WHERE 1=1
+		]]>
+		<if test="userTimeS != null and userTimeS != ''">
+		<![CDATA[
+			AND date_format(START_TIME,'%Y-%m-%d') >= #{userTimeS}
+		]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND date_format(END_TIME,'%Y-%m-%d') <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test="searchType != null and searchType != '' and totSearch != ''">
+			<choose>
+				<when test="searchType == 'name'">
+					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'phon'">
+					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'sensor'">
+					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'smart'">
+					AND SMART_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+			</choose>
+		</if>
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if>
+	</select>
+	
+	<select id="getAlarmListCnt" parameterType="map" resultType="String">
+		<![CDATA[
+			SELECT
+	      		count(*)
+			FROM girl_safe_alarm_event a
+	        WHERE 1=1
+		]]>
+		<if test="userTimeS != null and userTimeS != ''">
+		<![CDATA[
+			AND date_format(START_TIME,'%Y-%m-%d') >= #{userTimeS}
+		]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND date_format(END_TIME,'%Y-%m-%d') <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test="searchType != null and searchType != '' and totSearch != ''">
+			<choose>
+				<when test="searchType == 'name'">
+					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'phon'">
+					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'sensor'">
+					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'smart'">
+					AND SMART_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+
 	<insert id="insertHw" parameterType="map">
 		INSERT INTO girl_safe_hw (
 		SMART_ID,
