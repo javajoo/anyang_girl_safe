@@ -1362,6 +1362,14 @@
 		WHERE SEQ_NO=#{seqNo};
 		]]>
 	</update>
+	
+	<delete id="deleteAdmin" parameterType="map">
+		<![CDATA[
+		DELETE
+		FROM admin
+		WHERE SEQ_NO=#{seqNo};
+		]]>
+	</delete>
 
 	<select id="getLoginFailCount" parameterType="map" resultType="String">
 		<![CDATA[		
