@@ -98,6 +98,7 @@
 					<!-- <a href="#" id="admin_update_btn" class="eventR_button_list" 
 						onclick="onAdminUpdatePopup()" style="display: none;">수정</a> -->
 					<a href="#" id="admin_update_btn" class="eventR_button_list"  onclick="updateAdmin()" style="display: none;">수정</a>
+					<a href="#" id="admin_delete_btn" class="eventR_button_list"  onclick="deleteAdmin()" style="display: none;">삭제</a>
 					<a href="#" id="admin_save_btn" class="eventR_button_list" onclick="saveAdmin()">저장</a>
 				</div>
 			</li>
@@ -128,6 +129,7 @@ function setAdminDetailData(row, data) {
 	$('#admin_address_box').val(data.address);
 	$('#admin_rank_box').val(data.rank);
 	$('#admin_update_btn').css('display', 'inline-block');
+	$('#admin_delete_btn').css('display', 'inline-block');
 	$('#admin_save_btn').css('display', 'none');
 }
 
@@ -182,6 +184,37 @@ function updateAdmin() {
         closePopup();
     }).fail(function (xhr) {
         alert("수정 실패");
+    }).always(function() {
+
+    });
+}
+
+function deleteAdmin() {
+	const jsonObj = {};
+	
+	jsonObj.singleDeleteSid = "girlSafe.deleteAdmin";
+	jsonObj.seqNo = $('#admin_seq_no').val();
+	
+    $.ajax({
+            type       : "POST",
+            url        : "/multiAjax/action.do",
+            dataType   : "json",
+            data : {"param" : JSON.stringify(jsonObj)},
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (result) {
+        if (result == "SUCCESS") {
+            $('#userApprovalList_table').datagrid('reload');
+            alert("삭제 완료");
+        }
+        else {
+            alert("삭제 실패");
+        }
+        closePopup();
+    }).fail(function (xhr) {
+        alert("삭제 실패");
     }).always(function() {
 
     });
