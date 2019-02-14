@@ -1573,4 +1573,106 @@
 		IP_DOMAIN = #{ipDomain},
 		UPDATE_DATE = NOW()
 	</insert>
+	
+	
+	<insert id="insertSmsLog" parameterType="map">
+		<![CDATA[
+		INSERT INTO girl_safe_sms_log
+		 (
+			NAME,
+			PHONE_NUMBER,
+			S_NAME,
+			S_PHONE_NUMBER,
+			INSERT_DATE
+		) VALUES (
+			HEX(AES_ENCRYPT(#{name},'aycctv!1808')),
+			HEX(AES_ENCRYPT(#{phoneNumber},'aycctv!1808')),
+			HEX(AES_ENCRYPT(#{sName},'aycctv!1808')),
+			HEX(AES_ENCRYPT(#{sPhoneNumber},'aycctv!1808')),
+			now()
+		)
+		]]>
+	</insert>
+	
+	
+	<select id="getSmsLogList" parameterType="map" resultType="HashMap">
+		<![CDATA[
+	       SELECT
+	       @ROWNUM := @ROWNUM + 1 AS num, 
+	    ]]>
+	   			CAST(AES_DECRYPT(UNHEX(NAME), 'aycctv!1808')AS CHAR) as name,
+	    <![CDATA[
+	    		CASE LENGTH(CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR))
+					WHEN 11 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,4),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR),8,4))
+					WHEN 10 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR),7,4))
+					ELSE a.PHONE_NUMBER
+				END phoneNumber,
+				CAST(AES_DECRYPT(UNHEX(S_NAME), 'aycctv!1808')AS CHAR) as sName,
+				CASE LENGTH(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR))
+					WHEN 11 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,4),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),8,4))
+					WHEN 10 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),7,4))
+					ELSE CAST(AES_DECRYPT(UNHEX(S_PHONE_NUMBER), 'aycctv!1808')AS CHAR)
+				END sPhoneNumber,
+				date_format(INSERT_DATE,'%Y-%m-%d %H:%i:%s')as insertDate
+			FROM girl_safe_sms_log a
+			,(SELECT @ROWNUM := #{firstIndex}) R
+	        WHERE 1=1
+		]]>
+		<if test="userTimeS != null and userTimeS != ''">
+		<![CDATA[
+			AND date_format(INSERT_DATE,'%Y-%m-%d') >= #{userTimeS}
+		]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test="searchType != null and searchType != '' and totSearch != ''">
+			<choose>
+				<when test="searchType == 'name'">
+					AND CAST(AES_DECRYPT(UNHEX(NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'phon'">
+					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+			</choose>
+		</if>
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if>
+	</select>
+	
+	<select id="getSmsLogListCnt" parameterType="map" resultType="String">
+		<![CDATA[
+	       SELECT
+	    	COUNT(*)
+			FROM girl_safe_sms_log a
+	        WHERE 1=1
+		]]>
+		<if test="userTimeS != null and userTimeS != ''">
+		<![CDATA[
+			AND date_format(INSERT_DATE,'%Y-%m-%d') >= #{userTimeS}
+		]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test="searchType != null and searchType != '' and totSearch != ''">
+			<choose>
+				<when test="searchType == 'name'">
+					AND CAST(AES_DECRYPT(UNHEX(NAME), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'phon'">
+					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+			</choose>
+		</if>
+	</select>
 </mapper>

@@ -138,6 +138,10 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 			result = msg;
 			eventClear(result, netSocket);
 		}
+		else if(msg.contains("SMS")){
+			result = msg;
+			smsInsert(result, netSocket);
+		}
 		else {
 //			testGis(msg, netSocket);
 //			System.out.println("2");
@@ -538,6 +542,53 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		}
 	}
 	
+	
+	public void smsInsert(String msg, NetSocket netSocket) {
+		msg.replaceAll("\\r|\\n", "");
+		String[] msgArray = msg.split(",");
+		Map<String,Object> map = new HashMap<String,Object>();
+		String name = msgArray[1];
+		String content = msgArray[2];
+		String sName = msgArray[3];
+		String sPhoneNumber = msgArray[4];
+		String phoneNumber = msgArray[5];
+		if (msgArray.length == 6) {
+			try {
+				map.put("name", name);
+				map.put("content", content);
+				map.put("sName", sName);
+				map.put("sPhoneNumber", sPhoneNumber);
+				map.put("phoneNumber", phoneNumber);
+				/*List<Map<String,Object>> eventList = NetSocketVerticle.this.baseService
+						.baseSelectList("girlSafe.getHwInfo",map);
+*/
+				NetSocketVerticle.this.baseService
+				.baseUpdate("girlSafe.insertSmsLog", map);
+				
+				
+//				netSocket.write("00000");
+//				netSocket.write("\n");
+				NetSocketVerticle.logger
+						.info("received socket message 4: OK");
+			}  catch (Exception e) {
+//				netSocket.write("11111");
+//				netSocket.write("\n");
+				NetSocketVerticle.logger
+						.info("received socket message 6: ERROR"
+								+ e.getMessage());
+				NetSocketVerticle.logger.error(
+						"handle Exception : {} ",
+						new Object[] { e.getMessage() });
+			}
+		}
+		else {
+//			netSocket.write("11111");
+//			netSocket.write("\n");
+			NetSocketVerticle.logger
+					.info("received socket message 7: ERROR");
+		}
+	}
+	
 	String UnitoStr(String uni)
 	{
 		String str = "" ;
@@ -580,10 +631,11 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	        	String content = name+"님 센서에 침입 감지가 되었습니다.";
 	        	String rcvId = (String)result.get("sName");
 		    	String rcvMobl = (String)result.get("sPhoneNumber");
+		    	String phoneNumber = (String)result.get("phoneNumber");
 		    	if(rcvMobl != null){
 		        	socket = new Socket(smsServer , smsPort);
 		        	oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"));//한글
-		        	msg = "SAF,"+name+","+content+","+rcvId+","+rcvMobl;
+		        	msg = "SAF,"+name+","+content+","+rcvId+","+rcvMobl+","+phoneNumber;
 		        	System.out.println("asdfasdf||||||||||||||||"+msg);
 		        	oos.write(msg);
 					oos.flush();
