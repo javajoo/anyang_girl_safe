@@ -1675,4 +1675,15 @@
 			</choose>
 		</if>
 	</select>
+	
+	<select id="getStatus" parameterType="map" resultType="HashMap">
+		<![CDATA[
+			SELECT *
+			  FROM (
+			  		(SELECT COUNT(*) as userNum FROM girl_safe_user) A,
+			  		(SELECT SUM(IF((SMART_CONN=1 OR SENSOR_CONN=1),1,0)) as sensorOn,
+			  				SUM(IF((SMART_CONN=0 AND SENSOR_CONN=0),1,0)) as sensorOff FROM girl_safe_hw ) B
+			  )
+		]]>
+	</select>
 </mapper>
