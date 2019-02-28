@@ -447,3 +447,22 @@ function excelDownLoad(table_obj, path, fileName, data) {
 	
 	$.download(url, data, "POST");
 }
+
+function setStatus() {
+	var url = "/select/girlSafe.getStatus/action.do";
+	const jsonObj = {};
+	$.ajax({
+		type : "POST"
+		, url : url
+		, dataType : "json"
+		, data : {"param" : JSON.stringify(jsonObj)}
+		, success:function(data) {
+			$('.status_1 span').text(data[0].userNum);
+			$('.status_2 span').text(Number(data[0].sensorOn));
+			$('.status_3 span').text(Number(data[0].sensorOff));
+		}
+		, error:function(e) {
+			alert(e.responseText);
+		}
+	});
+}

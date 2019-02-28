@@ -178,7 +178,7 @@
 		});
 		
 		/*상황처리 팝업 이벤트 지정*/
-		$("#event_monitoring_handle .tabs li:nth-child(1) a").click(function(event){	//상황처리-전체 tab 클릭
+		/* $("#event_monitoring_handle .tabs li:nth-child(1) a").click(function(event){	//상황처리-전체 tab 클릭
 			search_pop(0);	//상황처리 리스트 초기화
 		});
 		$("#event_monitoring_handle .tabs li:nth-child(2) a").click(function(event){	//상황처리-발생 tab 클릭
@@ -189,7 +189,7 @@
 		});
 		$("#event_monitoring_handle .tabs li:nth-child(4) a").click(function(event){	//상황처리-처리중 tab 클릭
 			search_pop('EVENT_STATE_4');	//상황처리 리스트 초기화
-		});
+		}); */
 		
 		/* $("#map_addr_search_text").textbox({
 			inputEvents: $.extend({}, $.fn.textbox.defaults.inputEvents,{
@@ -316,6 +316,8 @@
 			mapInfo();
 			search_list("/include/userEmergency_list");	
 			$('#layer_area').show();
+			
+			setStatus();
 		}
 		/* else if(flag == 'menu_userList') {
 			
@@ -1225,6 +1227,11 @@
 					onLoadSuccess:mapLateChange,
 					onCheck:mapChange
 					">
+				</div>
+				<div class="status_area">
+					<p class="status_1">총가입자수 : <span></span> 명</p>
+					<p class="status_2">센서연결상태(ON)수량 : <span></span> 대</p>
+					<p class="status_3">센서연결상태(OFF)수량 : <span></span> 대</p>
 				</div>
 			</div>
 			<a href="#" onclick="changeWidth('layer');" class="layer_tool_open"></a>

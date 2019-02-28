@@ -164,6 +164,13 @@
 	margin: 5px 0px;
 }
 
+#layer_area .status_area {
+	position: absolute;
+	bottom: 0;
+	padding: 0 0 10px 10px;
+    line-height: 30px;
+}
+
 .footer {
 	position: fixed;
 	width: 1920px;
