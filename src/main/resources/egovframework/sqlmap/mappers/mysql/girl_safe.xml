@@ -31,9 +31,17 @@
 				b.SMART_ID as smartId,
 				b.SENSOR_ID as sensorId,				
 				CASE b.STATUS
-					WHEN '0' THEN 'ON'
-					WHEN '1' THEN 'OFF'
+					WHEN '0' THEN '정상'
+					WHEN '1' THEN '비정상'
 				END as status,
+				CASE b.SMART_CONN
+					WHEN '0' THEN '미연결'
+					WHEN '1' THEN '연결'
+				END as smartConnKr,
+				CASE b.SENSOR_CONN
+					WHEN '0' THEN '미연결'
+					WHEN '1' THEN '연결'
+				END as sensorConnKr,
 				b.STATUS as chkStatus,
 				b.BAT as bat,
 				CASE b.BAT
@@ -1289,7 +1297,15 @@
 		b.EMERGENCY as emergency,
 		CAST(AES_DECRYPT(UNHEX(c.S_ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as sName,
 		CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR) as sPhoneNumber,
-		c.RELATIONS as realation,
+		CASE c.RELATIONS
+			WHEN '0' THEN '기타'
+			WHEN '1' THEN '부'
+			WHEN '2' THEN '모'
+			WHEN '3' THEN '형제'
+			WHEN '4' THEN '애인'
+			WHEN '5' THEN '친척'
+			WHEN '6' THEN '친구'
+		END as realation,
 		now() as time,
 		d.NO as no
 		FROM girl_safe_user a
@@ -1321,7 +1337,15 @@
 		b.EMERGENCY as emergency,
 		CAST(AES_DECRYPT(UNHEX(c.S_ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as sName,
 		CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR) as sPhoneNumber,
-		c.RELATIONS as realation,
+		CASE c.RELATIONS
+			WHEN '0' THEN '기타'
+			WHEN '1' THEN '부'
+			WHEN '2' THEN '모'
+			WHEN '3' THEN '형제'
+			WHEN '4' THEN '애인'
+			WHEN '5' THEN '친척'
+			WHEN '6' THEN '친구'
+		END as realation,
 		now() as time,
 		MAX(d.NO) as no
 		FROM girl_safe_user a
@@ -1635,7 +1659,7 @@
 					'%')
 				</when>
 				<when test="searchType == 'phon'">
-					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
+					AND CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 			</choose>
@@ -1669,10 +1693,103 @@
 					'%')
 				</when>
 				<when test="searchType == 'phon'">
-					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
+					AND CAST(AES_DECRYPT(UNHEX(PHONE_NUMBER), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 			</choose>
 		</if>
 	</select>
+	
+	
+	<select id="getPushLogList" parameterType="map" resultType="HashMap">
+		<![CDATA[
+	       SELECT
+	    	    @ROWNUM := @ROWNUM + 1 AS num, 
+	    		TITLE as title,
+	    		CONTENT as content,
+	    		CASE PUSH_KIND
+					WHEN 'N' THEN '일반'
+					WHEN 'P' THEN '강제'
+				END as pushKind,
+				date_format(INSERT_DATE,'%Y-%m-%d %H:%i:%s')as insertDate
+			FROM push_log
+			,(SELECT @ROWNUM := #{firstIndex}) R
+	        WHERE 1=1
+		]]>
+		<if test="userTimeS != null and userTimeS != ''">
+		<![CDATA[
+			AND date_format(INSERT_DATE,'%Y-%m-%d') >= #{userTimeS}
+		]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test="pushKind != null and pushKind != ''">
+			AND PUSH_KIND = #{pushKind}
+		</if>
+		<if test="searchType != null and searchType != '' and totSearch != ''">
+			<choose>
+				<when test="searchType == 'name'">
+					AND TITLE LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'phon'">
+					AND CONTENT LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+			</choose>
+		</if>
+		<if test='recordCountPerPage != -1'>
+			LIMIT #{firstIndex}, #{recordCountPerPage}
+		</if>
+	</select>
+	
+	<select id="getPushLogListCnt" parameterType="map" resultType="String">
+		<![CDATA[
+	       SELECT
+	    	COUNT(*)
+			FROM push_log a
+	        WHERE 1=1
+		]]>
+		<if test="userTimeS != null and userTimeS != ''">
+		<![CDATA[
+			AND date_format(INSERT_DATE,'%Y-%m-%d') >= #{userTimeS}
+		]]>
+		</if>
+		<if test="userTimeE != null and userTimeE != ''">
+	    <![CDATA[
+	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
+	    ]]>
+		</if>
+		<if test="pushKind != null and pushKind != ''">
+			AND PUSH_KIND = #{pushKind}
+		</if>
+		<if test="searchType != null and searchType != '' and totSearch != ''">
+			<choose>
+				<when test="searchType == 'name'">
+					AND TITLE LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+				<when test="searchType == 'phon'">
+					AND CONTENT LIKE CONCAT('%', #{totSearch},
+					'%')
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	
+	<insert id="insertPushLog" parameterType="map">
+		INSERT INTO push_log
+				(TITLE, CONTENT, PUSH_KIND, INSERT_DATE)
+			SELECT
+				TITLE,
+				CONTENT,
+				#{pushKind},
+				now()
+			FROM girl_safe_board 
+			AND NO=#{no}
+	</insert>
 </mapper>

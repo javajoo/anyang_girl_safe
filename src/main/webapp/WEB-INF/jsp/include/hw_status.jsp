@@ -205,10 +205,12 @@ function reload(){
 	        {field:'smartId',title:'스테이션번호',width:'10%',align:'center'},
 	        {field:'name',title:'이름',width:'10%',align:'center'},
 	        {field:'phoneNumber',title:'연락처',width:'10%',align:'center'},
-	        {field:'address',title:'주소',width:'25%',align:'center'},
-			{field:'updateDate',title:'최종접속체크일',width:'20%',align:'center'},
+	        {field:'address',title:'주소',width:'20%',align:'center'},
+			{field:'updateDate',title:'최종접속체크일',width:'15%',align:'center'},
 			{field:'bat',title:'배터리',width:'5%',align:'center'},
 			{field:'status',title:'상태',width:'5%',align:'center'},
+			{field:'smartConnKr',title:'스테이션연결',width:'5%',align:'center'},
+			{field:'sensorConnKr',title:'센서연결',width:'5%',align:'center'},
 			{field:'krBat',hidden:true,align:'center'}
 	    ]],
 	    onLoadSuccess:function(data){

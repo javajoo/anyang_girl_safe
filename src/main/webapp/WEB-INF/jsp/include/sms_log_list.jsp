@@ -72,7 +72,7 @@ $(document).ready(function(){
 				searchType : $("#search_type_box").combobox('getValue'),
 				totSearch : $("#search_eventR_tot").val()
 		};
-		excelDownLoad($('#alarmList_table'), url, fileName, data);
+		excelDownLoad($('#smsLogList_table'), url, fileName, data);
 	});
 	
 	searchInit();

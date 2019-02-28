@@ -1531,15 +1531,18 @@ public class BaseController
         	        	
         String noticeNo;
         String resultMsg;
+        String pushKind;
         String pushMsg = null;
         try
         {
         	
         	noticeNo = String.valueOf(param.get("no"));
+        	pushKind = String.valueOf(param.get("pushKind"));
         	
         	
-        	pushMsg = "W,N,"+noticeNo; 
+        	pushMsg = "W,N,"+noticeNo+","+pushKind;
         	netSocketVerticle.sendApp(pushMsg);
+        	baseService.baseInsert("girlSafe.insertPushLog", param);
         	
         	resultMsg = "{\"cnt\":\""+noticeNo+"\"}"; 
         	System.out.println(resultMsg);

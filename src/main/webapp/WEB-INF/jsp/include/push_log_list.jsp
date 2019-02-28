@@ -24,7 +24,7 @@
 				<em>가입자 리스트</em>
 			</li>
 			<li>
-				<table id="alarmList_table" title="" style="width:100%;height:calc(100%-129px);">
+				<table id="pushLogList_table" title="" style="width:100%;height:calc(100%-129px);">
 				</table>
 			</li>
 			<li class="btn_list">
@@ -56,14 +56,6 @@ function searchInit() {
 	    {
 	    	label: '연락처',
 	    	value: 'phon'
-	    },
-	    {
-	    	label: '센서번호',
-	    	value: 'sensor'
-	    },
-	    {
-	    	label: '스테이션번호',
-	    	value: 'smart'
 	    }]
 	});
 	
@@ -72,15 +64,15 @@ function searchInit() {
 
 $(document).ready(function(){
 	$('#excel_download_btn').click(function() {
-		var url = "/excelDownload/girlSafe.getAlarmList/action.do";
-		var fileName = "girlSafeAlarm";
+		var url = "/excelDownload/girlSafe.getPushLogList/action.do";
+		var fileName = "girlSafePushLog";
 		var data ={
 				userTimeS : $("#search_eventR_timeS").datebox('getValue').replace(/\//g, ''),
 				userTimeE : $("#search_eventR_timeE").datebox('getValue').replace(/\//g, ''),
 				searchType : $("#search_type_box").combobox('getValue'),
 				totSearch : $("#search_eventR_tot").val()
 		};
-		excelDownLoad($('#alarmList_table'), url, fileName, data);
+		excelDownLoad($('#pushLogList_table'), url, fileName, data);
 	});
 	
 	searchInit();
@@ -93,20 +85,6 @@ $(document).ready(function(){
 	reload();
 });
 
-function setStationId(rows) {
-	var length = rows.length;
-	var maxLength = 4;
-	
-	for (var i = 0; i < length; i++) {
-		var smartId = rows[i].smartId;
-		var idLength = maxLength - smartId.length;
-		for (var j = 0; j < idLength; j++) {
-			smartId = '0' + smartId;
-		}
-		rows[i].smartId = 'SA-S' + smartId;
-		$('#alarmList_table').datagrid('refreshRow', i);
-	}
-}
 
 
 
@@ -116,8 +94,8 @@ function reload(){
 	jsonObj.userTimeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
 	jsonObj.totSearch = $("#search_eventR_tot").val();
-	$('#alarmList_table').datagrid({
-	    url:'/selectList/girlSafe.getAlarmList/action.do',
+	$('#pushLogList_table').datagrid({
+	    url:'/selectList/girlSafe.getPushLogList/action.do',
 	    pagination:true,
 	    pageSize:12,
 	    scrollOnSelect:false,
@@ -128,17 +106,14 @@ function reload(){
 	    },
 	    columns:[[
 	        {field:'num',title:'No',width:'5%',align:'center'},
-			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'phoneNumber',width:'15%',title:'연락처',align:'center'},
-			{field:'sensorId',title:'센서번호',width:'15%',align:'center'},
-			{field:'smartId',title:'스테이션번호',width:'15%',align:'center'},
-			{field:'startTime',title:'시작날짜',width:'15%',align:'center'},
-			{field:'endTime',title:'종료날짜',width:'15%',align:'center'},
-			{field:'endYN',title:'작동여부',width:'10%',align:'center'}
+			{field:'title',title:'제목',width:'15%',align:'center'},
+			{field:'content',width:'20%',title:'내용',align:'center'},
+			{field:'pushKind',title:'푸쉬종류',width:'15%',align:'center'},
+			{field:'insertDate',title:'발송일',width:'20%',align:'center'}
 	    ]],
 	    onLoadSuccess:function(data){
 	    	
-	    	var rows = $('#alarmList_table').datagrid('getRows');
+	    	var rows = $('#pushLogList_table').datagrid('getRows');
 			if(data.rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){

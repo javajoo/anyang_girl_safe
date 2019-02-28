@@ -342,6 +342,10 @@
 			changeWidth("full");
 			search_list("/include/sms_log_list");
 		}
+		else if(flag == 'menu_pushLogList'){
+			changeWidth("full");
+			search_list("/include/push_log_list");
+		}
 		else if(flag == 'menu_board'){
 			changeWidth("full");
 			search_list("/include/board_list");
@@ -1137,7 +1141,8 @@
 							<li><a id="topmenu_evnetList" href="javascript:menuDisplay('menu_evnetList')">이벤트 검색</a></li>
 							<li><a id="topmenu_hwStatus" href="javascript:menuDisplay('menu_hwStatus')">센서 상태 체크</a></li>
 							<li><a id="topmenu_alarmList" href="javascript:menuDisplay('menu_alarmList')">서비스 이력</a></li>
-							<li><a id="topmenu_alarmList" href="javascript:menuDisplay('menu_smsLogList')">SMS 이력</a></li>
+							<li><a id="topmenu_smsLogList" href="javascript:menuDisplay('menu_smsLogList')">SMS 이력</a></li>
+							<li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
 							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
 							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li>
 							<!-- <li><a id="topmenu_system" href="javascript:menuDisplay('menu_system')">시스템설정</a></li> -->

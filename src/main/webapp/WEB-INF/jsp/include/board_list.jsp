@@ -37,6 +37,9 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
+					<a href="#" id="pPush_button" class="eventR_button_list" onclick="pPushBoard()">강제푸시</a>
+				</div>
+				<div class="list_cont">
 					<a href="#" id="push_button" class="eventR_button_list" onclick="pushBoard()">푸시</a>
 				</div>
 				<div class="list_cont">
@@ -91,6 +94,9 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	$('#push_button').css('display', 'none');	
+	$('#pPush_button').css('display', 'none');	
+	
 	searchInit();
 	
 	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
@@ -147,6 +153,7 @@ function pushBoard() {
 	
 	jsonObj.no = row.no;
 	jsonObj.pushYN = "Y";
+	jsonObj.pushKind = "N";
 	
 	$.ajax({
 		type : "POST"
@@ -164,6 +171,51 @@ function pushBoard() {
 				, success:function(data)
 				{
 					alert("푸쉬발송 완료");
+					$('#boardList_table').datagrid('reload');
+					$('#push_button').css('display', 'none');
+					$('#pPush_button').css('display', 'none');
+				}
+				, error:function(e){
+					alert(e.responseText);
+				}
+			});
+		}
+		, error:function(e){
+			alert(e.responseText);
+		}
+	});
+}
+
+
+function pPushBoard() {
+	var row = $('#boardList_table').datagrid('getSelected');
+	var url = "/boardPush.do";
+	
+	const jsonObj = {};
+	
+	jsonObj.no = row.no;
+	jsonObj.pushYN = "Y";
+	jsonObj.pushKind = "P";
+	
+	$.ajax({
+		type : "POST"
+		, url : url
+		, dataType : "json"
+		, data : {"param" : JSON.stringify(jsonObj)}
+		, success:function(data)
+		{
+			console.log(data);
+			$.ajax({
+				type : "POST"
+				, url : "/ajax/update/girlSafe.updateBoard/action.do"
+				, dataType : "json"
+				, data : {"param" : JSON.stringify(jsonObj)}
+				, success:function(data)
+				{
+					alert("푸쉬발송 완료");
+					$('#boardList_table').datagrid('reload');
+					$('#push_button').css('display', 'none');
+					$('#pPush_button').css('display', 'none');
 				}
 				, error:function(e){
 					alert(e.responseText);
@@ -203,9 +255,11 @@ function reload(){
 	    ]],
 	    onSelect:function(index, row) {
 			$('#push_button').css('display', 'inline-block');
+			$('#pPush_button').css('display', 'inline-block');
 	    },
 	    onUnselect:function(index, row) {
 			$('#push_button').css('display', 'none');
+			$('#pPush_button').css('display', 'none');
 	    },
 	    onDblClickRow: function(row, data) {
 	    	updateCount(row, data);
@@ -222,7 +276,7 @@ function reload(){
 				}
 			}
 			if(data && data.total > 0) {			
-				$('#push_button').css('display', 'none');	
+				
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 				//$(this).datagrid('selectRow',0);
 			}
