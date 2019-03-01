@@ -376,6 +376,7 @@
 				</when>
 			</choose>
 		</if>
+		ORDER BY INSERT_DATE DESC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1664,6 +1665,7 @@
 				</when>
 			</choose>
 		</if>
+		ORDER BY INSERT_DATE DESC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1741,6 +1743,7 @@
 				</when>
 			</choose>
 		</if>
+		ORDER BY INSERT_DATE DESC
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
