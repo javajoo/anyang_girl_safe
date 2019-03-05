@@ -55,6 +55,10 @@ var userRangeData = [
    	{
    		label: '거주지(동)',
    		value: 'dong'
+   	},
+   	{
+   		label: '연령대',
+   		value: 'age'
    	}];
 var eventRangeData = [
 	{
@@ -69,7 +73,11 @@ var eventRangeData = [
 	{
 		label: '기기별',
 		value: 'hw'
-	}];
+	},
+   	{
+   		label: '연령대',
+   		value: 'age'
+   	}];
 var logRangeData = [
 	{
 		label: 'WEB ID별',
@@ -172,6 +180,9 @@ $(document).ready(function(){
 			} else if (range == "hw") {
 				url = "excelDownload/girlSafe.getEventHwStatsList/action.do";
 				fileName = "girlSafeEventHw"
+			} else if (range == "age") {
+				urlType = "excelDownload/girlSafe.getEventAgeStatsList/action.do";
+				fileName = "girlSafeEventAge";
 			}
 		} else if (type == "user") {
 			if (range == "gu") {
@@ -180,6 +191,9 @@ $(document).ready(function(){
 			} else if (range == "dong") {
 				url = "excelDownload/girlSafe.getUserDongStatsList/action.do";
 				fileName = "girlSafeUserDong";
+			} else if (range == "age") {
+				urlType = "excelDownload/girlSafe.getUserAgeStatsList/action.do";
+				fileName = "girlSafeUserAge";
 			}
 		} else if (type == "log") {
 			url = "excelDownload/girlSafe.getLogStatsList/action.do";
@@ -207,7 +221,14 @@ $(document).ready(function(){
 	    {
 	    	label: '기기별',
 	    	value: 'hw'
-	    }]
+	    },
+	   	{
+	   		label: '연령대',
+	   		value: 'age'
+	   	}],
+	    onSelect: function() {
+	    	setSearchYearBox();
+	    }
 	});
 	
 	$('#search_type_box').combobox({
@@ -229,7 +250,6 @@ $(document).ready(function(){
 	    }],
 	    onSelect: function() {
 	    	setSearchRangeBox();
-	    	setSearchYearBox();
 	    }
 	});
 	
@@ -257,7 +277,10 @@ $(document).ready(function(){
 	lineChart = new Chart(lineChartElement, config);
 	
 	setSearchYearBox();
-	reload();
+	setTimeout(function() {
+		reload();
+	}, 500)
+	//reload();
 });
 
 function checkBrower() {
@@ -289,17 +312,33 @@ function setSearchRangeBox() {
 	}
 	$("#search_range_box").combobox('options', opts);
 	$("#search_range_box").combobox('reload');
+	setSearchYearBox();
 }
 
 function setSearchYearBox() {
-	var type = $("#search_type_box").combobox('getValue');
+	var type = $("#search_type_box").combobox('getValue');var range = $("#search_range_box").combobox('getValue');
+	var year = $("#search_year_box").combobox('getValue');
 	var url = "";
 	const jsonObj = {};
 	
 	if (type == "event") {
-		url = "/select/girlSafe.getEventStatsYearList/action.do";
+		if (range == "gu") {
+			url = "/select/girlSafe.getEventGuStatsYearList/action.do";
+		} else if (range == "dong") {
+			url = "/select/girlSafe.getEventDongStatsYearList/action.do";
+		} else if (range == "hw") {
+			url = "/select/girlSafe.getEventHwStatsYearList/action.do";
+		} else if (range == "age") {
+			url = "/select/girlSafe.getEventAgeStatsYearList/action.do";
+		}
 	} else if (type == "user") {
-		url = "/select/girlSafe.getUserStatsYearList/action.do";
+		if (range == "gu") {
+			url = "/select/girlSafe.getUserGuStatsYearList/action.do";
+		} else if (range == "dong") {
+			url = "/select/girlSafe.getUserDongStatsYearList/action.do";
+		} else if (range == "age") {
+			url = "/select/girlSafe.getUserAgeStatsYearList/action.do";
+		}
 	} else if (type == "log") {
 		url = "/select/girlSafe.getLogStatsYearList/action.do";
 	}
@@ -404,6 +443,9 @@ function reload(){
 		} else if (range == "hw") {
 			urlType = "/girlSafe.getEventHwStatsList/action.do";
 			title = "기기별"
+		} else if (range == "age") {
+			urlType = "/girlSafe.getEventAgeStatsList/action.do";
+			title = "연령대 별";
 		}
 	} else if (type == "user") {
 		if (range == "gu") {
@@ -411,6 +453,9 @@ function reload(){
 		} else if (range == "dong") {
 			urlType = "/girlSafe.getUserDongStatsList/action.do";
 			title = "거주지(동)별";
+		} else if (range == "age") {
+			urlType = "/girlSafe.getUserAgeStatsList/action.do";
+			title = "연령대 별";
 		}
 	} else if (type == "log") {
 		urlType = "/girlSafe.getLogStatsList/action.do";
