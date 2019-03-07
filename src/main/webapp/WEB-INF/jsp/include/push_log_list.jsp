@@ -122,7 +122,7 @@ function reload(){
 					closeWindow();
 				}
 			} else {
-				setStationId(rows);
+				
 			}
 		}
 	});
