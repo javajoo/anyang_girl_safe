@@ -247,10 +247,11 @@ function deleteUser() {
     jsonArray1[0] = jsonObj;
     jsonArray2[0] = jsonObj;
     jsonArray3[0] = jsonObj;
+    jsonArray4[0] = jsonObj;
 
     $.ajax({
             type       : "POST",
-            url        : "/multiTransaction/girlSafe.deleteUser/girlSafe.deleteHw/girlSafe.deleteUserSub/sqlid4/action.do",
+            url        : "/multiTransaction/girlSafe.insertWithdraw/girlSafe.deleteUser/girlSafe.deleteHw/girlSafe.deleteUserSub/action.do",
             dataType   : "json",
             data       : {
             	"param1" : JSON.stringify(jsonArray1),

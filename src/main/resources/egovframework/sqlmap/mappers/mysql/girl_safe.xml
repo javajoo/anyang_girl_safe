@@ -830,66 +830,44 @@
 	</select>
 
 	<select id="getUserGuStatsList" parameterType="map" resultType="HashMap">
-		SELECT
-		dt.ENCRYPT_GU_NAME AS label,
-		COUNT(a.PHONE_NUMBER) AS total,
-		EXTRACT(year FROM a.INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month
-		FROM a.INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 3 THEN 1 ELSE 0 END)
-		AS m3,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 4 THEN 1 ELSE
-		0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 5 THEN 1
-		ELSE 0 END) AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 6
-		THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM
-		a.INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 8 THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 9 THEN 1 ELSE 0 END)
-		AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 10 THEN 1 ELSE
-		0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN
-		1 ELSE 0 END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) =
-		12 THEN 1 ELSE 0 END) AS m12
-		FROM (SELECT ENCRYPT_GU_NAME FROM district
-		GROUP BY ENCRYPT_GU_NAME)
-		AS dt
-		LEFT JOIN (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
-		LEFT JOIN (
-		select *
-		from
-		girl_safe_user_sub LIMIT 1) c
-		ON u.PHONE_NUMBER = c.PHONE_NUMBER ,
-		(SELECT @ROWNUM := 0) R
-		) a
-		ON a.ENCRYPT_ADRES LIKE CONCAT('%',
-		dt.ENCRYPT_GU_NAME, '%')
+		SELECT 
+			label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_user
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY dt.ENCRYPT_GU_NAME, EXTRACT(year FROM a.INSERT_DATE)
-		ORDER BY
-		dt.ENCRYPT_GU_NAME ASC
+				UNION ALL
+				SELECT ADRESS, DATE_FORMAT(USER_INSERT_DATE,'%m') month
+				FROM girl_safe_user_withdraw
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(USER_INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_GU_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -898,79 +876,71 @@
 	<select id="getUserGuStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(a.ENCRYPT_ADRES)
+		COUNT(a.label)
 		FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
-		FROM girl_safe_user u
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_user
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM u.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY d.ENCRYPT_GU_NAME
+				UNION ALL
+				SELECT ADRESS, DATE_FORMAT(USER_INSERT_DATE,'%m') month
+				FROM girl_safe_user_withdraw
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(USER_INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_GU_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label
 		) AS a
 	</select>
 
 	<select id="getUserDongStatsList" parameterType="map"
 		resultType="HashMap">
-		SELECT
-		dt.ENCRYPT_DONG_NAME AS label,
-		COUNT(a.PHONE_NUMBER) AS total,
-		EXTRACT(year FROM a.INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month
-		FROM a.INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 3 THEN 1 ELSE 0 END)
-		AS m3,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 4 THEN 1 ELSE
-		0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 5 THEN 1
-		ELSE 0 END) AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 6
-		THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM
-		a.INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 8 THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 9 THEN 1 ELSE 0 END)
-		AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 10 THEN 1 ELSE
-		0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN
-		1 ELSE 0 END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) =
-		12 THEN 1 ELSE 0 END) AS m12
-		FROM district AS dt
-		LEFT JOIN (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
-		LEFT JOIN (
-		select *
-		from
-		girl_safe_user_sub LIMIT 1) c
-		ON u.PHONE_NUMBER = c.PHONE_NUMBER
-		) a
-		ON a.ENCRYPT_ADRES LIKE CONCAT('%',
-		dt.ENCRYPT_DONG_NAME, '%')
+		SELECT 
+			label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_user
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY dt.ENCRYPT_DONG_NAME, EXTRACT(year FROM a.INSERT_DATE)
-		ORDER
-		BY dt.ENCRYPT_DONG_NAME ASC
+				UNION ALL
+				SELECT ADRESS, DATE_FORMAT(USER_INSERT_DATE,'%m') month
+				FROM girl_safe_user_withdraw
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(USER_INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_DONG_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -979,86 +949,77 @@
 	<select id="getUserDongStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(a.ENCRYPT_ADRES)
+		COUNT(a.label)
 		FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
-		FROM girl_safe_user u
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_user
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM u.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY d.ENCRYPT_DONG_NAME
+				UNION ALL
+				SELECT ADRESS, DATE_FORMAT(USER_INSERT_DATE,'%m') month
+				FROM girl_safe_user_withdraw
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(USER_INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_DONG_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label
 		) AS a
 	</select>
 	
 	<select id="getUserAgeStatsList" parameterType="map"
 		resultType="HashMap">
-		SELECT
-		CASE a.ageGroup 
-        WHEN '10' THEN '10대'
-        WHEN '20' THEN '20대'
-        WHEN '30' THEN '30대'
-        WHEN '40' THEN '40대'
-        WHEN '50' THEN '50대'
-        WHEN '60' THEN '60대'
-        WHEN '70' THEN '70대'
-        WHEN '80' THEN '80대'
-        WHEN '90' THEN '90대'
-        END AS label,
-		COUNT(a.PHONE_NUMBER) AS total,
-		EXTRACT(year FROM a.INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month
-		FROM a.INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 3 THEN 1 ELSE 0 END)
-		AS m3,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 4 THEN 1 ELSE
-		0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 5 THEN 1
-		ELSE 0 END) AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 6
-		THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM
-		a.INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 8 THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 9 THEN 1 ELSE 0 END)
-		AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 10 THEN 1 ELSE
-		0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN
-		1 ELSE 0 END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) =
-		12 THEN 1 ELSE 0 END) AS m12
+		SELECT 
+			CASE label 
+				WHEN '0' THEN '아동'
+				WHEN '10' THEN '10대'
+				WHEN '20' THEN '20대'
+				WHEN '30' THEN '30대'
+				WHEN '40' THEN '40대'
+				WHEN '50' THEN '50대'
+				WHEN '60' THEN '60대'
+				WHEN '70' THEN '70대'
+				WHEN '80' THEN '80대'
+				WHEN '90' THEN '90대'
+			END AS label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
 		FROM (
-		SELECT
-		(TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as ageGroup,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
-		LEFT JOIN (
-		select *
-		from
-		girl_safe_user_sub LIMIT 1) c
-		ON u.PHONE_NUMBER = c.PHONE_NUMBER
-		) a
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT (TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as label, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_user
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY a.ageGroup, EXTRACT(year FROM a.INSERT_DATE)
-		ORDER
-		BY a.ageGroup ASC
+				UNION ALL
+				SELECT (TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as label, DATE_FORMAT(USER_INSERT_DATE,'%m') month
+				FROM girl_safe_user_withdraw
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(USER_INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1067,77 +1028,59 @@
 	<select id="getUserAgeStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(a.ageGroup)
+		COUNT(a.label)
 		FROM (
-		(
-		SELECT
-		(TRUNCATE((YEAR(NOW())-LEFT(u.BIRTH,4)+1) / 10, 0) * 10) as ageGroup,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
-		LEFT JOIN (
-		select *
-		from
-		girl_safe_user_sub LIMIT 1) c
-		ON u.PHONE_NUMBER = c.PHONE_NUMBER
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT (TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as label, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_user
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM u.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY ageGroup, EXTRACT(year FROM u.INSERT_DATE)
-		)
+				UNION ALL
+				SELECT (TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as label, DATE_FORMAT(USER_INSERT_DATE,'%m') month
+				FROM girl_safe_user_withdraw
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(USER_INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			GROUP BY label
 		) AS a
 	</select>
 
 	<select id="getEventGuStatsList" parameterType="map" resultType="HashMap">
-		SELECT
-		dt.ENCRYPT_GU_NAME AS label,
-		COUNT(a.PHONE_NUMBER) AS total,
-		EXTRACT(year FROM a.INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month
-		FROM a.INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 3 THEN 1 ELSE 0 END)
-		AS m3,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 4 THEN 1 ELSE
-		0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 5 THEN 1
-		ELSE 0 END) AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 6
-		THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM
-		a.INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 8 THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 9 THEN 1 ELSE 0 END)
-		AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 10 THEN 1 ELSE
-		0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN
-		1 ELSE 0 END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) =
-		12 THEN 1 ELSE 0 END) AS m12
-		FROM (SELECT ENCRYPT_GU_NAME FROM district
-		GROUP BY ENCRYPT_GU_NAME)
-		AS dt
-		LEFT JOIN (SELECT CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-		PHONE_NUMBER, INSERT_DATE FROM
-		girl_safe_event) a
-		ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_GU_NAME, '%')
+		SELECT 
+			label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY dt.ENCRYPT_GU_NAME, EXTRACT(year FROM a.INSERT_DATE)
-		ORDER BY
-		dt.ENCRYPT_GU_NAME ASC
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_GU_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1146,67 +1089,59 @@
 	<select id="getEventGuStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(a.ENCRYPT_ADRES)
+		COUNT(a.label)
 		FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
-		FROM girl_safe_event e
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM e.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY d.ENCRYPT_GU_NAME
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_GU_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label
 		) AS a
 	</select>
 
 	<select id="getEventDongStatsList" parameterType="map"
 		resultType="HashMap">
-		SELECT
-		dt.ENCRYPT_DONG_NAME AS label,
-		COUNT(a.PHONE_NUMBER) AS total,
-		EXTRACT(year FROM a.INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month
-		FROM a.INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 3 THEN 1 ELSE 0 END)
-		AS m3,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 4 THEN 1 ELSE
-		0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 5 THEN 1
-		ELSE 0 END) AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 6
-		THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM
-		a.INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 8 THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 9 THEN 1 ELSE 0 END)
-		AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 10 THEN 1 ELSE
-		0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN
-		1 ELSE 0 END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) =
-		12 THEN 1 ELSE 0 END) AS m12
-		FROM district AS dt
-		LEFT JOIN (SELECT
-		CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES, PHONE_NUMBER, INSERT_DATE FROM
-		girl_safe_event) a
-		ON a.ENCRYPT_ADRES LIKE CONCAT('%', dt.ENCRYPT_DONG_NAME, '%')
+		SELECT 
+			label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY dt.ENCRYPT_DONG_NAME, EXTRACT(year FROM a.INSERT_DATE)
-		ORDER
-		BY dt.ENCRYPT_DONG_NAME ASC
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_DONG_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1215,62 +1150,53 @@
 	<select id="getEventDongStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(a.ENCRYPT_ADRES)
+		COUNT(a.label)
 		FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES
-		FROM girl_safe_event e
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM e.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY d.ENCRYPT_DONG_NAME
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_DONG_NAME as label
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.label,'%')
+			GROUP BY label
 		) AS a
 	</select>
 
 	<select id="getEventHwStatsList" parameterType="map" resultType="HashMap">
-		SELECT
-		DIVISION AS label,
-		COUNT(PHONE_NUMBER) AS total,
-		EXTRACT(year FROM
-		INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 1
-		THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE)
-		= 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM
-		INSERT_DATE) = 3 THEN 1 ELSE 0 END) AS m3,
-		SUM(CASE WHEN EXTRACT(month
-		FROM INSERT_DATE) = 4 THEN 1 ELSE 0 END)
-		AS m4,
-		SUM(CASE WHEN
-		EXTRACT(month FROM INSERT_DATE) = 5 THEN 1 ELSE 0 END) AS m5,
-		SUM(CASE
-		WHEN EXTRACT(month FROM INSERT_DATE) = 6 THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 7 THEN 1 ELSE 0 END)
-		AS m7,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 8 THEN 1 ELSE 0
-		END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 9 THEN 1
-		ELSE 0 END) AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE) = 10
-		THEN 1 ELSE 0 END)
-		AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM INSERT_DATE)
-		= 11 THEN 1 ELSE 0 END) AS m11,
-		SUM(CASE WHEN EXTRACT(month FROM
-		INSERT_DATE) = 12 THEN 1 ELSE 0 END)
-		AS m12
-		FROM girl_safe_event
+		SELECT 
+			label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT DIVISION as label, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY DIVISION, EXTRACT(year FROM INSERT_DATE)
-		ORDER BY DIVISION ASC
+			) g
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1279,70 +1205,60 @@
 	<select id="getEventHwStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(e.DIVISION)
-		FROM (SELECT DIVISION FROM
-		girl_safe_event GROUP BY DIVISION) AS e
+		COUNT(a.label)
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT DIVISION as label, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
+		<if test="year != null and year != ''">
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
+		</if>
+			) g
+			GROUP BY label
+		) AS a
 	</select>
 	
 	<select id="getEventAgeStatsList" parameterType="map"
 		resultType="HashMap">
-		SELECT
-		CASE a.ageGroup 
-        WHEN '10' THEN '10대'
-        WHEN '20' THEN '20대'
-        WHEN '30' THEN '30대'
-        WHEN '40' THEN '40대'
-        WHEN '50' THEN '50대'
-        WHEN '60' THEN '60대'
-        WHEN '70' THEN '70대'
-        WHEN '80' THEN '80대'
-        WHEN '90' THEN '90대'
-        END AS label,
-		COUNT(a.PHONE_NUMBER) AS total,
-		EXTRACT(year FROM a.INSERT_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month
-		FROM a.INSERT_DATE) = 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 3 THEN 1 ELSE 0 END)
-		AS m3,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 4 THEN 1 ELSE
-		0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 5 THEN 1
-		ELSE 0 END) AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 6
-		THEN 1 ELSE 0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM
-		a.INSERT_DATE) = 7 THEN 1 ELSE 0 END) AS m7,
-		SUM(CASE WHEN
-		EXTRACT(month FROM a.INSERT_DATE) = 8 THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 9 THEN 1 ELSE 0 END)
-		AS m9,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 10 THEN 1 ELSE
-		0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) = 11 THEN
-		1 ELSE 0 END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM a.INSERT_DATE) =
-		12 THEN 1 ELSE 0 END) AS m12
+		SELECT 
+			CASE label 
+				WHEN '0' THEN '아동'
+				WHEN '10' THEN '10대'
+				WHEN '20' THEN '20대'
+				WHEN '30' THEN '30대'
+				WHEN '40' THEN '40대'
+				WHEN '50' THEN '50대'
+				WHEN '60' THEN '60대'
+				WHEN '70' THEN '70대'
+				WHEN '80' THEN '80대'
+				WHEN '90' THEN '90대'
+			END AS label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
 		FROM (
-		SELECT
-		(TRUNCATE((YEAR(NOW())-LEFT(e.BIRTH,4)+1) / 10, 0) * 10) as ageGroup,
-		e.PHONE_NUMBER,
-		e.INSERT_DATE
-		FROM girl_safe_event e
-		) a
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT (TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as label, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM a.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY a.ageGroup, EXTRACT(year FROM a.INSERT_DATE)
-		ORDER
-		BY a.ageGroup ASC
+			) g
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1351,71 +1267,49 @@
 	<select id="getEventAgeStatsListCnt" parameterType="map"
 		resultType="String">
 		SELECT
-		COUNT(a.ageGroup)
+		COUNT(a.label)
 		FROM (
-		(
-		SELECT
-		(TRUNCATE((YEAR(NOW())-LEFT(e.BIRTH,4)+1) / 10, 0) * 10) as ageGroup,
-		e.PHONE_NUMBER,
-		e.INSERT_DATE
-		FROM girl_safe_event e
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT (TRUNCATE((YEAR(NOW())-LEFT(BIRTH,4)+1) / 10, 0) * 10) as label, DATE_FORMAT(INSERT_DATE,'%m') month
+				FROM girl_safe_event
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM e.INSERT_DATE) = #{year}
+				WHERE DATE_FORMAT(INSERT_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY ageGroup, EXTRACT(year FROM e.INSERT_DATE)
-		)
+			) g
+			GROUP BY label
 		) AS a
 	</select>
 
 	<select id="getLogStatsList" parameterType="map" resultType="HashMap">
-		SELECT
-		l.CONTENT AS label,
-		COUNT(l.CONTENT) AS total,
-		EXTRACT(year FROM
-		l.CREATE_DATE) AS year,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE)
-		= 1 THEN 1 ELSE 0 END) AS m1,
-		SUM(CASE WHEN EXTRACT(month FROM
-		l.CREATE_DATE) = 2 THEN 1 ELSE 0 END)
-		AS m2,
-		SUM(CASE WHEN EXTRACT(month
-		FROM l.CREATE_DATE) = 3 THEN 1 ELSE 0 END) AS m3,
-		SUM(CASE WHEN
-		EXTRACT(month FROM l.CREATE_DATE) = 4 THEN 1 ELSE 0 END)
-		AS m4,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 5 THEN 1 ELSE 0 END)
-		AS m5,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 6 THEN 1 ELSE
-		0 END)
-		AS m6,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 7 THEN 1
-		ELSE 0 END) AS m7,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 8
-		THEN 1 ELSE 0 END)
-		AS m8,
-		SUM(CASE WHEN EXTRACT(month FROM
-		l.CREATE_DATE) = 9 THEN 1 ELSE 0 END) AS m9,
-		SUM(CASE WHEN
-		EXTRACT(month FROM l.CREATE_DATE) = 10 THEN 1 ELSE 0
-		END) AS m10,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 11 THEN 1 ELSE 0
-		END) AS
-		m11,
-		SUM(CASE WHEN EXTRACT(month FROM l.CREATE_DATE) = 12 THEN 1
-		ELSE 0 END) AS m12
-		FROM (SELECT
-		LOG_TYPE,
-		CONTENT,
-		CREATE_DATE
-		FROM
-		girl_safe_log
-		WHERE LOG_TYPE = 'ACCESSPAGE') AS l
+		SELECT 
+			label,
+			SUM(IF(cnt, cnt, 0)) as total,
+			SUM(IF(month='01',cnt,0)) as m1,
+			SUM(IF(month='02',cnt,0)) as m2,
+			SUM(IF(month='03',cnt,0)) as m3,
+			SUM(IF(month='04',cnt,0)) as m4,
+			SUM(IF(month='05',cnt,0)) as m5,
+			SUM(IF(month='06',cnt,0)) as m6,
+			SUM(IF(month='07',cnt,0)) as m7,
+			SUM(IF(month='08',cnt,0)) as m8,
+			SUM(IF(month='09',cnt,0)) as m9,
+			SUM(IF(month='10',cnt,0)) as m10,
+			SUM(IF(month='11',cnt,0)) as m11,
+			SUM(IF(month='12',cnt,0)) as m12
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT CONTENT as label, DATE_FORMAT(CREATE_DATE,'%m') month
+				FROM girl_safe_log
+                WHERE LOG_TYPE = 'ACCESSPAGE'
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM l.CREATE_DATE) = #{year}
+				AND DATE_FORMAT(CREATE_DATE,'%Y') = #{year}
 		</if>
-		GROUP BY l.CONTENT, EXTRACT(year FROM l.CREATE_DATE)
-		ORDER BY l.CONTENT
-		ASC
+			) g
+			GROUP BY label, month
+		) m
+		GROUP BY label
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
@@ -1423,109 +1317,117 @@
 
 	<select id="getLogStatsListCnt" parameterType="map" resultType="String">
 		SELECT
-		COUNT(e.CONTENT)
-		FROM (SELECT
-		LOG_TYPE,
-		CONTENT,
-		CREATE_DATE
-		FROM
-		girl_safe_log
-		WHERE LOG_TYPE = 'ACCESSPAGE'
-		GROUP BY CONTENT,
-		EXTRACT(year FROM CREATE_DATE)) AS e
+		COUNT(a.label)
+		FROM (
+			SELECT label, month, COUNT(label) as cnt
+			FROM (
+				SELECT CONTENT as label, DATE_FORMAT(CREATE_DATE,'%m') month
+				FROM girl_safe_log
+                WHERE LOG_TYPE = 'ACCESSPAGE'
 		<if test="year != null and year != ''">
-			WHERE EXTRACT(year FROM e.CREATE_DATE) = #{year}
+				AND DATE_FORMAT(CREATE_DATE,'%Y') = #{year}
 		</if>
+			) g
+			GROUP BY label
+		) AS a
 	</select>
 
 	<select id="getEventGuStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM a.INSERT_DATE) AS label FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-        INSERT_DATE
-		FROM girl_safe_event e
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
-        ) as a
-		GROUP BY EXTRACT(year FROM a.INSERT_DATE)
+			SELECT label
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%Y') label
+				FROM girl_safe_event
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_GU_NAME
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.ENCRYPT_GU_NAME,'%')
+			GROUP BY label
 	</select>
 
 	<select id="getEventDongStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM a.INSERT_DATE) AS label FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-        INSERT_DATE
-		FROM girl_safe_event e
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(e.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
-        ) as a
-		GROUP BY EXTRACT(year FROM a.INSERT_DATE)
+			SELECT label
+			FROM (
+				SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%Y') label
+				FROM girl_safe_event
+			) g
+			INNER JOIN (
+				SELECT distinct ENCRYPT_DONG_NAME
+				FROM district
+			) d
+			ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',d.ENCRYPT_DONG_NAME,'%')
+			GROUP BY label
 	</select>
 
 	<select id="getEventHwStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM INSERT_DATE) AS label FROM
+		SELECT DATE_FORMAT(INSERT_DATE,'%Y') AS label FROM
 		girl_safe_event
-		GROUP BY EXTRACT(year FROM INSERT_DATE)
+		GROUP BY label
 	</select>
 
 	<select id="getEventAgeStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM INSERT_DATE) AS label FROM
+		SELECT DATE_FORMAT(INSERT_DATE,'%Y') AS label FROM
 		girl_safe_event
-		GROUP BY EXTRACT(year FROM INSERT_DATE)
+		GROUP BY label
 	</select>
 
 	<select id="getUserGuStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM a.INSERT_DATE) AS label FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-        INSERT_DATE
-		FROM girl_safe_user u
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_GU_NAME, '%')
-        ) as a
-		GROUP BY EXTRACT(year FROM a.INSERT_DATE)
+		SELECT label
+		FROM (
+			SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%Y') label
+			FROM girl_safe_user
+			UNION ALL
+			SELECT ADRESS, DATE_FORMAT(USER_INSERT_DATE,'%Y') label
+			FROM girl_safe_user_withdraw
+		) g
+		INNER JOIN (
+			SELECT distinct ENCRYPT_GU_NAME
+			FROM district
+		) d
+		ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',ENCRYPT_GU_NAME,'%')
+		GROUP BY label
 	</select>
 
 	<select id="getUserDongStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM a.INSERT_DATE) AS label FROM (
-		SELECT
-		CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as ENCRYPT_ADRES,
-        INSERT_DATE
-		FROM girl_safe_user u
-		JOIN district d
-		ON CAST(AES_DECRYPT(UNHEX(u.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', d.ENCRYPT_DONG_NAME, '%')
-        ) as a
-		GROUP BY EXTRACT(year FROM a.INSERT_DATE)
+		SELECT label
+		FROM (
+			SELECT ENCRYPT_ADRES, DATE_FORMAT(INSERT_DATE,'%Y') label
+			FROM girl_safe_user
+			UNION ALL
+			SELECT ADRESS, DATE_FORMAT(USER_INSERT_DATE,'%Y') label
+			FROM girl_safe_user_withdraw
+		) g
+		INNER JOIN (
+			SELECT distinct ENCRYPT_DONG_NAME
+			FROM district
+		) d
+		ON CAST(AES_DECRYPT(UNHEX(g.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%',ENCRYPT_DONG_NAME,'%')
+		GROUP BY label
 	</select>
 
 	<select id="getUserAgeStatsYearList" parameterType="map"
 		resultType="HashMap">
-		SELECT EXTRACT(year FROM a.INSERT_DATE) AS label FROM (
-		SELECT
-		(TRUNCATE((YEAR(NOW())-LEFT(u.BIRTH,4)+1) / 10, 0) * 10) as ageGroup,
-		u.PHONE_NUMBER,
-		u.INSERT_DATE
-		FROM girl_safe_user u
-		JOIN girl_safe_hw b
-		on u.PHONE_NUMBER = b.PHONE_NUMBER
-		LEFT JOIN (
-		select *
-		from
-		girl_safe_user_sub LIMIT 1) c
-		ON u.PHONE_NUMBER = c.PHONE_NUMBER
-        ) as a
-		GROUP BY EXTRACT(year FROM a.INSERT_DATE)
+		SELECT label
+		FROM (
+			SELECT DATE_FORMAT(INSERT_DATE,'%Y') label
+			FROM girl_safe_user
+			UNION ALL
+			SELECT DATE_FORMAT(USER_INSERT_DATE,'%Y') label
+			FROM girl_safe_user_withdraw
+		) g
+		GROUP BY label
 	</select>
 
 	<select id="getLogStatsYearList" parameterType="map" resultType="HashMap">
-		SELECT EXTRACT(year FROM create_date) AS label FROM girl_safe_log
-		GROUP BY EXTRACT(year FROM create_date)
+		SELECT DATE_FORMAT(CREATE_DATE,'%Y') AS label FROM girl_safe_log
+		GROUP BY DATE_FORMAT(CREATE_DATE,'%Y')
 	</select>
 
 
@@ -2069,5 +1971,29 @@
 			  )
 		]]>
 	</select>
+    
+    <insert id="insertWithdraw" parameterType="map">
+        <![CDATA[
+            INSERT INTO girl_safe_user_withdraw
+                  ( 
+                  	BIRTH,
+                  	ADRESS,
+                  	USER_INSERT_DATE,
+                  	REASON_NUMBER,
+                  	REASON,
+                  	INSERT_DATE
+                  )
+           SELECT 
+				BIRTH,
+				ENCRYPT_ADRES,
+				INSERT_DATE,
+                0,
+                '기타',
+                now()
+           FROM girl_safe_user
+           WHERE 1=1
+           AND PHONE_NUMBER = #{phoneNumber}
+        ]]>
+    </insert>
 	
 </mapper>
