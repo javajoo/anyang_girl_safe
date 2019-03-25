@@ -315,7 +315,7 @@ public class BaseController
     public ModelAndView baseAction(HttpServletRequest request, HttpServletResponse response, Locale locale, Model model)
     {
         System.out.println("----------POST----------");
-        System.out.println(request.getParameter("path"));
+        //System.out.println(request.getParameter("path"));
 
         HttpSession session = request.getSession();
         AdminVo lgnVO = (AdminVo) session.getAttribute("admin");
@@ -383,17 +383,14 @@ public class BaseController
 		HttpSession session = request.getSession(false);
 		AdminVo user = (AdminVo) session.getAttribute("admin");
 		System.out.println("세션아이디 :: "+session.getId());
-		System.out.println("탐??");		
 		 
         if (request.getParameter("param").trim().equals("") == true)
         {
-        	System.out.println("어디");
         	param = new HashMap<String, Object>();
         }
         else
         {
-        	System.out.println("타니");
-            param = JsonUtil.JsonToMap(request.getParameter("param"));
+        	param = JsonUtil.JsonToMap(request.getParameter("param"));
         }        
         System.out.println("파라미터 " + param);
         
@@ -429,7 +426,7 @@ public class BaseController
              paginationInfo.setTotalRecordCount(Integer.parseInt(total));
             map.put("rows", resList);
             map.put("total", total);
-            System.out.println(map);
+            //System.out.println(map);
         }
         else {
             map.put("rows", "sessionOut");
@@ -482,7 +479,7 @@ public class BaseController
             resList = baseService.baseSelectList(sqlid, param);
             JSONArray jsonList = new JSONArray(JsonUtil.ListToJson(resList));
 
-            System.out.println("json = [" + jsonList + "]");
+            //System.out.println("json = [" + jsonList + "]");
             
             model.addAttribute("jsonList", jsonList); // Retun Json String
             model.addAttribute("resList",  resList);

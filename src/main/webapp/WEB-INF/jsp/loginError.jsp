@@ -29,7 +29,7 @@
 	                <div class="login_box">
                 		<div style="position: absolute;background-color: #fff;width:330px; height:100px; top: 120px; left:60px; font-size: 13px;color: red">
 	                  		<div>아이디 또는 비밀번호를 다시 확인하세요.<br/><br/><br/></div>
-							<div>주차정보 제공 서비스에 등록되지 않은 아이디이거나, 아이디 또는 비밀번호를 잘못 입력하셨습니다.</div>
+							<div>여성거주지 안심 서비스에 등록되지 않은 아이디이거나, 아이디 또는 비밀번호를 잘못 입력하셨습니다.</div>
 						</div>
 	                </div>
 	                <a href="/main.do" class="btn_login_back" id="login"></a>
