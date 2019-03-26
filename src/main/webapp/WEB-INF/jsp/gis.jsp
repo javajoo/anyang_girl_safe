@@ -1166,6 +1166,7 @@
 				<ul>
 					<li><a href="javascript:settingMenuChange('menu_adminSetting')" class="selected" id="setting_1">계정 관리</a></li>
 					<li><a href="javascript:settingMenuChange('menu_webSetting')">WEB 설정</a></li>
+					<li><a href="javascript:settingMenuChange('menu_accessLog')">접속이력조회</a></li>
 				</ul>
 			</nav>
 		</div>

@@ -2044,4 +2044,93 @@
         ]]>
     </insert>
 	
+	<select id="getAccessLogList" parameterType="map" resultType="HashMap">
+		<![CDATA[
+			SELECT @ROWNUM := @ROWNUM + 1 AS num, m.*
+			FROM (
+					SELECT l.log_no as logNo
+	       				  ,l.log_type as logType
+	       				  ,l.admin_id as id
+	       				  ,a.name as name
+	       				  ,a.address as address
+	       				  ,l.content as content
+	       				  ,l.ip as ip
+	       				  ,l.session_id as sessionId
+	       				  ,MAX(l.accessS) as accessS
+	       				  ,MAX(l.accessE) as accessE
+	       			FROM (
+	       					SELECT *
+	       						  ,IF(l.log_type = 'LOGIN', l.create_date, '') as accessS
+	       						  ,IF(l.log_type IN ('LOGOUT','SESSIONOUT'), l.create_date, '') as accessE
+	       					FROM girl_safe_log l
+	       					WHERE l.log_type IN ('LOGIN','LOGOUT','SESSIONOUT')
+	       					GROUP BY l.session_id, l.content
+	       					ORDER BY l.session_id DESC, l.create_date
+	       				) l
+	       				, admin a
+	       			WHERE l.admin_id = a.id
+	       			GROUP BY l.session_id, l.admin_id
+	       			ORDER BY l.create_date
+	       	) m
+	       	,(SELECT @ROWNUM := 0) R
+	       	WHERE 1=1
+	     ]]>
+	     <if test="timeS != null and timeS != ''">
+	     <![CDATA[
+	     	AND accessS >= #{timeS}
+	     	
+	     ]]>
+	     </if>
+	     <if test="timeE != null and timeE != ''">
+	     <![CDATA[
+	     	AND accessS <= #{timeE}
+	     ]]>
+	     </if>
+	     <if test='recordCountPerPage != -1'>
+	     LIMIT #{firstIndex}, #{recordCountPerPage}
+	     </if>
+	</select>
+	<select id="getAccessLogListCnt" parameterType="map" resultType="String">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM (
+					SELECT l.log_no as logNo
+	       				  ,l.log_type as logType
+	       				  ,l.admin_id as id
+	       				  ,a.name as name
+	       				  ,a.address as address
+	       				  ,a.rank as rank
+	       				  ,l.content as content
+	       				  ,l.ip as ip
+	       				  ,l.session_id as sessionId
+	       				  ,MAX(l.accessS) as accessS
+	       				  ,MAX(l.accessE) as accessE
+	       			FROM (
+	       					SELECT *
+	       						  ,IF(l.log_type = 'LOGIN', l.create_date, '') as accessS
+	       						  ,IF(l.log_type IN ('LOGOUT','SESSIONOUT'), l.create_date, '') as accessE
+	       					FROM girl_safe_log l
+	       					WHERE l.log_type IN ('LOGIN','LOGOUT','SESSIONOUT')
+	       					GROUP BY l.session_id, l.content
+	       					ORDER BY l.session_id DESC, l.create_date
+	       				) l
+	       				, admin a
+	       			WHERE l.admin_id = a.id
+	       			GROUP BY l.session_id, l.admin_id
+	       			ORDER BY l.create_date
+	       	) m
+	       	WHERE 1=1
+	     ]]>
+	     <if test="timeS != null and timeS != ''">
+	     <![CDATA[
+	     	AND accessS >= #{timeS}
+	     	
+	     ]]>
+	     </if>
+	     <if test="timeE != null and timeE != ''">
+	     <![CDATA[
+	     	AND accessS <= #{timeE}
+	     ]]>
+	     </if>
+	</select>
 </mapper>

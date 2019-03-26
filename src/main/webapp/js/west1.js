@@ -393,6 +393,9 @@ function settingMenuChange(flag) {
 		changeWidth("west_full");
 		changeSettingPage("/include/web_setting");	
 	}
+	else if(flag == 'menu_accessLog') {
+		changeSettingPage("/include/access_log");
+	}
 }
 function changeSettingPage(page){
 	$("#path").val(page);
