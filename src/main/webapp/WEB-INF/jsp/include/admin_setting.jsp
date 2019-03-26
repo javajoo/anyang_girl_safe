@@ -24,6 +24,7 @@
 			</li>
 			<li class="btn_list">
 				<a href="#" id="excel_download_btn" class="eventR_button_list">엑셀 다운로드</a> 
+				<a href="#" id="passFail_button" class="eventR_button_list" onclick="passFail()">비밀번호 횟수 초기화</a>
 				<a href="#" id="approval_button" class="eventR_button_list" onclick="onAddAdminPopup()">추가</a>
 			</li>
 		</ul>
@@ -93,17 +94,17 @@ function onAddAdminPopup() {
     $('#popup_area').dialog('open');
 }
 
-function approval(){
+function passFail(){
 	var row = $('#userApprovalList_table').datagrid('getSelected');
 	if (row){
 		const jsonObj = {};
 
-        jsonObj.phoneNumber = row.phoneNumber;
+        jsonObj.id = row.id;
 
         $.ajax(
             {
                 type       : "POST",
-                url        : "${pageContext.request.contextPath}/ajax/update/girlSafe.updateApproval/action.do",
+                url        : "${pageContext.request.contextPath}/ajax/update/girlSafe.updatePassFail/action.do",
                 dataType   : "json",
                 data       : {
                     "param" : JSON.stringify(jsonObj)
@@ -115,15 +116,15 @@ function approval(){
             }).done(function (result) {
             if (result == "SUCCESS")
             {
-                alert("승인 완료");
+                alert("초기화 완료");
                 $('#userApprovalList_table').datagrid('reload');
             }
             else
             {
-                alert("수정 실패");
+                alert("초기화 실패");
             }
         }).fail(function (xhr) {
-            alert("수정 실패");
+            alert("초기화 실패");
         }).always(function() {
 
         });
@@ -139,13 +140,13 @@ function onAdminDetailPopup(row, data) {
     selectedRow = row;
     selectedData = data;
     
-	const jsonObj = {};
-    jsonObj.phoneNumber = row.phoneNumber;
+    const jsonObj = {};
+    jsonObj.id = data.id;
 
     $.ajax(
         {
             type       : "POST",
-            url        : "/select/girlSafe.getAdminList/action.do",
+            url        : "/select/girlSafe.getAdmin/action.do",
             dataType   : "json",
             data       : {
                 "param" : JSON.stringify(jsonObj)

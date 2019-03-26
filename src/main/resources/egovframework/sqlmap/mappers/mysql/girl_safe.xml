@@ -758,7 +758,14 @@
 		</if>
 
 	</select>
-
+	
+	<select id="checkBoard" parameterType="map" resultType="HashMap">
+		select count(*) as idKey from (select TITLE as title,CONTENT as content from girl_safe_board WHERE NO=(SELECT MAX(NO) FROM girl_safe_board)) a
+		where 1=1 
+		AND a.title = #{title}
+		AND a.content = #{content}		
+	</select>
+	
 	<select id="getBoardOne" parameterType="map" resultType="HashMap">
 		<![CDATA[		
 	       SELECT 
@@ -1578,6 +1585,7 @@
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
 	</select>
+	
 	<select id="getAdminListCnt" parameterType="map" resultType="String">
 		<![CDATA[
 	         SELECT 
@@ -1597,6 +1605,37 @@
 		</if>
 	</select>
 
+	<select id="getAdmin" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+				a.SEQ_NO as seqNo,
+				a.ID as id,
+				a.PWD as password,
+				a.NAME as name,
+				a.BIRTHDAY as birthday,
+				a.PHONE_NO as phoneNumber,
+				a.EMAIL as email,
+				a.ADDRESS as address,
+				a.RANK as rank,
+				date_format(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s')as insertDate,
+				date_format(a.UPD_DATE,'%Y-%m-%d %H:%i:%s') as updateDate 
+			FROM admin a
+	        WHERE 1=1
+	     ]]>
+		AND a.ID = #{id}
+	</select>
+	
+	<select id="getCheckAdminId" parameterType="map" resultType="HashMap">
+		<![CDATA[		
+	       SELECT 
+				count(*) as idKey
+			FROM admin a
+	        WHERE 1=1
+	     ]]>
+	    AND id = #{id}
+	</select>
+	
+	
 	<insert id="insertAdmin" parameterType="map">
 		<![CDATA[
 		INSERT INTO admin (
@@ -1644,6 +1683,15 @@
 		RANK=#{rank},
 		UPD_DATE=NOW()
 		WHERE SEQ_NO=#{seqNo};
+		]]>
+	</update>
+	
+	<update id="updatePassFail" parameterType="map">
+		<![CDATA[
+		UPDATE admin
+		SET
+		LOGIN_FAIL_COUNT=0
+		WHERE ID=#{id};
 		]]>
 	</update>
 	

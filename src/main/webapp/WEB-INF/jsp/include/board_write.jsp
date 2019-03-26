@@ -44,9 +44,42 @@ function closePopup() {
 
 function savePosts() {
 	var url = "/ajax/insert/girlSafe.insertBoard/action.do";
+	
+	const checkAttack =  (function() {
+        let rtnVal;
+        const jsonObj = {};
+        jsonObj.title = $("#board_title").val();
+        jsonObj.content = CKEDITOR.instances.board_cont.getData();
+        
+        $.ajax(
+            {
+                type       : "POST",
+                url        : "/select/girlSafe.checkBoard/action.do",
+                dataType   : "json",
+                data       : {"param" : JSON.stringify(jsonObj)},
+                async       : false,
+                beforeSend : function(xhr) {
+                    // 전송 전 Code
+                }
+            }).done(function (result) {
+            rtnVal = result[0].idKey;
+        }).fail(function (xhr) {
+
+        }).always(function() {
+
+        });
+        return rtnVal;
+    })();
+	
+	if(checkAttack > 0){
+		alert("같은내용의 게시물을 연속해서 입력할 수 없습니다.");
+		return false;
+	}
+	
 	const jsonObj = {};
 	jsonObj.title = $("#board_title").val();
 	jsonObj.content = CKEDITOR.instances.board_cont.getData();
+	
 	$.ajax({
 		type : "POST"
 		, url : url
