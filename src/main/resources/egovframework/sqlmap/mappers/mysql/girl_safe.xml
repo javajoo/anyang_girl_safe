@@ -2060,6 +2060,7 @@
 	       				  ,l.session_id as sessionId
 	       				  ,MAX(l.accessS) as accessS
 	       				  ,MAX(l.accessE) as accessE
+	       				  ,a.rank as rank
 	       			FROM (
 	       					SELECT *
 	       						  ,IF(l.log_type = 'LOGIN', l.create_date, '') as accessS
@@ -2072,7 +2073,7 @@
 	       				, admin a
 	       			WHERE l.admin_id = a.id
 	       			GROUP BY l.session_id, l.admin_id
-	       			ORDER BY l.create_date
+	       			ORDER BY l.create_date DESC
 	       	) m
 	       	,(SELECT @ROWNUM := 0) R
 	       	WHERE 1=1
@@ -2080,7 +2081,6 @@
 	     <if test="timeS != null and timeS != ''">
 	     <![CDATA[
 	     	AND accessS >= #{timeS}
-	     	
 	     ]]>
 	     </if>
 	     <if test="timeE != null and timeE != ''">
@@ -2126,7 +2126,6 @@
 	     <if test="timeS != null and timeS != ''">
 	     <![CDATA[
 	     	AND accessS >= #{timeS}
-	     	
 	     ]]>
 	     </if>
 	     <if test="timeE != null and timeE != ''">

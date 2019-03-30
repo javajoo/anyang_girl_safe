@@ -68,7 +68,7 @@
 			</li>
 			<li class="list">
 				<div class="popup_list_title">
-					<em>주소</em>
+					<em>소속</em>
 				</div>
 				<div class="popup_list_cont">
 					<input type="text" id="admin_address_box" class="easyui-textbox"
