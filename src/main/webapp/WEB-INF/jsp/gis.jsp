@@ -1133,6 +1133,11 @@
 	</form>
 	<div class="title_area" data-options="region:'north'">
         	<div class="logo_tit"></div>
+        	<div class="stat_area" onClick="openStatusPopup();">
+        		<p class="status_total">총계 : <span></span></p>
+				<p class="status_1">정상 : <span></span></p>
+				<p class="status_2">비정상 : <span></span></p>
+        	</div>
         	<header>
 				<div class="cont">
 					<nav class="gnb">
@@ -1229,11 +1234,11 @@
 					onCheck:mapChange
 					">
 				</div>
-				<div class="status_area">
+				<!-- <div class="status_area">
 					<p class="status_1">총가입자수 : <span></span> 명</p>
 					<p class="status_2">센서연결상태(ON)수량 : <span></span> 대</p>
 					<p class="status_3">센서연결상태(OFF)수량 : <span></span> 대</p>
-				</div>
+				</div> -->
 			</div>
 			<a href="#" onclick="changeWidth('layer');" class="layer_tool_open"></a>
 		</div>

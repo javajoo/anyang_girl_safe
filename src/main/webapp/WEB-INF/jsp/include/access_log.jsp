@@ -72,7 +72,7 @@ function reload(){
 	        {field:'num',title:'No',width:'5%',align:'center'},
 	        {field:'id',title:'아이디',width:'15%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
-			{field:'address',title:'주소',width:'20%',align:'center'},
+			{field:'address',title:'소속',width:'20%',align:'center'},
 			{field:'rank',title:'등급',width:'10%',align:'center'},
 			{field:'accessS',title:'접속일시간',width:'20%',align:'center'},
 			{field:'accessE',title:'종료일시간',width:'20%',align:'center'}

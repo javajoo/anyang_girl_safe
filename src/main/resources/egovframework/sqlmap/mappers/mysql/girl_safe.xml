@@ -1478,6 +1478,7 @@
 			WHEN '5' THEN '친척'
 			WHEN '6' THEN '친구'
 		END as realation,
+		c.RELATION_NAME as relationName,
 		now() as time,
 		d.NO as no
 		FROM girl_safe_user a
@@ -1518,6 +1519,7 @@
 			WHEN '5' THEN '친척'
 			WHEN '6' THEN '친구'
 		END as realation,
+		c.RELATION_NAME as relationName,
 		now() as time,
 		MAX(d.NO) as no
 		FROM girl_safe_user a
@@ -2014,8 +2016,13 @@
 			SELECT *
 			  FROM (
 			  		(SELECT COUNT(*) as userNum FROM girl_safe_user) A,
-			  		(SELECT SUM(IF((SMART_CONN=1 OR SENSOR_CONN=1),1,0)) as sensorOn,
-			  				SUM(IF((SMART_CONN=0 AND SENSOR_CONN=0),1,0)) as sensorOff FROM girl_safe_hw ) B
+			  		(SELECT COUNT(*) as total,
+			  				SUM(IF((STATUS=1),1,0)) as sensorStatusOff,
+			  				SUM(IF((BAT=2),1,0)) as batOff,
+			  				SUM(IF((SMART_CONN=0),1,0)) as smartOff,
+			  				SUM(IF((SENSOR_CONN=0),1,0)) as sensorOff,
+			  				SUM(IF((STATUS=0 AND BAT!=2),1,0)) as normal
+			  		   FROM girl_safe_hw ) B
 			  )
 		]]>
 	</select>
@@ -2058,6 +2065,7 @@
 	       				  ,l.session_id as sessionId
 	       				  ,MAX(l.accessS) as accessS
 	       				  ,MAX(l.accessE) as accessE
+	       				  ,a.rank as rank
 	       			FROM (
 	       					SELECT *
 	       						  ,IF(l.log_type = 'LOGIN', l.create_date, '') as accessS
@@ -2070,7 +2078,7 @@
 	       				, admin a
 	       			WHERE l.admin_id = a.id
 	       			GROUP BY l.session_id, l.admin_id
-	       			ORDER BY l.create_date
+	       			ORDER BY l.create_date DESC
 	       	) m
 	       	,(SELECT @ROWNUM := #{firstIndex}) R
 	       	WHERE 1=1
@@ -2078,7 +2086,6 @@
 	     <if test="timeS != null and timeS != ''">
 	     <![CDATA[
 	     	AND accessS >= #{timeS}
-	     	
 	     ]]>
 	     </if>
 	     <if test="timeE != null and timeE != ''">
@@ -2124,7 +2131,6 @@
 	     <if test="timeS != null and timeS != ''">
 	     <![CDATA[
 	     	AND accessS >= #{timeS}
-	     	
 	     ]]>
 	     </if>
 	     <if test="timeE != null and timeE != ''">

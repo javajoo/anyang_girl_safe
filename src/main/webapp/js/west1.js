@@ -452,20 +452,42 @@ function excelDownLoad(table_obj, path, fileName, data) {
 }
 
 function setStatus() {
-	var url = "/select/girlSafe.getStatus/action.do";
 	const jsonObj = {};
+	
+	var url = "/select/girlSafe.getStatus/action.do";
 	$.ajax({
 		type : "POST"
 		, url : url
 		, dataType : "json"
 		, data : {"param" : JSON.stringify(jsonObj)}
 		, success:function(data) {
-			$('.status_1 span').text(data[0].userNum);
-			$('.status_2 span').text(Number(data[0].sensorOn));
-			$('.status_3 span').text(Number(data[0].sensorOff));
+			$('.stat_area .status_total span').text(Number(data[0].total));
+			$('.stat_area .status_1 span').text(Number(data[0].normal));
+			$('.stat_area .status_2 span').text(Number(data[0].total-data[0].normal));
 		}
 		, error:function(e) {
 			alert(e.responseText);
 		}
 	});
+}
+
+function openStatusPopup() {
+	var page = '/popup/status_popup'; 
+    $("#popup_area").html("");
+    $("#popup_area").load("/action/page.do", { path : page }, function() {
+    	
+    });
+    
+    $('#popup_area').dialog({
+        title: '상태정보',
+        width: 765,
+        height: 175,
+        closed: false,
+        cache: false,
+        modal: true,
+		onClose: function() {
+			
+		}
+    });
+    $('#popup_area').dialog('open');
 }
