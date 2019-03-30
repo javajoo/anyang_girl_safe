@@ -144,6 +144,8 @@ function updateAdmin() {
 	
 	var password = $('#admin_password_box').val();
 	var password2 = $('#admin_password2_box').val();
+	var checkName = $('#admin_name_box').val();
+	
 	if(password != '') {
 		if(password != password2) {
 			alert("비밀번호가 일치 하지 않습니다.");
@@ -151,6 +153,17 @@ function updateAdmin() {
 		}
 		else jsonObj.password = $('#admin_password_box').val();
 	}
+	
+	if(!fn_pw_check(password)) {
+		return false;
+	}
+	
+	if(checkName == '' || checkName == 'undefined')
+	{
+		alert("이름을 입력해 주세요");
+		return false;
+	}
+	
 	jsonObj.singleInsertSid = "girlSafe.updateAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
 	jsonObj.id = $('#admin_id_box').val();
@@ -225,6 +238,14 @@ function saveAdmin() {
 	
 	var password = $('#admin_password_box').val();
 	var password2 = $('#admin_password2_box').val();
+	var checkName = $('#admin_name_box').val();
+	var checkId = $('#admin_id_box').val();
+	
+	if(checkId.length < 5){
+		alert("아이디를 5자리 이상 입력해 주세요");
+		return false;
+	}
+	
 	if(password != '') {
 		if(password != password2) {
 			alert("비밀번호가 일치 하지 않습니다.");
@@ -232,6 +253,48 @@ function saveAdmin() {
 		}
 		else jsonObj.password = $('#admin_password_box').val();
 	}
+	
+	if(!fn_pw_check(password)) {
+		return false;
+	}
+	
+	if(checkName == '' || checkName == 'undefined')
+	{
+		alert("이름을 입력해 주세요");
+		return false;
+	}
+	
+	const chekcDId =  (function() {
+        let rtnVal;
+        const jsonObj = {};
+        jsonObj.id = $('#admin_id_box').val();
+        
+        $.ajax(
+            {
+                type       : "POST",
+                url        : "/select/girlSafe.getCheckAdminId/action.do",
+                dataType   : "json",
+                data       : {"param" : JSON.stringify(jsonObj)},
+                async       : false,
+                beforeSend : function(xhr) {
+                    // 전송 전 Code
+                }
+            }).done(function (result) {
+            rtnVal = result[0].idKey;
+        }).fail(function (xhr) {
+
+        }).always(function() {
+
+        });
+        return rtnVal;
+    })();
+	
+	if(chekcDId > 0){
+		alert("이미 존재하는 아이디 입니다.");
+		return false;
+	}
+
+	
 	
 	jsonObj.singleInsertSid = "girlSafe.insertAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
@@ -269,6 +332,90 @@ function saveAdmin() {
     }).always(function() {
 
     });
+}
+
+function fn_pw_check(passWord) {
+    var pw = passWord; //비밀번호
+   
+
+    pw_passed = true;
+
+
+    var pattern1 = /[0-9]/;
+    var pattern2 = /[a-zA-Z]/;
+    var pattern3 = /[~!@\#$%<>^&*]/;     // 원하는 특수문자 추가 제거
+    var pw_msg = "";
+
+   if(!pattern1.test(pw)||!pattern2.test(pw)||!pattern3.test(pw)||pw.length<8||pw.length>50){
+        alert("영문+숫자+특수기호 8자리 이상으로 구성하여야 합니다.");
+        return false;
+
+       
+    }          
+
+       var SamePass_0 = 0; //동일문자 카운트
+    var SamePass_1 = 0; //연속성(+) 카운드
+    var SamePass_2 = 0; //연속성(-) 카운드
+
+
+
+    for(var i=0; i < pw.length; i++) {
+         var chr_pass_0;
+         var chr_pass_1;
+         var chr_pass_2;
+ 
+         if(i >= 2) {
+             chr_pass_0 = pw.charCodeAt(i-2);
+             chr_pass_1 = pw.charCodeAt(i-1);
+             chr_pass_2 = pw.charCodeAt(i);
+             
+              //동일문자 카운트
+             if((chr_pass_0 == chr_pass_1) && (chr_pass_1 == chr_pass_2)) {
+                SamePass_0++;
+              } 
+              else {
+               SamePass_0 = 0;
+               }
+
+              //연속성(+) 카운드
+             if(chr_pass_0 - chr_pass_1 == 1 && chr_pass_1 - chr_pass_2 == 1) {
+                 SamePass_1++;
+              }
+              else {
+               SamePass_1 = 0;
+              }
+      
+              //연속성(-) 카운드
+             if(chr_pass_0 - chr_pass_1 == -1 && chr_pass_1 - chr_pass_2 == -1) {
+                 SamePass_2++;
+              } 
+              else {
+               SamePass_2 = 0;
+              }  
+         }     
+          
+        if(SamePass_0 > 0) {
+           alert("동일문자를 3자 이상 연속 입력할 수 없습니다.");
+           pw_passed=false;
+
+          
+         }
+
+
+
+        if(SamePass_1 > 0 || SamePass_2 > 0 ) {
+           alert("영문, 숫자는 3자 이상 연속 입력할 수 없습니다.");
+           pw_passed=false;
+
+          
+         } 
+         
+         if(!pw_passed) {             
+              return false;
+              break;
+        }
+    }
+    return true;
 }
 
 </script>
