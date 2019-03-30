@@ -695,7 +695,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 		    String birth = (String)result.get("birth");
 		    String protName = (String) result.get("sName");
         	String protPhoneNumber = (String) result.get("sPhoneNumber");
-        	String protRelation = (String) result.get("realation");
+        	String protRelation = (String) result.get("realationName");
         	String picture = (String) result.get("picture");
         	int no = (int) result.get("no");
         	String strNo = Integer.toString(no);

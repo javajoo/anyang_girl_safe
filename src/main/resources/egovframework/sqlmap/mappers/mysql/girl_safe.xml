@@ -1471,6 +1471,7 @@
 			WHEN '5' THEN '친척'
 			WHEN '6' THEN '친구'
 		END as realation,
+		c.RELATION_NAME as relationName,
 		now() as time,
 		d.NO as no
 		FROM girl_safe_user a
@@ -1511,6 +1512,7 @@
 			WHEN '5' THEN '친척'
 			WHEN '6' THEN '친구'
 		END as realation,
+		c.RELATION_NAME as relationName,
 		now() as time,
 		MAX(d.NO) as no
 		FROM girl_safe_user a
