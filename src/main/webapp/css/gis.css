@@ -164,11 +164,41 @@
 	margin: 5px 0px;
 }
 
-#layer_area .status_area {
-	position: absolute;
-	bottom: 0;
-	padding: 0 0 10px 10px;
-    line-height: 30px;
+.stat_area {
+	height: 71px;
+    width: 140px;
+    float: left;
+    margin: 7px 0 0 50px;
+    cursor: pointer;
+}
+.stat_area p {
+	line-height: 20px;
+    color: #97fed2;
+    font-size: 16px;
+}
+
+#status_popup {
+	padding: 10px;
+}
+#status_popup .popup_title {
+	font-family: 'nanum-barun-gothic-regular';
+    font-size: 15px;
+}
+.status_table {
+	border-collapse: collapse;
+	text-align: center;
+    margin-top: 10px;
+}
+.status_table th,
+.status_table td {
+	border: 1px solid #e0e0df;
+    padding: 5px 10px;
+}
+.status_table .status_title {
+	background: #f4f4f5;
+}
+.status_table .extra_title {
+	background: #e0d3d9;
 }
 
 .footer {

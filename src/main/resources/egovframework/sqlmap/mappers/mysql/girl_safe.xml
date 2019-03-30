@@ -2016,8 +2016,13 @@
 			SELECT *
 			  FROM (
 			  		(SELECT COUNT(*) as userNum FROM girl_safe_user) A,
-			  		(SELECT SUM(IF((SMART_CONN=1 OR SENSOR_CONN=1),1,0)) as sensorOn,
-			  				SUM(IF((SMART_CONN=0 AND SENSOR_CONN=0),1,0)) as sensorOff FROM girl_safe_hw ) B
+			  		(SELECT COUNT(*) as total,
+			  				SUM(IF((STATUS=1),1,0)) as sensorStatusOff,
+			  				SUM(IF((BAT=2),1,0)) as batOff,
+			  				SUM(IF((SMART_CONN=0),1,0)) as smartOff,
+			  				SUM(IF((SENSOR_CONN=0),1,0)) as sensorOff,
+			  				SUM(IF((STATUS=0 AND BAT!=2),1,0)) as normal
+			  		   FROM girl_safe_hw ) B
 			  )
 		]]>
 	</select>
