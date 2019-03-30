@@ -2072,7 +2072,7 @@
 	       			GROUP BY l.session_id, l.admin_id
 	       			ORDER BY l.create_date
 	       	) m
-	       	,(SELECT @ROWNUM := 0) R
+	       	,(SELECT @ROWNUM := #{firstIndex}) R
 	       	WHERE 1=1
 	     ]]>
 	     <if test="timeS != null and timeS != ''">
