@@ -1149,9 +1149,13 @@
 							<li><a id="topmenu_hwStatus" href="javascript:menuDisplay('menu_hwStatus')">센서 상태 체크</a></li>
 							<li><a id="topmenu_alarmList" href="javascript:menuDisplay('menu_alarmList')">서비스 이력</a></li>
 							<li><a id="topmenu_smsLogList" href="javascript:menuDisplay('menu_smsLogList')">SMS 이력</a></li>
+							<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정 (메뉴 순서 변경 및 게시판을 공지사항으로 변경)-->
+							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">공지사항</a></li>
 							<li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
 							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
-							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li>
+							<!-- <li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
+							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
+							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li> -->
 							<!-- <li><a id="topmenu_system" href="javascript:menuDisplay('menu_system')">시스템설정</a></li> -->
 					    </ul>
 					</nav>
@@ -1171,7 +1175,9 @@
 				<ul>
 					<li><a href="javascript:settingMenuChange('menu_adminSetting')" class="selected" id="setting_1">계정 관리</a></li>
 					<li><a href="javascript:settingMenuChange('menu_webSetting')">WEB 설정</a></li>
-					<li><a href="javascript:settingMenuChange('menu_accessLog')">접속이력조회</a></li>
+					<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정(접속이력조회를 로그이력조회로 변경) -->
+					<li><a href="javascript:settingMenuChange('menu_accessLog')">로그이력조회</a>
+					<!-- <li><a href="javascript:settingMenuChange('menu_accessLog')">접속이력조회</a></li> -->
 				</ul>
 			</nav>
 		</div>

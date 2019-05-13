@@ -158,7 +158,23 @@ function reload(){
 			state: '0',
 	    },
 	    columns:[[
-	        {field:'num',title:'No',width:'5%',align:'center'},
+
+	  		/* 2019.05.13 KMH 여성안심서비스 미비사항 수정(이벤트 종료사유 삽입) */
+	  		{field:'num',title:'No',width:'5%',align:'center'},
+	        {field:'no',title:'이벤트',hidden:true},
+			{field:'name',title:'이름',width:'5%',align:'center'},
+			{field:'birthAge',title:'생년월일(나이)',width:'10%',align:'center'},
+			{field:'phoneNumber',title:'번호',width:'10%',align:'center'},
+			{field:'address',title:'주소',width:'25%',align:'center'},
+			{field:'startTime',title:'발생일',width:'10%',align:'center'},
+			{field:'endTime',title:'종료일',width:'10%',align:'center'},
+			{field:'endYN',title:'종료여부',width:'5%',align:'center'},
+			{field:'remark',title:'종료사유',width:'10%',align:'center'},
+			{field:'sensorId',title:'센서번호',width:'5%',align:'center'},
+			{field:'smartId',title:'스테이션번호',width:'5%',align:'center'},
+			{field:'reason',title:'추가정보',hidden:true}
+			
+	        /* {field:'num',title:'No',width:'5%',align:'center'},
 	        {field:'no',title:'이벤트',hidden:true},
 			{field:'name',title:'이름',width:'5%',align:'center'},
 			{field:'birthAge',title:'생년월일(나이)',width:'10%',align:'center'},
@@ -170,7 +186,7 @@ function reload(){
 			{field:'sensorId',title:'센서번호',width:'5%',align:'center'},
 			{field:'smartId',title:'스테이션번호',width:'5%',align:'center'},
 			{field:'remark',title:'종료사유',hidden:true},
-			{field:'reason',title:'추가정보',hidden:true}
+			{field:'reason',title:'추가정보',hidden:true} */
 	    ]],
 	    onDblClickRow:function(index, row) {
 	    	onEventDetailPopup(row);

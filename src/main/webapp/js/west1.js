@@ -481,7 +481,9 @@ function openStatusPopup() {
     $('#popup_area').dialog({
         title: '상태정보',
         width: 765,
-        height: 175,
+        /* 2019.05.13 KMH 여성안심서비스 미비사항 수정 (대시보드 수정) */
+        /*height: 175,*/
+        height: 200,
         closed: false,
         cache: false,
         modal: true,

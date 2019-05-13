@@ -4,14 +4,16 @@
 	<div id="event_list" class="cont_inner" title="" style="height:99%; width: 97%;">
 		<ul class="list_condi_full">
 			<li class="list">
-				<em>가입일 : </em>
+				<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정 (가입일을 발송일로 변경) -->
+				<em>발송일 : </em>
+				<!-- <em>가입일 : </em> -->
 				<input id="search_eventR_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'">
 				&nbsp;~ 
 				<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'">
 			</li>
 			<li class="list">
 				<div id="search_type_box_wrap" class="list_cont">
-					<em>검색 조건 : </em>
+					<em>푸시 종류 : </em>
 					<select id="search_type_box" class="easyui-combobox" style="width: 90px; height: 27px;"></select>
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;" onkeypress="if(event.keyCode==13){reload();}"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
@@ -48,7 +50,25 @@ function searchInit() {
 	$('#search_type_box').combobox({
 	    valueField:'value',
 	    textField:'label',
+	    /* 2019.05.13 KMH 여성안심서비스 미비사항 수정(검색조건명 변경) */
 	    data: [{
+	    	label: '전체',
+	    	value: '',
+	    	"selected":true
+	    },
+	    {
+	    	label: '강제',
+	    	value: 'P'
+	    },
+	    {
+	    	label: '일반',
+	    	value: 'N'
+	    },
+	    {
+	    	label: '예약',
+	    	value: 'R'
+	    }]
+	    /* data: [{
 	    	label: '이름',
 	    	value: 'name',
 	    	"selected":true
@@ -56,7 +76,7 @@ function searchInit() {
 	    {
 	    	label: '연락처',
 	    	value: 'phon'
-	    }]
+	    }] */
 	});
 	
 	$('#search_eventR_tot').val('');
@@ -105,11 +125,17 @@ function reload(){
 			state: '0',
 	    },
 	    columns:[[
-	        {field:'num',title:'No',width:'5%',align:'center'},
+			/* 2019.05.13 KMH 여성안심서비스 미비사항 수정 (그리드리스트의 크기수정 및 내용열 삭제) */
+			{field:'num',title:'No',width:'5%',align:'center'},
+			{field:'title',title:'제목',width:'60%',align:'center'},
+			{field:'pushKind',title:'푸시종류',width:'5%',align:'center'},
+			{field:'insertDate',title:'발송일',width:'30%',align:'center'}
+			
+	        /* {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'title',title:'제목',width:'15%',align:'center'},
 			{field:'content',width:'20%',title:'내용',align:'center'},
 			{field:'pushKind',title:'푸쉬종류',width:'15%',align:'center'},
-			{field:'insertDate',title:'발송일',width:'20%',align:'center'}
+			{field:'insertDate',title:'발송일',width:'20%',align:'center'} */
 	    ]],
 	    onLoadSuccess:function(data){
 	    	
