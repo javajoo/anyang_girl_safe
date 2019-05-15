@@ -37,9 +37,6 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
-					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard()">삭제</a>
-				</div>
-				<div class="list_cont">
 					<a href="#" id="pPush_button" class="eventR_button_list" onclick="pPushBoard()">강제푸시</a>
 				</div>
 				<div class="list_cont">
@@ -97,9 +94,8 @@ function searchInit() {
 }
 
 $(document).ready(function(){
-	$('#delete_button').css('display', 'none');
 	$('#push_button').css('display', 'none');	
-	$('#pPush_button').css('display', 'none');
+	$('#pPush_button').css('display', 'none');	
 	
 	searchInit();
 	
@@ -119,27 +115,6 @@ $("#write_button").off("click").on({
 	}
 });
 
-function deleteBoard(){
-	var row = $('#boardList_table').datagrid('getSelected');
-	const jsonObj = {};
-	jsonObj.no = row.no;
-	
-	$.ajax({
-			type		:"POST",
-			url 		:"/ajax/delete/girlSafe.deleteBoard/action.do",
-			dataType 	:"json",
-			data		:{"param" : JSON.stringify(jsonObj)},
-			success		:function(data){
-				console.log(data);
-				alert("삭제 완료");
-				reload();
- 			}
-			,error:function(e){
-				alert(e.resonseText);
-			}
-	})
-}
-
 function getBoardOne(row, data) {
 	var url = "/select/girlSafe.getBoardOne/action.do";
 	const path = "include/board_detail";
@@ -149,7 +124,6 @@ function getBoardOne(row, data) {
 	jsonObj.path = path;
        common.openDialogPopPosition(id, "상세보기", "1024", "470", true, "/action/page.do", jsonObj, id);
 }
-
 
 function updateCount(row, data) {
 	var url = "/ajax/update/girlSafe.updateBoard/action.do";
@@ -171,18 +145,16 @@ function updateCount(row, data) {
 	});
 }
 
-function pushBoard(no) {
-	if(confirm("푸시 하시겠습니까?")== false) return false;
+function pushBoard() {
 	var row = $('#boardList_table').datagrid('getSelected');
 	var url = "/boardPush.do";
+	
 	const jsonObj = {};
-	if(no != null && no != '' &&no != 'undefined'){
-		jsonObj.no = no;	
-	}else{
-		jsonObj.no = row.no;
-	}
+	
+	jsonObj.no = row.no;
 	jsonObj.pushYN = "Y";
 	jsonObj.pushKind = "N";
+	
 	$.ajax({
 		type : "POST"
 		, url : url
@@ -199,8 +171,9 @@ function pushBoard(no) {
 				, success:function(data)
 				{
 					alert("푸쉬발송 완료");
-					reload();
-					reload_detail();
+					$('#boardList_table').datagrid('reload');
+					$('#push_button').css('display', 'none');
+					$('#pPush_button').css('display', 'none');
 				}
 				, error:function(e){
 					alert(e.responseText);
@@ -214,16 +187,13 @@ function pushBoard(no) {
 }
 
 
-function pPushBoard(no) {
-	if(confirm("강제푸쉬 하시겠습니까?")== false) return false;
+function pPushBoard() {
 	var row = $('#boardList_table').datagrid('getSelected');
 	var url = "/boardPush.do";
+	
 	const jsonObj = {};
-	if(no != null && no != '' &&no != 'undefined'){
-		jsonObj.no = no;	
-	}else{
-		jsonObj.no = row.no;
-	}
+	
+	jsonObj.no = row.no;
 	jsonObj.pushYN = "Y";
 	jsonObj.pushKind = "P";
 	
@@ -243,8 +213,9 @@ function pPushBoard(no) {
 				, success:function(data)
 				{
 					alert("푸쉬발송 완료");
-					reload();
-					reload_detail();
+					$('#boardList_table').datagrid('reload');
+					$('#push_button').css('display', 'none');
+					$('#pPush_button').css('display', 'none');
 				}
 				, error:function(e){
 					alert(e.responseText);
@@ -283,12 +254,10 @@ function reload(){
 			{field:'no',title:'번호',hidden:true}
 	    ]],
 	    onSelect:function(index, row) {
-	    	$('#delete_button').css('display', 'inline-block');
 			$('#push_button').css('display', 'inline-block');
 			$('#pPush_button').css('display', 'inline-block');
 	    },
 	    onUnselect:function(index, row) {
-	    	$('#delete_button').css('display', 'none');
 			$('#push_button').css('display', 'none');
 			$('#pPush_button').css('display', 'none');
 	    },
@@ -298,9 +267,6 @@ function reload(){
 	    	reload();
 	    },
 	    onLoadSuccess:function(data){
-	    	$('#delete_button').css('display', 'none');
-			$('#push_button').css('display', 'none');
-			$('#pPush_button').css('display', 'none');
 			if(data.rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
@@ -310,6 +276,7 @@ function reload(){
 				}
 			}
 			if(data && data.total > 0) {			
+				
 				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
 				//$(this).datagrid('selectRow',0);
 			}

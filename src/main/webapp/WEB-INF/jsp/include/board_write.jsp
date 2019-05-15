@@ -21,27 +21,12 @@
 					</textarea>
 				</div>
 			</li>
-	<!-- 		<li class="list2 border_none btn_list2">
-				<div class="list_cont_super2" style="float:left">
-					<div class="list_cont2">
-						<input type="radio"name="push" class="push" value="p">푸시
-					</div>
-					<div class="list_cont2">
-						<input type="radio"name="fpush" class="fpush" value="f">강제푸시
-					</div>
-					<div class="list_cont2">
-						<input type="radio"name="dpush" class="dpush" value="d" checked>푸시안함
-					</div>
-				</div>
-			</li> -->
 			<li class="btn_list">
 				<div class="list_cont">
-					<div class="list_cont">
-						<a href="#" id="save_button" class="eventR_button_list" onclick="savePosts()">저장</a>
-					</div>
-					<div class="list_cont">
-						<a href="#" id="cancel_button" class="eventR_button_list" onclick="closePopup()">취소</a>
-					</div>
+					<a href="#" id="save_button" class="eventR_button_list" onclick="savePosts()">저장</a>
+				</div>
+				<div class="list_cont">
+					<a href="#" id="cancel_button" class="eventR_button_list" onclick="closePopup()">취소</a>
 				</div>
 			</li>
 		</ul>
@@ -58,15 +43,6 @@ function closePopup() {
 }
 
 function savePosts() {
-/* 	var push = $('#push').val();
-	var fpush = $('#fpush').val();
-	var dpush = $('#dpush').val();
-	
-	if(push == 'p'){
-		pushBoard();
-	}
-	 */
-	
 	var url = "/ajax/insert/girlSafe.insertBoard/action.do";
 	
 	const checkAttack =  (function() {
@@ -112,18 +88,8 @@ function savePosts() {
 		, success:function(data)
 		{
 			alert("저장되었습니다.");
-			$.ajax({
-				type 		: "POST",
-				url  		: "/select/girlSafe.getBoardNo/action.do",
-				dataType 	: "json",
-				data 		: {"param" : JSON.stringify(jsonObj)},
-				success 	:function(data){
-					common.closeDialogPop("board_write");
-					updateCount("",data[0]);
-					getBoardOne("",data[0]);
-					reload();
-				}
-			})
+			common.closeDialogPop("board_write");
+			$('#boardList_table').datagrid('reload');
 		}
 		, error:function(e){
 			alert(e.responseText);
@@ -131,18 +97,8 @@ function savePosts() {
 	});
 }
 
-function checkNull(val){
-	var flag = false;
-	
-	if(val != '' && val != null && typeof val != 'undefined'){
-		flag = true;
-	}
-	return flag;
-}
-
-/* 
 function reload(){
 	
-} */
+}
 </script>
 

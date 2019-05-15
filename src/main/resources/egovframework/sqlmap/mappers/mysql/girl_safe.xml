@@ -791,15 +791,6 @@
 	        AND NO = #{no}
 	    ]]>
 	</select>
-	
-	<select id="getBoardNo" parameterType="map" resultType="HashMap">
-		SELECT 
-			   No as no
-		  FROM girl_safe_board
-		 WHERE 1=1
-		   AND no = (SELECT max(NO) FROM girl_safe_board)
-	</select>
-	
 
 	<insert id="insertBoard" parameterType="map">
 		INSERT INTO
@@ -814,11 +805,6 @@
 		NOW(),
 		NOW())
 	</insert>
-	
-	<delete id="deleteBoard" parameterType="map">
-		DELETE FROM girl_safe_board
-		WHERE NO = #{no} 
-	</delete>
 
 	<update id="updateBoard" parameterType="map">
 		UPDATE girl_safe_board
