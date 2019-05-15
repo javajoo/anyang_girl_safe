@@ -408,22 +408,28 @@ function changeSettingPage(page){
 }
 
 function rankDisplay(rank) {
-	if(rank >= 2) {
+	/* 2019.05.14 KMH 여성거주지 안심서비스 (등급별 변경)*/
+	if(rank == 2) {
 		$('#setting_btn').hide();			//환경설정
 	}
 	if(rank == 3) {
-		$('#topmenu_board').hide();			//게시판
+		$('#topmenu_board').hide();			//공지사항
 		$('#topmenu_approvalList').hide();	//가입자 관리
+		$('#setting_btn').hide();			//환경설정
 		$('.update_button').hide();			//수정
 		$('.save_button').hide();			//저장
 		$('.delete_button').hide();			//삭제
 	}
 	if(rank == 4) {
+		$('#topmenu_approvalList').hide();	//가입자 관리
+		$('#topmenu_pushLogList').hide();	//푸시 이력
 		$('#topmenu_evnetList').hide();		//이벤트 검색
 		$('#topmenu_hwStatus').hide();		//센서 상태 체크
 		$('#topmenu_stats').hide();			//통계자료
-		$('#topmenu_board').hide();			//게시판
+		$('#topmenu_board').hide();			//공지사항
 		$('#setting_btn').hide();			//환경설정
+		$('.update_button').hide();			//수정
+		$('.save_button').hide();			//저장
 	}
 }
 
@@ -462,8 +468,8 @@ function setStatus() {
 		, data : {"param" : JSON.stringify(jsonObj)}
 		, success:function(data) {
 			$('.stat_area .status_total span').text(Number(data[0].total));
-			$('.stat_area .status_1 span').text(Number(data[0].normal));
-			$('.stat_area .status_2 span').text(Number(data[0].total-data[0].normal));
+			$('.stat_area .status_2 span').text(Number(data[0].normal));
+			$('.stat_area .status_1 span').text(Number(data[0].total-data[0].normal));
 		}
 		, error:function(e) {
 			alert(e.responseText);

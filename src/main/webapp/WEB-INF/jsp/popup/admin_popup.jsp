@@ -417,5 +417,38 @@ function fn_pw_check(passWord) {
     }
     return true;
 }
+/* 2019.05.14 KMH 여성안심서비스 미비사항 수정 (관리자 권한에 따른 툴팁삽입 문제시 삭제) */
+$(function() {
+	$("#admin_rank_box").val(1).tooltip({
+		position: 'right',
+		content: '모든 기능을 사용하는 관리자입니다.'
+	})
+	$("#admin_rank_box").change(function(){
+		if($("#admin_rank_box").val() == 1){
+			$("#admin_rank_box").tooltip({
+				position: 'right',
+		    	content: '모든 기능을 사용하는 관리자입니다.'
+		    });
+		};
+		if($("#admin_rank_box").val() == 2){
+			$("#admin_rank_box").tooltip({
+				position: 'right',
+		    	content: '관리자 설정을 제외한 기능을 사용하는 관리자입니다.'
+		    });
+		};
+		if($("#admin_rank_box").val() == 3){
+			$("#admin_rank_box").tooltip({
+				position: 'right',
+		    	content: '가입자 관리, 공지사항, 관리자 설정을 제외한 기능을 사용하는 관리자입니다.'
+		    });
+		};
+		if($("#admin_rank_box").val() == 4){
+			$("#admin_rank_box").tooltip({
+				position: 'right',
+		    	content: '서비스 이력, SMS이력을 열람할 수 있는 게스트입니다.'
+		    });
+		};
+	})
+});
 
 </script>

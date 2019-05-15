@@ -328,7 +328,6 @@
 			search_list("/include/user_approval_list");	
 		}
 		else if(flag == 'menu_evnetList'){
-			
 			changeWidth("full");
 			search_list("/include/event_list");
 		}
@@ -1225,7 +1224,7 @@
 			</ul>
 		</div>
 		
-		<div id="layer_area">
+	 <div id="layer_area">
 			<div class="layer">
 				<div class="layer_top">
 					<span class="layer_logo"></span>

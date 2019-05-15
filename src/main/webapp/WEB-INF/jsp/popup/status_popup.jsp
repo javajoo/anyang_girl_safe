@@ -62,8 +62,8 @@ $(document).ready(function(){
 			/* $('#error_num').text(error); */
 			
 			$('.stat_area .status_total span').text(total);
-			$('.stat_area .status_1 span').text(normal);
-			$('.stat_area .status_2 span').text(total-normal);
+			$('.stat_area .status_1 span').text(total-normal);
+			$('.stat_area .status_2 span').text(normal);
 		}
 		, error:function(e) {
 			alert(e.responseText);
