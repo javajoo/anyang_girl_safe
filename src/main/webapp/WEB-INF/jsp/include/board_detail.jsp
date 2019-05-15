@@ -53,6 +53,12 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
+					<a href="#" id="pPush_button" class="eventR_button_list" onclick="pPushBoard(${no})">강제푸시</a>
+				</div>
+				<div class="list_cont">
+					<a href="#" id="push_button" class="eventR_button_list" onclick="pushBoard(${no})">푸시</a>
+				</div>
+				<div class="list_cont">
 					<a href="#" id="save_button" class="eventR_button_list" onclick="changeView(0)">수정</a>
 				</div>
 				<div class="list_cont">
