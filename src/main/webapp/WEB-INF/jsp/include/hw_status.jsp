@@ -194,6 +194,7 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getUserList/action.do";
 		var fileName = "girlSafeSensor";
@@ -219,6 +220,7 @@ $(document).ready(function(){
 });
 
 function moveMap(){
+	rankDisplay(rank);
 	$('#west-panel').hide();
 }
 

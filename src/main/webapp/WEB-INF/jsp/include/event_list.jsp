@@ -116,6 +116,7 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getEventList/action.do";
 		var fileName = "girlSafeEvent";
@@ -189,7 +190,9 @@ function reload(){
 			{field:'reason',title:'추가정보',hidden:true} */
 	    ]],
 	    onDblClickRow:function(index, row) {
-	    	onEventDetailPopup(row);
+	    	if(${admin.rank} <= 2){
+	    		onEventDetailPopup(row);
+	    	}
 	    },
 	    onLoadSuccess:function(data){
 	    	var rows = $('#eventList_table').datagrid('getRows');

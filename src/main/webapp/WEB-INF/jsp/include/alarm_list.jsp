@@ -71,6 +71,7 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getAlarmList/action.do";
 		var fileName = "girlSafeAlarm";

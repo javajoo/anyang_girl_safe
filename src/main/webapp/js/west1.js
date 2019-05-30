@@ -409,27 +409,18 @@ function changeSettingPage(page){
 
 function rankDisplay(rank) {
 	/* 2019.05.14 KMH 여성거주지 안심서비스 (등급별 변경)*/
-	if(rank == 2) {
+	if(rank >= 2) {
 		$('#setting_btn').hide();			//환경설정
 	}
-	if(rank == 3) {
+	if(rank >= 3) {
 		$('#topmenu_board').hide();			//공지사항
 		$('#topmenu_approvalList').hide();	//가입자 관리
-		$('#setting_btn').hide();			//환경설정
-		$('.update_button').hide();			//수정
-		$('.save_button').hide();			//저장
-		$('.delete_button').hide();			//삭제
+		$('#topmenu_stats').hide();			//통계자료
+		$('#excel_download_btn').hide(); 	//엑셀다운로드
+		$('#moveMap_button').hide();		//지도이동
 	}
 	if(rank == 4) {
-		$('#topmenu_approvalList').hide();	//가입자 관리
-		$('#topmenu_pushLogList').hide();	//푸시 이력
-		$('#topmenu_evnetList').hide();		//이벤트 검색
 		$('#topmenu_hwStatus').hide();		//센서 상태 체크
-		$('#topmenu_stats').hide();			//통계자료
-		$('#topmenu_board').hide();			//공지사항
-		$('#setting_btn').hide();			//환경설정
-		$('.update_button').hide();			//수정
-		$('.save_button').hide();			//저장
 	}
 }
 

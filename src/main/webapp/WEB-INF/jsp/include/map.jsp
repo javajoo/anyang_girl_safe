@@ -228,7 +228,7 @@
 	
 	/* 영상표출 부분을 감추고, flag 값에 따라 우측 레이어나 좌측 리스트 표출 부분을 조정하는 Method */
 	function changeWidth(flag) {
-		try{document.AthenaStream.DAS_DisconnectVideoStream();}catch(e){}
+		//try{document.AthenaStream.DAS_DisconnectVideoStream();}catch(e){}
 		
 		resizeMap('480px','calc(100% - 480px)','calc(100% - 44px)');
 		
@@ -1048,7 +1048,7 @@
 			<a href="#" onclick="changeWidth('layer');" class="layer_tool_open"></a>
 		</div>
 	
-	<object id="AthenaMgr" classid="CLSID:DC8A5A7E-AA71-4BA9-B899-DE76960ACA24" CODEBASE="./activex/AthenaMgr.cab#version=1,0,0,6" width="0" height="0"></object>
+	<!-- <object id="AthenaMgr" classid="CLSID:DC8A5A7E-AA71-4BA9-B899-DE76960ACA24" CODEBASE="./activex/AthenaMgr.cab#version=1,0,0,6" width="0" height="0"></object> -->
 	
 
 	

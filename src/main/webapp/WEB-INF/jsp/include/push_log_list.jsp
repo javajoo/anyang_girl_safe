@@ -23,7 +23,7 @@
 		</ul>
 		<ul class="list_ty_full" style="width:100%;height:200px;">
 			<li class="table_title">
-				<em>가입자 리스트</em>
+				<em>PUSH 이력 리스트</em>
 			</li>
 			<li>
 				<table id="pushLogList_table" title="" style="width:100%;height:calc(100%-129px);">
@@ -83,6 +83,7 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getPushLogList/action.do";
 		var fileName = "girlSafePushLog";

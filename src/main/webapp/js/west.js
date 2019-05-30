@@ -76,7 +76,7 @@ function selectEeventMGIS(row, data){
 }
 
 /* 이벤트모니터링 더블클릭시 - 저장 영상표출 */
-function selectEeventMRow(row, data){
+/*function selectEeventMRow(row, data){
 	//document.AthenaStream.DAS_Storage_Stop(0);
 	document.AthenaStream.DAS_DisconnectVideoStream();
 	closeCctv();
@@ -86,10 +86,10 @@ function selectEeventMRow(row, data){
 	object.isEvent = true;
 	object.eventDe = data.eventDe;
 	search_radius(object);
-}
+}*/
 
 /* 투망감시 더블클릭시 - 실시간 영상표출 */
-function selectCastingNRow(row, data){
+/*function selectCastingNRow(row, data){
 	document.AthenaStream.DAS_DisconnectVideoStream();
 	closeCctv();
 	var object = new Object();
@@ -97,7 +97,7 @@ function selectCastingNRow(row, data){
 	object.encryptLatitude = data.latitude;
 	object.isEvent = false;
 	search_radius(object);
-}
+}*/
 
 /* 이벤트모니터링-상황처리 */
 function search_eventM_handle(){
@@ -150,7 +150,7 @@ function addr_search(){
 }
 
 /* 투망감시-조회 */
-function search_castingN(flag,lat,lon){
+/*function search_castingN(flag,lat,lon){
 	if (!lat) {
 		lat = 0;
 	}
@@ -239,7 +239,7 @@ function search_castingN(flag,lat,lon){
 				}
 			}
 		}});
-}
+}*/
 
 /* 시설물 사용유형 종류 목록을 가져온다. */
 function selectUsedTyList() {
@@ -254,11 +254,11 @@ function selectUsedTyList() {
 	});	
 }
 /* 시설물관제>시설물관리 더블클릭시 - 실시간 영상표출 */
-function selectMRow(row, data){
+/*function selectMRow(row, data){
 	//document.AthenaStream.DAS_ConnectVideoStreamSingle("172.20.20.103", 10000, 20467, 0, "윤일로");
 	document.AthenaStream.DAS_ConnectVideoStreamSingle("192.168.3.200", 554, 20467, 0, "윤일로");
 	//document.AthenaStream.DAS_ConnectVideoStreamSingle(data.nodeIp, data.nodePort, data.nodeId, 0, data.cctvNm);
-}
+}*/
 
 /* 순환감시 목록을 가져온다. */
 function cycleUsedTyList(){
@@ -346,10 +346,10 @@ function search_facilityM(){
 }
 
 /* 시설물관제>시설물관리 더블클릭시 - 실시간 영상표출 */
-function selectFacilityMRow(row, data){
+/*function selectFacilityMRow(row, data){
 	//document.AthenaStream.DAS_ConnectVideoStreamSingle("172.20.20.103", 10000, 20467, 0, "윤일로");
 	document.AthenaStream.DAS_ConnectVideoStreamSingle(data.nodeIp, data.nodePort, data.nodeId, 0, data.cctvNm);
-}
+}*/
 
 /*시설물관제>시설물관리 - 단일등록*/
 function add_facility(){

@@ -1936,6 +1936,7 @@
 	    		CASE PUSH_KIND
 					WHEN 'N' THEN '일반'
 					WHEN 'P' THEN '강제'
+					WHEN 'R' THEN '예약'
 				END as pushKind,
 				date_format(INSERT_DATE,'%Y-%m-%d %H:%i:%s')as insertDate
 			FROM push_log
@@ -1994,10 +1995,13 @@
 	    	AND date_format(INSERT_DATE,'%Y-%m-%d') <= #{userTimeE}
 	    ]]>
 		</if>
-		<if test="pushKind != null and pushKind != ''">
-			AND PUSH_KIND = #{pushKind}
+		<if test="searchType != null and searchType != ''">
+			AND PUSH_KIND = #{searchType}
 		</if>
-		<if test="searchType != null and searchType != '' and totSearch != ''">
+		<if test="totSearch != null and totSearch != ''">
+			AND TITLE LIKE CONCAT('%', #{totSearch}, '%')
+		</if>
+		<!-- <if test="searchType != null and searchType != '' and totSearch != ''">
 			<choose>
 				<when test="searchType == 'name'">
 					AND TITLE LIKE CONCAT('%', #{totSearch},
@@ -2008,7 +2012,7 @@
 					'%')
 				</when>
 			</choose>
-		</if>
+		</if> -->
 	</select>
 	
 	

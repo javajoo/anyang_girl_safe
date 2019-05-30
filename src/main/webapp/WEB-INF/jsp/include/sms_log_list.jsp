@@ -63,6 +63,7 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getSmsLogList/action.do";
 		var fileName = "girlSafeSmsLog";

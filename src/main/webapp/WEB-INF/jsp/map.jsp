@@ -15,26 +15,26 @@
 <title>여성 안심서비스</title>
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
-<script for="AthenaMgr" event="ConnectRsp(_nPort,_nIndex,_nConnect)">
+<!-- <script for="AthenaMgr" event="ConnectRsp(_nPort,_nIndex,_nConnect)">
 	//alert("connection! "+_nConnect);
 	console.log("connect!");
 	document.AthenaMgr.DAM_Login("${config.mgrId}", "${config.mgrPw}");
-</script>
+</script> -->
 
 <!-- 로그인 후 , Response 받는 곳 -->
-<script for="AthenaMgr" event="LoginProcess(err)">
+<!-- <script for="AthenaMgr" event="LoginProcess(err)">
 	//alert("login! "+err);
 	console.log("login!");
 	console.log(err);
 	document.AthenaMgr.DAM_GetNodeServiceInfoReq(); // 노드정보 요청
-</script>
+</script> -->
 
 <!-- 관리서버로 부터 카메라 node 정보를 받는 곳  -->
-<script for="AthenaMgr" event="GetNodeServiceInfoRsp(strNodeInfo)">
+<!-- <script for="AthenaMgr" event="GetNodeServiceInfoRsp(strNodeInfo)">
 	//alert("get node info!");
 	//console.log(strNodeInfo);
 	//parsingNodeInfo(strNodeInfo)
-</script>
+</script> -->
 
 <!-- 안심귀가 이벤트를 받는 곳 -->
 <script for="AthenaMgr" event="GIS_UserEmergencyCall(strAlertInfo)">
@@ -84,16 +84,16 @@
 </script>
 
 <!-- 특정 카메라에 대한 저장영상 히스토리를 받는 곳. 히스토리를 Stream server로 전송  -->
-<script for="AthenaMgr" event="GetStorageHistory(str)" type="text/javascript">
+<!-- <script for="AthenaMgr" event="GetStorageHistory(str)" type="text/javascript">
 	/* var strVal = str.split(":");
 	var index = nodeIdArr.indexOf(strVal[0]);
 	console.log("index: "+nodeIdArr.indexOf(strVal[0])+", node id: "+strVal[0]);*/
 	console.log("GetStorageHistory! :"+str);
 	document.AthenaStream.DAS_Storage_History(str, "", 0);
-</script>
+</script> -->
 
 <!-- 저장영상 히스토리를 보냈을 때, 스트림 서버로 Connection이 되었다는 응답을 받는 곳. 시간을 설정하여 저장영상을 요청. -->
-<script for="AthenaStream" event="ConnectStreamRsp(nPort, nNodeID, nConnectType, number)" type="text/javascript">
+<!-- <script for="AthenaStream" event="ConnectStreamRsp(nPort, nNodeID, nConnectType, number)" type="text/javascript">
 	console.log("ConnectStreamRsp!");
 	console.log("node id:"+nNodeID+", number:"+number);
 	var startDate = new Date(eventMills - (25*60*1000));	// 이벤트 발생시점으로 부터 25분 이전
@@ -107,7 +107,7 @@
 	console.log("req saved video Start:"+customStart+", End:"+customEnd);
 	document.AthenaStream.DAS_Storage_SetTime(nNodeID, customStart, customEnd);
 	
-</script>
+</script> -->
 
 <script type="text/javascript">
 	    /** 날짜 포맷 형식 00 또는 0X */
@@ -407,7 +407,7 @@
 	
 	/* 영상표출 부분을 감추고, flag 값에 따라 우측 레이어나 좌측 리스트 표출 부분을 조정하는 Method */
 	function changeWidth(flag) {
-		try{document.AthenaStream.DAS_DisconnectVideoStream();}catch(e){}
+		//try{document.AthenaStream.DAS_DisconnectVideoStream();}catch(e){}
 		
 		resizeMap('480px','calc(100% - 480px)','calc(100% - 44px)');
 		
@@ -1227,7 +1227,7 @@
 			<a href="#" onclick="changeWidth('layer');" class="layer_tool_open"></a>
 		</div>
 	
-	<object id="AthenaMgr" classid="CLSID:DC8A5A7E-AA71-4BA9-B899-DE76960ACA24" CODEBASE="./activex/AthenaMgr.cab#version=1,0,0,6" width="0" height="0"></object>
+	<!-- <object id="AthenaMgr" classid="CLSID:DC8A5A7E-AA71-4BA9-B899-DE76960ACA24" CODEBASE="./activex/AthenaMgr.cab#version=1,0,0,6" width="0" height="0"></object> -->
 	
 	
     
