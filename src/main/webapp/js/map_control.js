@@ -594,7 +594,7 @@ function mapLateChange(){
 	}
 	console.log(s);
 	setTimeout(function() { 
-		addWMS(s); 
+		search_home(s);
 	}, 1000);
 	
 	$('.icon-tree-folder').hide();
@@ -611,8 +611,8 @@ function mapChange(){
 	    if (s != '') s += ',';
 	    s += nodes[i].id;
 	}
-	console.log(s);
-	addWMS(s);
+	console.log(s + " : mapchange ");
+	search_home(s);
 }
 
 /*map resize*/
