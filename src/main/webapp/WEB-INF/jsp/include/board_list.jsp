@@ -154,6 +154,8 @@ function pushBoard() {
 	jsonObj.no = row.no;
 	jsonObj.pushYN = "Y";
 	jsonObj.pushKind = "N";
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
 	
 	$.ajax({
 		type : "POST"
@@ -196,6 +198,8 @@ function pPushBoard() {
 	jsonObj.no = row.no;
 	jsonObj.pushYN = "Y";
 	jsonObj.pushKind = "P";
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
 	
 	$.ajax({
 		type : "POST"

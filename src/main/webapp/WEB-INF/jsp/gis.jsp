@@ -776,7 +776,9 @@
 	    } else {
 			info += "<div class=\"popup_btn_area\" id=\"popup_btn_area\" style=\"display: none;\">";
 	    }
+	    if(rank <= 2){
 		info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd()\">응급상황 종료</a>"
+	    }
 		info += "</div>";
 	    info += "</div>";
 		

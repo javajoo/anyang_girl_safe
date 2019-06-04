@@ -12,8 +12,13 @@
 				<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'">
 			</li>
 			<li class="list">
-				<div id="search_type_box_wrap" class="list_cont">
+				<div class="list_cont">
 					<em>푸시 종류 : </em>
+					<select id="pushKind_box" style="width: 90px; height: 27px; display: none;">
+					</select>
+				</div>
+				<div class="list_cont">
+					<em>검색 조건 : </em>
 					<select id="search_type_box" class="easyui-combobox" style="width: 90px; height: 27px;"></select>
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;" onkeypress="if(event.keyCode==13){reload();}"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
@@ -47,10 +52,9 @@ function searchInit() {
 		requeired:true
 	});
 	
-	$('#search_type_box').combobox({
+	$('#pushKind_box').combobox({
 	    valueField:'value',
 	    textField:'label',
-	    /* 2019.05.13 KMH 여성안심서비스 미비사항 수정(검색조건명 변경) */
 	    data: [{
 	    	label: '전체',
 	    	value: '',
@@ -68,15 +72,28 @@ function searchInit() {
 	    	label: '예약',
 	    	value: 'R'
 	    }]
-	    /* data: [{
-	    	label: '이름',
-	    	value: 'name',
+	});
+	
+	$('#search_type_box').combobox({
+	    valueField:'value',
+	    textField:'label',
+	    data: [{
+	    	label: '전체',
+	    	value: '',
 	    	"selected":true
 	    },
 	    {
-	    	label: '연락처',
-	    	value: 'phon'
-	    }] */
+	    	label: '제목',
+	    	value: 'title'
+	    },
+	    {
+	    	label: '관리자ID',
+	    	value: 'adminId'
+	    },
+	    {
+	    	label: '관리자이름',
+	    	value: 'adminName'
+	    }]
 	});
 	
 	$('#search_eventR_tot').val('');
@@ -91,6 +108,7 @@ $(document).ready(function(){
 				userTimeS : $("#search_eventR_timeS").datebox('getValue').replace(/\//g, ''),
 				userTimeE : $("#search_eventR_timeE").datebox('getValue').replace(/\//g, ''),
 				searchType : $("#search_type_box").combobox('getValue'),
+				pushKind : $("#pushKind_box").combobox('getValue'),
 				totSearch : $("#search_eventR_tot").val()
 		};
 		excelDownLoad($('#pushLogList_table'), url, fileName, data);
@@ -114,6 +132,7 @@ function reload(){
 	jsonObj.userTimeS = $("#search_eventR_timeS").datebox('getValue').replace(/\//g, '');
 	jsonObj.userTimeE = $("#search_eventR_timeE").datebox('getValue').replace(/\//g, '');
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
+	jsonObj.pushKind = $("#pushKind_box").combobox('getValue');
 	jsonObj.totSearch = $("#search_eventR_tot").val();
 	$('#pushLogList_table').datagrid({
 	    url:'/selectList/girlSafe.getPushLogList/action.do',
@@ -128,9 +147,11 @@ function reload(){
 	    columns:[[
 			/* 2019.05.13 KMH 여성안심서비스 미비사항 수정 (그리드리스트의 크기수정 및 내용열 삭제) */
 			{field:'num',title:'No',width:'5%',align:'center'},
-			{field:'title',title:'제목',width:'60%',align:'center'},
-			{field:'pushKind',title:'푸시종류',width:'5%',align:'center'},
-			{field:'insertDate',title:'발송일',width:'30%',align:'center'}
+				{field:'title',title:'제목',width:'40%',align:'center'},
+				{field:'pushKind',title:'푸시종류',width:'5%',align:'center'},
+				{field:'insertDate',title:'발송일',width:'20%',align:'center'},
+				{field:'adminId',title:'관리자ID',width:'15%',align:'center'},
+				{field:'adminName',title:'관리자이름',width:'15%',align:'center'}
 			
 	        /* {field:'num',title:'No',width:'5%',align:'center'},
 			{field:'title',title:'제목',width:'15%',align:'center'},

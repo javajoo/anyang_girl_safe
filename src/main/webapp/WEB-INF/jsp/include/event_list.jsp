@@ -190,7 +190,7 @@ function reload(){
 			{field:'reason',title:'추가정보',hidden:true} */
 	    ]],
 	    onDblClickRow:function(index, row) {
-	    	if(${admin.rank} <= 2){
+	    	if(rank <= 2){
 	    		onEventDetailPopup(row);
 	    	}
 	    },

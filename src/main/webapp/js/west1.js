@@ -215,7 +215,9 @@ function setEmergencyPopup(data) {
 	info += "<td><div class=\"event_popup_col\">" + sPhoneNumber + "</div></td></tr>";
 	info += "</table></div>";
 	info += "<div class=\"popup_btn_area\">";
+	if(rank <= 2){
 	info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd('" + sensorId + "')\">응급상황 종료</a>"
+	}
 	info += "</div>";
 	info += "</div>";
 
