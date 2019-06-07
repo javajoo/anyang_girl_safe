@@ -79,6 +79,8 @@ function savePosts() {
 	const jsonObj = {};
 	jsonObj.title = $("#board_title").val();
 	jsonObj.content = CKEDITOR.instances.board_cont.getData();
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
 	
 	$.ajax({
 		type : "POST"

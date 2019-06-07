@@ -785,7 +785,9 @@
 				PUSH_YN as pushYN,
 				COUNT as count,
 				date_format(INSERT_DATE,'%Y-%m-%d') as insertDate,
-				date_format(UPDATE_DATE,'%Y-%m-%d') as updateDate
+				date_format(UPDATE_DATE,'%Y-%m-%d') as updateDate,
+				ADMIN_ID as adminId,
+				ADMIN_NAME as adminName
 	        FROM girl_safe_board 
 	        WHERE 1=1
 	        AND NO = #{no}
@@ -796,14 +798,16 @@
 		INSERT INTO
 		girl_safe_board
 		(TITLE, CONTENT, PUSH_YN, COUNT, INSERT_DATE,
-		UPDATE_DATE)
+		UPDATE_DATE, ADMIN_ID, ADMIN_NAME)
 		VALUES
 		(#{title},
 		#{content},
 		'N',
 		0,
 		NOW(),
-		NOW())
+		NOW(),
+		#{adminId},
+		#{adminName})
 	</insert>
 
 	<update id="updateBoard" parameterType="map">
@@ -820,6 +824,12 @@
 		</if>
 		<if test="count != null and count != ''">
 			COUNT = COUNT + 1,
+		</if>
+		<if test="adminId != null and adminId != ''">
+			ADMIN_ID = #{adminId},
+		</if>
+		<if test="adminName != null and adminName != ''">
+			ADMIN_NAME = #{adminName},
 		</if>
 		UPDATE_DATE = NOW()
 		WHERE NO = #{no}

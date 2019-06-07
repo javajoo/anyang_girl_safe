@@ -39,6 +39,20 @@
 			</li>
 			<li class="list2">
 				<div class="list_cont3">
+					<em>ID</em>
+				</div>
+				<div class="list_cont3">
+					<span id="board_detail_admin_id"></span>
+				</div>
+				<div class="list_cont3">
+					<em>작성자</em>
+				</div>
+				<div class="list_cont3">
+					<span id="board_detail_admin_name"></span>
+				</div>
+			</li>
+			<li class="list2">
+				<div class="list_cont3">
 					<em>등록일</em>
 				</div>
 				<div class="list_cont3">
@@ -126,6 +140,9 @@ function updatePosts() {
 	jsonObj.title = $("#update_board_title").val();
 	jsonObj.content = CKEDITOR.instances['editor2'].getData();
 	jsonObj.no = no;
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	
 	$.ajax({
 		type : "POST"
 		, url : url
@@ -150,6 +167,8 @@ function setBoardValues(data) {
 	$("#board_detail_push").text(data.pushYN);
 	$("#board_detail_insert_date").text(data.insertDate);
 	$("#board_detail_update_date").text(data.updateDate);
+	$("#board_detail_admin_id").text(data.adminId);
+	$("#board_detail_admin_name").text(data.adminName);
 	
 	$("#update_board_title").val(data.title);
 	
