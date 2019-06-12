@@ -1,7 +1,15 @@
 /* 초기 화면  */
-function search_home(){
+function search_home(id){	
 	var url = "/select/girlSafe.getUserList/action.do";
 	const jsonObj = {};
+	var selectState = [];
+	var k ='';
+	k = id.split(',');
+	for(var i=0;i<k.length;i++){
+		selectState.push(k[i]);  
+	}
+	jsonObj.selectState = selectState;
+	
 	$.ajax({
 		type : "POST"
 		, url : url
@@ -89,16 +97,42 @@ function createFeature(data){
 	if(eventLayer == null){
 		return;;
 	}
+	if(data.selectState == 'woman_nor_'){
+		pointX = data.pointX;
+		pointY = data.pointY;
+		iconcls = 'images/icons/woman_nor_.png';
+	}
+	if(data.selectState == 'woman_emr_'){
+		pointX = data.pointX;
+		pointY = data.pointY;
+		iconcls = 'images/icons/woman_emr_.png';
+	}
+	if(data.selectState == 'woman_stat_dis'){
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		iconcls = 'images/icons/woman_stat_dis.png';
+	}
+	if(data.selectState == 'woman_stat_emr'){
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		iconcls = 'images/icons/woman_stat_emr.png';
+	}
+	if(data.selectState == 'woman_stat_nor'){
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		iconcls = 'images/icons/woman_stat_nor.png';
+	}
 	
+	/*
 	if(data.sensorConn > 0){
 		pointX = data.pointX;
 		pointY = data.pointY;
 		//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
 		if(data.emergency < 1){
-			iconcls = 'images/icons/woman_nor.png';
+			iconcls = 'images/icons/woman_nor_.png';
 		}
 		else{
-			iconcls = 'images/icons/woman_emr.png';
+			iconcls = 'images/icons/woman_emr_.png';
 			setEmergencyControl(data);
 		}
 	}
@@ -119,7 +153,7 @@ function createFeature(data){
 			iconcls = 'images/icons/woman_stat_emr.png';
 			setEmergencyControl(data);
 		}
-	}
+	}*/
 	
 	if(pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(

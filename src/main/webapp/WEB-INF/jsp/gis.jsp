@@ -310,7 +310,7 @@
 		$('#layer_area').hide();
 		if(flag == 'menu_home'){
 			layerClean(selectedImageLayer);
-			search_home();
+//			search_home();
 			$('#map').css('cursor', 'move');
 			
 			mapInfo();
@@ -318,6 +318,7 @@
 			$('#layer_area').show();
 			
 			setStatus();
+			mapChange();
 		}
 		/* else if(flag == 'menu_userList') {
 			
