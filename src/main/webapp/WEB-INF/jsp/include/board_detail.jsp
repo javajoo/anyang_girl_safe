@@ -211,4 +211,35 @@ function reload_detail(){
 		}
 	});
 }
+
+
+function deleteBoard() {
+	const jsonObj = {};
+	jsonObj.no = "${no}";
+
+    $.ajax(
+        {
+            type       : "POST",
+            url        : "/ajax/delete/girlSafe.deleteBoard/action.do",
+            dataType   : "json",
+            data : {"param" : JSON.stringify(jsonObj)},
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (result) {
+        if (result == "SUCCESS") {
+        	alert("삭제되었습니다.");
+        	common.closeDialogPop("board_detail");
+			$('#boardList_table').datagrid('reload');
+        }
+        else {
+            alert("삭제 실패");
+        }
+    }).fail(function (xhr) {
+        alert("삭제 실패");
+    }).always(function() {
+
+    });
+}
 </script>

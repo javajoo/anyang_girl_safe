@@ -37,9 +37,6 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
-					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard()">삭제</a>
-				</div>
-				<div class="list_cont">
 					<a href="#" id="pPush_button" class="eventR_button_list" onclick="pPushBoard()">강제푸시</a>
 				</div>
 				<div class="list_cont">
@@ -47,6 +44,9 @@
 				</div>
 				<div class="list_cont">
 					<a href="#" id="write_button" class="eventR_button_list">글쓰기</a>
+				</div>
+				<div class="list_cont">
+					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard()">삭제</a>
 				</div>
 			</li>
 		</ul>
