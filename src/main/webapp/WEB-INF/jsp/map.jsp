@@ -800,11 +800,11 @@
 		info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
 		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + age + "</div></td></tr>";
-	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
+	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">연락처</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_phoneNumber\">" + phoneNumber + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_address\">" + address + "</div></td></tr>";
-	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
+	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 연락처</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_sPhoneNumber\">" + sPhoneNumber + "</div></td></tr>";
 	    /* info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">발생시간</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_de\">" + eventDe + "</div></td></tr>"; */
