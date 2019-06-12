@@ -1,3 +1,29 @@
+.icon_woman_nor_{
+	background: url(../images/icons/woman_nor_.png) no-repeat center center;
+    background-size: 90% !important;
+}
+
+.icon_woman_emr_{
+	background: url(../images/icons/woman_emr_.png) no-repeat center center;
+    background-size: 90% !important;
+}
+
+.icon_woman_stat_nor{
+	background: url(../images/icons/woman_stat_nor.png) no-repeat center center;
+    background-size: 90% !important;
+}
+
+.icon_woman_stat_emr{
+	background: url(../images/icons/woman_stat_emr.png) no-repeat center center;
+    background-size: 90% !important;
+}
+
+.icon_woman_stat_dis{
+	background: url(../images/icons/woman_stat_dis.png) no-repeat center center;
+    background-size: 90% !important;
+}
+
+
 #gis_layout{
 	margin: 0;
 	padding: 0;

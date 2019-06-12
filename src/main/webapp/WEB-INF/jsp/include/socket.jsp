@@ -22,7 +22,7 @@
 		{
 			//var socket = io.connect('http://121.140.40.52:10027');
 			//var socket = io.connect('http://172.20.20.107:10027');
-			//var socket = io.connect('http://127.0.0.1:10027');
+			//var socket = io.connect('http://172.20.14.19:10027');
 			//var socket = io.connect('http://58.76.192.101:10027');
 			var socket = io.connect('https://home-safety.anyang.go.kr:10027',{secure:true});
 			socket.on('response', function(evt) {
@@ -42,7 +42,7 @@
 						audio.play();
 					}
 					layerClean(eventLayer);
-					search_home();
+					mapChange();
 					if(sensorConn > 0){
 						pointX = evt.pointX;
 						pointY = evt.pointY;
