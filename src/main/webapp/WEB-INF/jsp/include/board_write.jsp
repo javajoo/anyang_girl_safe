@@ -90,17 +90,23 @@ function savePosts() {
 		, success:function(data)
 		{
 			alert("저장되었습니다.");
-			common.closeDialogPop("board_write");
-			$('#boardList_table').datagrid('reload');
+			$.ajax({
+				type 		: "POST",
+				url  		: "/select/girlSafe.getBoardNo/action.do",
+				dataType 	: "json",
+				data 		: {"param" : JSON.stringify(jsonObj)},
+				success 	:function(data){
+					common.closeDialogPop("board_write");
+					updateCount("",data[0]);
+					getBoardOne("",data[0]);
+					reload();
+				}
+			})
 		}
 		, error:function(e){
 			alert(e.responseText);
 		}
 	});
-}
-
-function reload(){
-	
 }
 </script>
 

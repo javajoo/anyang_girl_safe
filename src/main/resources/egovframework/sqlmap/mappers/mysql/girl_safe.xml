@@ -801,6 +801,23 @@
 		AND a.content = #{content}		
 	</select>
 	
+	<delete id="deleteBoard" parameterType="map">
+		<![CDATA[
+		DELETE
+		FROM girl_safe_board
+		WHERE NO=#{no};
+		]]>
+	</delete>
+	
+	<select id="getBoardNo" parameterType="map" resultType="HashMap">
+		SELECT 
+			   No as no
+		  FROM girl_safe_board
+		 WHERE 1=1
+		   AND no = (SELECT max(NO) FROM girl_safe_board)
+	</select>
+	
+	
 	<select id="getBoardOne" parameterType="map" resultType="HashMap">
 		<![CDATA[		
 	       SELECT 

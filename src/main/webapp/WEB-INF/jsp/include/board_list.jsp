@@ -37,6 +37,9 @@
 			</li>
 			<li class="btn_list">
 				<div class="list_cont">
+					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard()">삭제</a>
+				</div>
+				<div class="list_cont">
 					<a href="#" id="pPush_button" class="eventR_button_list" onclick="pPushBoard()">강제푸시</a>
 				</div>
 				<div class="list_cont">
@@ -145,13 +148,16 @@ function updateCount(row, data) {
 	});
 }
 
-function pushBoard() {
+function pushBoard(no) {
+	if(confirm("푸시 하시겠습니까?")== false) return false;
 	var row = $('#boardList_table').datagrid('getSelected');
 	var url = "/boardPush.do";
-	
 	const jsonObj = {};
-	
-	jsonObj.no = row.no;
+	if(no != null && no != '' &&no != 'undefined'){
+		jsonObj.no = no;	
+	}else{
+		jsonObj.no = row.no;
+	}
 	jsonObj.pushYN = "Y";
 	jsonObj.pushKind = "N";
 	jsonObj.adminId = "${admin.id}";
@@ -172,10 +178,9 @@ function pushBoard() {
 				, data : {"param" : JSON.stringify(jsonObj)}
 				, success:function(data)
 				{
-					alert("푸쉬발송 완료");
-					$('#boardList_table').datagrid('reload');
-					$('#push_button').css('display', 'none');
-					$('#pPush_button').css('display', 'none');
+					alert('발송되었습니다.');
+					reload();
+					reload_detail();
 				}
 				, error:function(e){
 					alert(e.responseText);
@@ -189,13 +194,16 @@ function pushBoard() {
 }
 
 
-function pPushBoard() {
+function pPushBoard(no) {
+	if(confirm("강제푸쉬 하시겠습니까?")== false) return false;
 	var row = $('#boardList_table').datagrid('getSelected');
 	var url = "/boardPush.do";
-	
 	const jsonObj = {};
-	
-	jsonObj.no = row.no;
+	if(no != null && no != '' &&no != 'undefined'){
+		jsonObj.no = no;	
+	}else{
+		jsonObj.no = row.no;
+	}
 	jsonObj.pushYN = "Y";
 	jsonObj.pushKind = "P";
 	jsonObj.adminId = "${admin.id}";
@@ -216,10 +224,9 @@ function pPushBoard() {
 				, data : {"param" : JSON.stringify(jsonObj)}
 				, success:function(data)
 				{
-					alert("푸쉬발송 완료");
-					$('#boardList_table').datagrid('reload');
-					$('#push_button').css('display', 'none');
-					$('#pPush_button').css('display', 'none');
+					alert('발송되었습니다.');
+					reload();
+					reload_detail();
 				}
 				, error:function(e){
 					alert(e.responseText);
@@ -258,19 +265,41 @@ function reload(){
 			{field:'no',title:'번호',hidden:true}
 	    ]],
 	    onSelect:function(index, row) {
-			$('#push_button').css('display', 'inline-block');
-			$('#pPush_button').css('display', 'inline-block');
+	    	if(rank == '2'){
+		    	$('#delete_button').css('display', 'inline-block');
+	    	}else if(rank == '1'){
+	    		$('#delete_button').css('display', 'inline-block');
+				$('#push_button').css('display', 'inline-block');
+				$('#pPush_button').css('display', 'inline-block');
+	    	}
 	    },
 	    onUnselect:function(index, row) {
-			$('#push_button').css('display', 'none');
-			$('#pPush_button').css('display', 'none');
+	    	if(rank == '2'){
+		    	$('#delete_button').css('display', 'inline-block');
+	    	}else if(rank == '1'){
+	    		$('#delete_button').css('display', 'inline-block');
+				$('#push_button').css('display', 'inline-block');
+				$('#pPush_button').css('display', 'inline-block');
+	    	}
 	    },
 	    onDblClickRow: function(row, data) {
-	    	updateCount(row, data);
-	    	getBoardOne(row, data);
-	    	reload();
+	    	if(rank == '2'){
+		    	updateCount(row, data);
+		    	getBoardOne(row, data);
+		    	$('#delete_button').css('display', 'none');
+	    	}else if(rank == '1'){
+	    		updateCount(row, data);
+		    	getBoardOne(row, data);
+		    	$('#delete_button').css('display', 'none');
+				$('#push_button').css('display', 'none');
+				$('#pPush_button').css('display', 'none');
+	    	}
 	    },
 	    onLoadSuccess:function(data){
+	    	$('#delete_button').css('display', 'none');
+			$('#push_button').css('display', 'none');
+			$('#pPush_button').css('display', 'none');
+			
 			if(data.rows=='sessionOut'){
 				sCnt++;
 				if(sCnt == 1){
@@ -286,6 +315,50 @@ function reload(){
 			}
 		}
 	});	
+}
+
+function deleteBoard() {
+	var row = $('#boardList_table').datagrid('getSelected');
+	
+	const jsonArray1 = [];
+	const jsonArray2 = [];
+	const jsonArray3 = [];
+	const jsonArray4 = [];
+	
+	const jsonObj = {};
+    jsonObj.rowStatus = "D";
+    jsonObj.no = row.no;
+    
+    jsonArray1[0] = jsonObj;
+  
+
+    $.ajax({
+            type       : "POST",
+            url        : "/multiTransaction/girlSafe.deleteBoard/sqlid2/sqlid3/sqlid4/action.do",
+            dataType   : "json",
+            data       : {
+            	"param1" : JSON.stringify(jsonArray1),
+                "param2" : JSON.stringify(jsonArray2),
+                "param3" : JSON.stringify(jsonArray3),
+                "param4" : JSON.stringify(jsonArray4)
+            },
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (result) {
+        if (result == "SUCCESS") {
+            $('#boardList_table').datagrid('reload');
+            alert("삭제 완료");
+        }
+        else {
+            alert("삭제 실패");
+        }
+    }).fail(function (xhr) {
+        alert("삭제 실패");
+    }).always(function() {
+
+    });
 }
 </script>
 
