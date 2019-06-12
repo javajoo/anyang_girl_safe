@@ -46,7 +46,7 @@ $(document).ready(function(){
 	    	value: 'adres'
 	    },
 	    {
-	    	label: '번호',
+	    	label: '연락처',
 	    	value: 'phon'
 	    }]
 	});
@@ -73,7 +73,7 @@ function reload(){
   	        {field:'num',title:'No',width:30,align:'center'},
 			{field:'name',title:'이름',width:60,align:'center'},
 			{field:'birthAge',title:'생년월일(나이)',width:100,align:'center'},
-			{field:'phoneNumber',title:'번호',width:60,align:'center'},
+			{field:'phoneNumber',title:'연락처',width:60,align:'center'},
 			{field:'address',title:'주소',width:100,align:'center'},
 			{field:'sensorId',title:'단말기번호',width:70,align:'center'}
 	    ]],

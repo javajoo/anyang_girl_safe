@@ -207,11 +207,11 @@ function setEmergencyPopup(data) {
 	info += "<td><div class=\"event_popup_col\">" + name + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일(나이)</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + birthAge + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
+	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">연락처</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + phoneNumber + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + address + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
+	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 연락처</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + sPhoneNumber + "</div></td></tr>";
 	info += "</table></div>";
 	info += "<div class=\"popup_btn_area\">";
