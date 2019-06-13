@@ -46,7 +46,7 @@
 					<a href="#" id="write_button" class="eventR_button_list">글쓰기</a>
 				</div>
 				<div class="list_cont">
-					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard()">삭제</a>
+					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard_list()">삭제</a>
 				</div>
 			</li>
 		</ul>
@@ -317,7 +317,7 @@ function reload(){
 	});	
 }
 
-function deleteBoard() {
+function deleteBoard_list() {
 	var row = $('#boardList_table').datagrid('getSelected');
 	
 	const jsonArray1 = [];
@@ -348,7 +348,7 @@ function deleteBoard() {
             }
         }).done(function (result) {
         if (result == "SUCCESS") {
-            $('#boardList_table').datagrid('reload');
+        	$('#boardList_table').datagrid('reload');
             alert("삭제 완료");
         }
         else {
