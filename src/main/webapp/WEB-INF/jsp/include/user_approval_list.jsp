@@ -124,7 +124,7 @@ function onAddUserPopup() {
     $('#popup_area').dialog({
         title: '사용자 신규 등록',
         width: 410,
-        height: 340,
+        height: 420,
         closed: false,
         cache: false,
         modal: true,
@@ -200,7 +200,7 @@ function onUserDetailPopup(row) {
             $('#popup_area').dialog({
                 title: '사용자 상세 정보',
                 width: 410,
-                height: 340,
+                height: 420,
                 closed: false,
                 cache: false,
                 modal: true,

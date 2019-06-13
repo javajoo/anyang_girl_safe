@@ -36,12 +36,38 @@
 			</li>
 			<li class="list">
 				<div class="popup_list_title">
+					<em>주소검색</em>
+				</div>
+				<div class="popup_list_cont">
+				<a href="#" id="add_user_save_btn" style="width: 85%;" class="eventR_button_list" onclick="post_address()">주소 검색</a>
+					<!--  <input type="text" id="add_user_post_box" class="easyui-textbox" />-->
+				</div>
+			</li>
+			<li class="list">
+				<div class="popup_list_title">
+					<em>주소</em>
+				</div>
+				<div class="popup_list_cont">
+					<input type="text" id="add_user_road_box" class="easyui-textbox" disabled/>
+					<input type="hidden" id="add_user_jibun_box" class="easyui-textbox" />
+				</div>
+			</li>
+			<li class="list">
+				<div class="popup_list_title">
+					<em>상세주소</em>
+				</div>
+				<div class="popup_list_cont">
+					<input type="text" id="add_user_detail_box" class="easyui-textbox" placeholder="내용을 입력해 주세요."/>
+				</div>
+			</li>
+			<!-- <li class="list">
+				<div class="popup_list_title">
 					<em>주소</em>
 				</div>
 				<div class="popup_list_cont">
 					<input type="text" id="user_address_box" class="easyui-textbox" placeholder="내용을 입력해 주세요."/>
 				</div>
-			</li>
+			</li> -->
 			<li class="list">
 				<div class="popup_list_title">
 					<em>연락처</em>
@@ -66,6 +92,51 @@
 	</div>
 </div>
 <script>
+function post_address() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+            // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+            var jibunAddr = ''; // 최종 주소 변수
+            var roadAddr = ''; // 히든 주소 변수
+            var extraAddr = ''; // 조합형 주소 변수
+            var addr = '';
+
+            // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+            	addr = data.address;
+                roadAddr = data.roadAddress;
+                jibunAddr = data.jibunAddress;
+
+            
+            // 사용자가 선택한 주소가 도로명 타입일때 조합한다.
+            if(data.userSelectedType === 'R'){
+                //법정동명이 있을 경우 추가한다.
+                if(data.bname !== ''){
+                    extraAddr += data.bname;
+                }
+                // 건물명이 있을 경우 추가한다.
+                if(data.buildingName !== ''){
+                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다.
+                roadAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+                jibunAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+            }
+            
+            // 우편번호와 주소 정보를 해당 필드에 넣는다.
+            //document.getElementById('add_user_post_box').value = data.zonecode; //5자리 새우편번호 사용
+            document.getElementById('add_user_road_box').value = roadAddr;
+            document.getElementById('add_user_jibun_box').value = jibunAddr;
+
+            // 커서를 상세주소 필드로 이동한다.
+            document.getElementById('add_user_detail_box').focus();
+        }
+    }).open();
+}
+
+
 $(document).ready(function(){
 	if (typeof(selectedData) != 'undefined' && selectedData != '') {
 		setUserDetailData(selectedData);
@@ -77,7 +148,8 @@ function onUserUpdatePopup() {
 	$('#user_smart_box').attr('disabled', false);
 	$('#user_name_box').attr('disabled', false);
 	$('#user_birth_box').attr('disabled', false);
-	$('#user_address_box').attr('disabled', false);
+	$('#add_user_detail_box').attr('disabled', false);
+//	$('#user_address_box').attr('disabled', false);
 //	$('#user_phone_box').attr('disabled', false);
 	
 	$('#user_update_btn').css('display', 'none');
@@ -98,14 +170,20 @@ function setUserDetailData(data) {
 	$('#user_smart_box').attr('disabled', true);
 	$('#user_name_box').attr('disabled', true);
 	$('#user_birth_box').attr('disabled', true);
-	$('#user_address_box').attr('disabled', true);
+	$('#add_user_detail_box').attr('disabled', true);
+	
+	//$('#user_address_box').attr('disabled', true);
 	$('#user_phone_box').attr('disabled', true);
 	
 	$('#user_sensor_box').val(row.sensorId);
 	$('#user_smart_box').val(smartId);
 	$('#user_name_box').val(row.name);
 	$('#user_birth_box').val(row.birth);
-	$('#user_address_box').val(row.address);
+	
+	$('#add_user_jibun_box').val(common.xssDecode(row.jibunAddr));
+	$('#add_user_road_box').val(common.xssDecode(row.roadAddr));
+	$('#add_user_detail_box').val(common.xssDecode(row.detailAddr));
+	//$('#user_address_box').val(row.address);
 	$('#user_phone_box').val(row.phoneNumber);
 	$('#user_update_btn').css('display', 'inline-block');
 	$('#user_save_btn').css('display', 'none');
@@ -296,7 +374,10 @@ function modifyUser() {
 	var smartId = $('#user_smart_box').val().replace('SA-S', '');
 	var name = $('#user_name_box').val();
 	var birth = $('#user_birth_box').val();
-	var address = $('#user_address_box').val();
+	//var address = $('#user_address_box').val();
+	var jibunAddr = $('#add_user_jibun_box').val();
+	var roadAddr = $('#add_user_road_box').val();
+	var detailAddr = $('#add_user_detail_box').val();
 	var phoneNumber = $('#user_phone_box').val();
 	
 	if (!checkSmartId()) {
@@ -320,9 +401,11 @@ function modifyUser() {
 		return;
 	}
 	
-	if (!checkNull(address)) {
-		alert("주소를 입력해 주십시오.");
-		return;
+	if(!checkNull(roadAddr, "주소 검색으로 주소를 입력해 주세요.")){
+		return false;
+	}
+	if(!checkNull(detailAddr, "상세주소를 입력해 주세요.")){
+		return false;
 	}
 	
 	smartId = parseInt(smartId);
@@ -340,8 +423,11 @@ function modifyUser() {
 	jsonObj.smartId = smartId;
 	jsonObj.name = name;
 	jsonObj.birth = birth.replace(/-/g,'');
-	jsonObj.address = address;
-    jsonObj.phoneNumber = phoneNumber;
+	//jsonObj.address = address;
+	jsonObj.jibunAddr = jibunAddr;
+	jsonObj.roadAddr = roadAddr;
+	jsonObj.detailAddr = detailAddr;
+    jsonObj.phoneNumber = phoneNumber.replace(/-/g, "");;
     
     jsonArray1[0] = jsonObj;
     jsonArray2[0] = jsonObj;

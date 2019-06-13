@@ -45,6 +45,7 @@
 <script type="text/javascript" src="./js/image_manage.js"></script>
 <script type="text/javascript" src="./js/Chart.js"></script>
 <script type="text/javascript" src="./js/custom/main.js"></script>
+<script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
 <!-- <script type="text/javascript" src="./js/datagrid-bufferview.js"></script> -->
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
@@ -1150,7 +1151,7 @@
 							<li><a id="topmenu_alarmList" href="javascript:menuDisplay('menu_alarmList')">서비스 이력</a></li>
 							<li><a id="topmenu_smsLogList" href="javascript:menuDisplay('menu_smsLogList')">SMS 이력</a></li>
 							<li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
-							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
+							<!-- <li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li> -->
 							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li>
 							<!-- <li><a id="topmenu_system" href="javascript:menuDisplay('menu_system')">시스템설정</a></li> -->
 					    </ul>

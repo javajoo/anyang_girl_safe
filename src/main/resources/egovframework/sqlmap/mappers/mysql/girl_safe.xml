@@ -22,7 +22,10 @@
 					ELSE a.PHONE_NUMBER
 				END phoneNumber,
 				]]>
-				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				CAST(AES_DECRYPT(UNHEX(a.JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
+				CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
+				CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
+				CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
 				<![CDATA[
 				CASE a.APPROVAL
 					WHEN 'N' THEN '비승인'
@@ -100,7 +103,7 @@
 					AND YEAR(NOW())-LEFT(a.BIRTH,4)+1 = #{totSearch}
 				</when>
 				<when test="searchType == 'adres'">
-					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 				<when test="searchType == 'phon'">
@@ -183,7 +186,7 @@
 					AND YEAR(NOW())-LEFT(a.BIRTH,4)+1 = #{totSearch}
 				</when>
 				<when test="searchType == 'adres'">
-					AND CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch},
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch},
 					'%')
 				</when>
 				<when test="searchType == 'phon'">
@@ -227,7 +230,10 @@
 				date_format(a.BIRTH,'%Y-%m-%d') as birth,
 				a.PHONE_NUMBER as phoneNumber,
 				]]>	
-				CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				CAST(AES_DECRYPT(UNHEX(a.JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
+				CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
+				CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
+				CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
 				<![CDATA[
 				CASE a.APPROVAL
 					WHEN 'N' THEN '비승인'
@@ -270,7 +276,9 @@
 		PHONE_NUMBER,
 		BIRTH,
 		ENCRYPT_NAME,
-		ENCRYPT_ADRES,
+		JIBUN_ADDR,
+		ROAD_ADDR,
+		DETAIL_ADDR,
 		APPROVAL,
 		TOKEN_ID,
 		INSERT_DATE,
@@ -279,7 +287,9 @@
 		#{phoneNumber},
 		#{birth},
 		HEX(AES_ENCRYPT(#{name},'aycctv!1808')),
-		HEX(AES_ENCRYPT(#{address},'aycctv!1808')),
+		HEX(AES_ENCRYPT(#{jibunAddr},'aycctv!1808')),
+		HEX(AES_ENCRYPT(#{roadAddr},'aycctv!1808')),
+		HEX(AES_ENCRYPT(#{detailAddr},'aycctv!1808')),
 		'N',
 		'',
 		NOW(),
@@ -289,7 +299,9 @@
 		PHONE_NUMBER = #{phoneNumber},
 		BIRTH = #{birth},
 		ENCRYPT_NAME = HEX(AES_ENCRYPT(#{name},'aycctv!1808')),
-		ENCRYPT_ADRES = HEX(AES_ENCRYPT(#{address},'aycctv!1808')),
+		JIBUN_ADDR = HEX(AES_ENCRYPT(#{jibunAddr},'aycctv!1808')),
+		ROAD_ADDR = HEX(AES_ENCRYPT(#{roadAddr},'aycctv!1808')),
+		DETAIL_ADDR = HEX(AES_ENCRYPT(#{detailAddr},'aycctv!1808')),
 		UPDATE_DATE = NOW()
 	</insert>
 	
@@ -511,7 +523,10 @@
 				<![CDATA[
 				CONCAT(date_format(BIRTH,'%Y-%m-%d'),' (',(YEAR(NOW())-LEFT(BIRTH,4)+1),'세)') as birthAge,
 				]]>
-				CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				CAST(AES_DECRYPT(UNHEX(JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
+				CAST(AES_DECRYPT(UNHEX(ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
+				CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
+				CONCAT(REPLACE(ROAD_ADDR,'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
 				<![CDATA[
 				SMART_ID as smartId,
 				SENSOR_ID as sensorId,
@@ -556,7 +571,7 @@
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
@@ -604,7 +619,7 @@
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'adres'">
-					AND CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) LIKE CONCAT('%', #{totSearch}, '%')
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
@@ -625,7 +640,10 @@
 				NO as no,
 				]]>
 				CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
-				CAST(AES_DECRYPT(UNHEX(ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+				CAST(AES_DECRYPT(UNHEX(JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
+				CAST(AES_DECRYPT(UNHEX(ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
+				CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
+				CONCAT(REPLACE(ROAD_ADDR,'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
 				<![CDATA[
 				date_format(BIRTH,'%Y-%m-%d') as birth,
 				SMART_ID as smartId,
@@ -659,7 +677,7 @@
 	<update id="insertEvent" parameterType="map">
 		INSERT INTO
 		girl_safe_event
-		(PHONE_NUMBER, ENCRYPT_NAME, BIRTH, ENCRYPT_ADRES,
+		(PHONE_NUMBER, ENCRYPT_NAME, BIRTH, JIBUN_ADDR,ROAD_ADDR,DETAIL_ADDR,
 		SENSOR_ID, SMART_ID, DIVISION,
 		END_YN, POINT_X, POINT_Y, START_TIME,
 		END_TIME, INSERT_DATE)
@@ -667,7 +685,9 @@
 		a.PHONE_NUMBER,
 		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
 		a.BIRTH,
-		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as address,
+		CAST(AES_DECRYPT(UNHEX(a.JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
+		CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
+		CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
 		b.SENSOR_ID,
 		b.SMART_ID,
 		'SENSOR',
@@ -1456,7 +1476,7 @@
 	<select id="getEvent" parameterType="map" resultType="HashMap">
 		SELECT
 		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
-		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_ADRES), 'aycctv!1808')AS CHAR) as adres,
+		CONCAT(REPLACE(a.ROAD_ADDR,'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) as adres,
 		a.PHONE_NUMBER as phoneNumber,
 		a.BIRTH as birth,
 		a.PICTURE as picture,
