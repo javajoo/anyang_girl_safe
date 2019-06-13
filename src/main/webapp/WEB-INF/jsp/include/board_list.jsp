@@ -275,11 +275,11 @@ function reload(){
 	    },
 	    onUnselect:function(index, row) {
 	    	if(rank == '2'){
-		    	$('#delete_button').css('display', 'inline-block');
+		    	$('#delete_button').css('display', 'none');
 	    	}else if(rank == '1'){
-	    		$('#delete_button').css('display', 'inline-block');
-				$('#push_button').css('display', 'inline-block');
-				$('#pPush_button').css('display', 'inline-block');
+	    		$('#delete_button').css('display', 'none');
+				$('#push_button').css('display', 'none');
+				$('#pPush_button').css('display', 'none');
 	    	}
 	    },
 	    onDblClickRow: function(row, data) {
