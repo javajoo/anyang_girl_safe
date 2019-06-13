@@ -45,6 +45,7 @@
 <script type="text/javascript" src="./js/image_manage.js"></script>
 <script type="text/javascript" src="./js/Chart.js"></script>
 <script type="text/javascript" src="./js/custom/main.js"></script>
+<script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
 <!-- <script type="text/javascript" src="./js/datagrid-bufferview.js"></script> -->
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
@@ -1154,7 +1155,9 @@
 							<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정 (메뉴 순서 변경 및 게시판을 공지사항으로 변경)-->
 							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">공지사항</a></li>
 							<li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
-							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
+
+							<!-- <li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li> -->
+
 							<!-- <li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
 							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
 							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li> -->

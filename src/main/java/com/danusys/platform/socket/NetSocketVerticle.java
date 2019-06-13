@@ -691,7 +691,7 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
         	String type;
         	String name = (String) result.get("name");
 		    String phoneNumber = (String) result.get("phoneNumber");
-		    String address = (String) result.get("adres");
+		    String address = CommonUtil.getReXSSFilter((String) result.get("adres"));
 		    String birth = (String)result.get("birth");
 		    String protName = (String) result.get("sName");
         	String protPhoneNumber = (String) result.get("sPhoneNumber");
