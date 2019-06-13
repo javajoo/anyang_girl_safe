@@ -16,8 +16,11 @@
 			<th class="status_title" style="width: 70px;">총계</th>
 			<th class="status_title" style="width: 72px;">센서상태</th>
 			<th class="status_title" style="width: 72px;">배터리</th>
-			<th class="status_title extra_title" style="width: 72px;">스테이션연결</th>
-			<th class="status_title extra_title" style="width: 70px;">센서연결</th>
+			<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정 (스테이션/센서 연결을 미연결로 변경, 크기조정) -->
+			<th class="status_title extra_title" style="width: 100px;">스테이션미연결</th>
+			<th class="status_title extra_title" style="width: 70px;">센서미연결</th>
+			<!-- <th class="status_title extra_title" style="width: 72px;">스테이션연결</th>
+			<th class="status_title extra_title" style="width: 70px;">센서연결</th> -->
 		</tr>
 		<tr>
 			<td id="error_num"></td>
@@ -46,17 +49,21 @@ $(document).ready(function(){
 			var normal = Number(data[0].normal);
 			
 			$('#user_num').text(Number(data[0].userNum));
-			$('#normal_num').text(Number(data[0].normal));
+			/* 2019.05.13 KMH 여성안심서비스 미비사항 수정 (총계 수치와 정상 수치를 변경)*/
+			$('#error_num').text(Number(data[0].normal));
+			/* $('#normal_num').text(Number(data[0].normal)); */
 			$('#girl_sensor_status_off').text(Number(data[0].sensorStatusOff));
 			$('#girl_bat_off').text(Number(data[0].batOff));
 			$('#girl_smart_off').text(Number(data[0].smartOff));
 			$('#girl_sensor_off').text(Number(data[0].sensorOff));
 			var error = Number(data[0].sensorStatusOff)+Number(data[0].batOff);
-			$('#error_num').text(error);
+			/* 2019.05.13 KMH 여성안심서비스 미비사항 수정(총계 수치와 정상 수치를 변경) */
+			$('#normal_num').text(error);
+			/* $('#error_num').text(error); */
 			
 			$('.stat_area .status_total span').text(total);
-			$('.stat_area .status_1 span').text(normal);
-			$('.stat_area .status_2 span').text(total-normal);
+			$('.stat_area .status_1 span').text(total-normal);
+			$('.stat_area .status_2 span').text(normal);
 		}
 		, error:function(e) {
 			alert(e.responseText);

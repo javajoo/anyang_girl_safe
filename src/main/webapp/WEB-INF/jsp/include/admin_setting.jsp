@@ -197,7 +197,7 @@ function reload(){
 	        {field:'id',title:'아이디',width:'15%',align:'center'},
 			{field:'name',title:'이름',width:'10%',align:'center'},
 			{field:'birthday',title:'생년월일',width:'10%',align:'center'},
-			{field:'phoneNumber',title:'번호',width:'15%',align:'center'},
+			{field:'phoneNumber',title:'연락처',width:'15%',align:'center'},
 			{field:'email',title:'이메일',width:'15%',align:'center'},
 			{field:'address',title:'소속',width:'20%',align:'center'},
 			{field:'rank',title:'등급',width:'5%',align:'center'}

@@ -116,6 +116,7 @@ function searchInit() {
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getEventList/action.do";
 		var fileName = "girlSafeEvent";
@@ -158,22 +159,24 @@ function reload(){
 			state: '0',
 	    },
 	    columns:[[
-	        {field:'num',title:'No',width:'5%',align:'center'},
+	  		{field:'num',title:'No',width:'5%',align:'center'},
 	        {field:'no',title:'이벤트',hidden:true},
 			{field:'name',title:'이름',width:'5%',align:'center'},
 			{field:'birthAge',title:'생년월일(나이)',width:'10%',align:'center'},
-			{field:'phoneNumber',title:'번호',width:'10%',align:'center'},
+			{field:'phoneNumber',title:'연락처',width:'10%',align:'center'},
 			{field:'address',title:'주소',width:'25%',align:'center'},
-			{field:'startTime',title:'발생일',width:'15%',align:'center'},
-			{field:'endTime',title:'종료일',width:'15%',align:'center'},
+			{field:'startTime',title:'발생일',width:'10%',align:'center'},
+			{field:'endTime',title:'종료일',width:'10%',align:'center'},
 			{field:'endYN',title:'종료여부',width:'5%',align:'center'},
+			{field:'remark',title:'종료사유',width:'10%',align:'center'},
 			{field:'sensorId',title:'센서번호',width:'5%',align:'center'},
 			{field:'smartId',title:'스테이션번호',width:'5%',align:'center'},
-			{field:'remark',title:'종료사유',hidden:true},
 			{field:'reason',title:'추가정보',hidden:true}
 	    ]],
 	    onDblClickRow:function(index, row) {
-	    	onEventDetailPopup(row);
+	    	if(rank <= 2){
+	    		onEventDetailPopup(row);
+	    	}
 	    },
 	    onLoadSuccess:function(data){
 	    	var rows = $('#eventList_table').datagrid('getRows');
@@ -223,7 +226,7 @@ function onEventDetailPopup(row) {
             $('#popup_area').dialog({
                 title: '이벤트 상세 정보',
                 width: 410,
-                height: 450,
+                height: 500,
                 closed: false,
                 cache: false,
                 modal: true,

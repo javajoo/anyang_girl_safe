@@ -1,7 +1,15 @@
 /* 초기 화면  */
-function search_home(){
+function search_home(id){	
 	var url = "/select/girlSafe.getUserList/action.do";
 	const jsonObj = {};
+	var selectState = [];
+	var k ='';
+	k = id.split(',');
+	for(var i=0;i<k.length;i++){
+		selectState.push(k[i]);  
+	}
+	jsonObj.selectState = selectState;
+	
 	$.ajax({
 		type : "POST"
 		, url : url
@@ -89,16 +97,42 @@ function createFeature(data){
 	if(eventLayer == null){
 		return;;
 	}
+	if(data.selectState == 'woman_nor_'){
+		pointX = data.pointX;
+		pointY = data.pointY;
+		iconcls = 'images/icons/woman_nor_.png';
+	}
+	if(data.selectState == 'woman_emr_'){
+		pointX = data.pointX;
+		pointY = data.pointY;
+		iconcls = 'images/icons/woman_emr_.png';
+	}
+	if(data.selectState == 'woman_stat_dis'){
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		iconcls = 'images/icons/woman_stat_dis.png';
+	}
+	if(data.selectState == 'woman_stat_emr'){
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		iconcls = 'images/icons/woman_stat_emr.png';
+	}
+	if(data.selectState == 'woman_stat_nor'){
+		pointX = data.mPointX;
+		pointY = data.mPointY;
+		iconcls = 'images/icons/woman_stat_nor.png';
+	}
 	
+	/*
 	if(data.sensorConn > 0){
 		pointX = data.pointX;
 		pointY = data.pointY;
 		//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
 		if(data.emergency < 1){
-			iconcls = 'images/icons/woman_nor.png';
+			iconcls = 'images/icons/woman_nor_.png';
 		}
 		else{
-			iconcls = 'images/icons/woman_emr.png';
+			iconcls = 'images/icons/woman_emr_.png';
 			setEmergencyControl(data);
 		}
 	}
@@ -119,7 +153,7 @@ function createFeature(data){
 			iconcls = 'images/icons/woman_stat_emr.png';
 			setEmergencyControl(data);
 		}
-	}
+	}*/
 	
 	if(pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
@@ -207,15 +241,17 @@ function setEmergencyPopup(data) {
 	info += "<td><div class=\"event_popup_col\">" + name + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일(나이)</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + birthAge + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
+	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">연락처</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + phoneNumber + "</div></td></tr>";
 	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + address + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
+	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 연락처</div></td>";
 	info += "<td><div class=\"event_popup_col\">" + sPhoneNumber + "</div></td></tr>";
 	info += "</table></div>";
 	info += "<div class=\"popup_btn_area\">";
+	if(rank <= 2){
 	info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd('" + sensorId + "')\">응급상황 종료</a>"
+	}
 	info += "</div>";
 	info += "</div>";
 
@@ -408,22 +444,19 @@ function changeSettingPage(page){
 }
 
 function rankDisplay(rank) {
+	/* 2019.05.14 KMH 여성거주지 안심서비스 (등급별 변경)*/
 	if(rank >= 2) {
 		$('#setting_btn').hide();			//환경설정
 	}
-	if(rank == 3) {
-		$('#topmenu_board').hide();			//게시판
+	if(rank >= 3) {
+		$('#topmenu_board').hide();			//공지사항
 		$('#topmenu_approvalList').hide();	//가입자 관리
-		$('.update_button').hide();			//수정
-		$('.save_button').hide();			//저장
-		$('.delete_button').hide();			//삭제
+		$('#topmenu_stats').hide();			//통계자료
+		$('#excel_download_btn').hide(); 	//엑셀다운로드
+		$('#moveMap_button').hide();		//지도이동
 	}
 	if(rank == 4) {
-		$('#topmenu_evnetList').hide();		//이벤트 검색
 		$('#topmenu_hwStatus').hide();		//센서 상태 체크
-		$('#topmenu_stats').hide();			//통계자료
-		$('#topmenu_board').hide();			//게시판
-		$('#setting_btn').hide();			//환경설정
 	}
 }
 
@@ -462,8 +495,8 @@ function setStatus() {
 		, data : {"param" : JSON.stringify(jsonObj)}
 		, success:function(data) {
 			$('.stat_area .status_total span').text(Number(data[0].total));
-			$('.stat_area .status_1 span').text(Number(data[0].normal));
-			$('.stat_area .status_2 span').text(Number(data[0].total-data[0].normal));
+			$('.stat_area .status_2 span').text(Number(data[0].normal));
+			$('.stat_area .status_1 span').text(Number(data[0].total-data[0].normal));
 		}
 		, error:function(e) {
 			alert(e.responseText);
@@ -481,7 +514,9 @@ function openStatusPopup() {
     $('#popup_area').dialog({
         title: '상태정보',
         width: 765,
-        height: 175,
+        /* 2019.05.13 KMH 여성안심서비스 미비사항 수정 (대시보드 수정) */
+        /*height: 175,*/
+        height: 200,
         closed: false,
         cache: false,
         modal: true,

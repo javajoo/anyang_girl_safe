@@ -22,6 +22,17 @@
 					<select id="hw_status_box" style="width: 90px; height: 27px; display: none;">
 					</select>
 				</div>
+				<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정(스테이션연결 상태, 센서연결 상태 추가) -->
+				<div class="list_cont">
+					<em>스테이션연결 상태 : </em>
+					<select id="station_connect_status_box" style="width: 90px; height: 27px; display: none;">
+					</select>
+				</div>
+				<div class="list_cont">
+					<em>센서연결 상태 : </em>
+					<select id="sensor_connect_status_box" style="width: 90px; height: 27px; display: none;">
+					</select>
+				</div>
 				<div class="list_cont">
 					<em>검색 조건 : </em>
 					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;"></select>
@@ -125,20 +136,65 @@ function searchInit() {
 	    	label: '전체',
 	    	value: ''
 	    },
+	    /* 2019.05.13 KMH 여성안심서비스 미비사항 수정(센서상태 ON/OFF를 정상 비정상으로 변경) */
 	    {
+	    	label: '정상',
+	    	value: '0'
+	    },
+	    {
+	    	label: '비정상',
+	    	value: '1'
+	    }
+	    /* {
 	    	label: 'ON',
 	    	value: '0'
 	    },
 	    {
 	    	label: 'OFF',
 	    	value: '1'
+	    } */]
+	});
+	
+	$("#station_connect_status_box").combobox({
+		valueField:'value',
+	    textField:'label',
+	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    /* 2019.05.13 KMH 여성안심서비스 미비사항 수정(스테이션연결 상태 추가) */
+	    {
+	    	label: '미연결',
+	    	value: '0'
+	    },
+	    {
+	    	label: '연결',
+	    	value: '1'
 	    }]
 	});
 	
+	$("#sensor_connect_status_box").combobox({
+		valueField:'value',
+	    textField:'label',
+	    data: [{
+	    	label: '전체',
+	    	value: ''
+	    },
+	    /* 2019.05.13 KMH 여성안심서비스 미비사항 수정(센서연결 상태 추가) */
+	    {
+	    	label: '미연결',
+	    	value: '0'
+	    },
+	    {
+	    	label: '연결',
+	    	value: '1'
+	    }]
+	});
 	$('#search_eventR_tot').val('');
 }
 
 $(document).ready(function(){
+	rankDisplay(rank);
 	$('#excel_download_btn').click(function() {
 		var url = "/excelDownload/girlSafe.getUserList/action.do";
 		var fileName = "girlSafeSensor";
@@ -164,6 +220,7 @@ $(document).ready(function(){
 });
 
 function moveMap(){
+	rankDisplay(rank);
 	$('#west-panel').hide();
 }
 
@@ -189,6 +246,8 @@ function reload(){
 	jsonObj.searchType = $("#search_type_box").combobox('getValue');
 	jsonObj.batStatus = $("#bat_status_box").combobox('getValue');
 	jsonObj.hwStatus = $("#hw_status_box").combobox('getValue');
+	jsonObj.smartConnKr = $("#station_connect_status_box").combobox('getValue');
+	jsonObj.sensorConnKr = $("#sensor_connect_status_box").combobox('getValue');
 	$('#hwStatus_table').datagrid({
 	    url:'/selectList/girlSafe.getUserList/action.do',
 	    pagination:true,

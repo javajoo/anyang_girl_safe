@@ -62,13 +62,13 @@ function selectIoTM(row, data){
 }
 
 /* 모니터링 더블클릭시 - 실시간 영상표출 */
-function selectIotMRow(row, data){
+/*function selectIotMRow(row, data){
 	console.log("selectIotMRow! "+data.siteno);
 	//document.AthenaStream.DAS_ConnectVideoStreamSingle("172.20.20.100", 10002, 20014, 0, "윤일로");
 	selectFacilityToSiteno(data.siteno);
-}
+}*/
 
-function selectFacilityToSiteno(siteno) {
+/*function selectFacilityToSiteno(siteno) {
 	var object = new Object();
 	object.siteno = siteno;
 	$.ajax({
@@ -87,7 +87,7 @@ function selectFacilityToSiteno(siteno) {
 			alert("데이터를 update하는데 실패했습니다.");
 		}
 	});
-}
+}*/
 
 /* 환경단위 */
 function fn_unit(s,v){

@@ -1119,7 +1119,8 @@ public class NetSocketVerticle extends DefaultEmbeddableVerticle {
 	        	
 				oos.write(msg);
 				oos.flush();
-				oos.close();
+				// 2019.05.14 KMH 여성안심서비스 수정
+				//oos.close();
 	    	}catch(Exception exx){
 	    		exx.printStackTrace();
 	    	}finally{

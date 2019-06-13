@@ -49,29 +49,29 @@
 <!-- <script type="text/javascript" src="./js/datagrid-bufferview.js"></script> -->
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
-<script for="AthenaMgr" event="ConnectRsp(_nPort,_nIndex,_nConnect)">
+<!-- <script for="AthenaMgr" event="ConnectRsp(_nPort,_nIndex,_nConnect)">
 	//alert("connection! "+_nConnect);
 	console.log("connect!");
 	document.AthenaMgr.DAM_Login("${config.mgrId}", "${config.mgrPw}");
-</script>
+</script> -->
 
 <!-- 로그인 후 , Response 받는 곳 -->
-<script for="AthenaMgr" event="LoginProcess(err)">
+<!-- <script for="AthenaMgr" event="LoginProcess(err)">
 	//alert("login! "+err);
 	console.log("login!");
 	console.log(err);
 	document.AthenaMgr.DAM_GetNodeServiceInfoReq(); // 노드정보 요청
-</script>
+</script> -->
 
 <!-- 관리서버로 부터 카메라 node 정보를 받는 곳  -->
-<script for="AthenaMgr" event="GetNodeServiceInfoRsp(strNodeInfo)">
+<!-- <script for="AthenaMgr" event="GetNodeServiceInfoRsp(strNodeInfo)">
 	//alert("get node info!");
 	//console.log(strNodeInfo);
 	//parsingNodeInfo(strNodeInfo)
-</script>
+</script> -->
 
 <!-- 안심귀가 이벤트를 받는 곳 -->
-<script for="AthenaMgr" event="GIS_UserEmergencyCall(strAlertInfo)">
+<!-- <script for="AthenaMgr" event="GIS_UserEmergencyCall(strAlertInfo)">
 	//alert(strAlertINfo);
 	console.log("received~! : "+strAlertInfo);
 	var arrAlertInfo = strAlertInfo.split(":");
@@ -115,19 +115,19 @@
 		object.instId = "SYSTEM";
 		insertEventDB(object);
 	}
-</script>
+</script> -->
 
 <!-- 특정 카메라에 대한 저장영상 히스토리를 받는 곳. 히스토리를 Stream server로 전송  -->
-<script for="AthenaMgr" event="GetStorageHistory(str)" type="text/javascript">
+<!-- <script for="AthenaMgr" event="GetStorageHistory(str)" type="text/javascript">
 	/* var strVal = str.split(":");
 	var index = nodeIdArr.indexOf(strVal[0]);
 	console.log("index: "+nodeIdArr.indexOf(strVal[0])+", node id: "+strVal[0]);*/
 	console.log("GetStorageHistory! :"+str);
 	document.AthenaStream.DAS_Storage_History(str, "", 0);
-</script>
+</script> -->
 
 <!-- 저장영상 히스토리를 보냈을 때, 스트림 서버로 Connection이 되었다는 응답을 받는 곳. 시간을 설정하여 저장영상을 요청. -->
-<script for="AthenaStream" event="ConnectStreamRsp(nPort, nNodeID, nConnectType, number)" type="text/javascript">
+<!-- <script for="AthenaStream" event="ConnectStreamRsp(nPort, nNodeID, nConnectType, number)" type="text/javascript">
 	console.log("ConnectStreamRsp!");
 	console.log("node id:"+nNodeID+", number:"+number);
 	var startDate = new Date(eventMills - (25*60*1000));	// 이벤트 발생시점으로 부터 25분 이전
@@ -141,7 +141,7 @@
 	console.log("req saved video Start:"+customStart+", End:"+customEnd);
 	document.AthenaStream.DAS_Storage_SetTime(nNodeID, customStart, customEnd);
 	
-</script>
+</script> -->
 
 <script type="text/javascript">
 	var rank = ${admin.rank};
@@ -311,7 +311,7 @@
 		$('#layer_area').hide();
 		if(flag == 'menu_home'){
 			layerClean(selectedImageLayer);
-			search_home();
+//			search_home();
 			$('#map').css('cursor', 'move');
 			
 			mapInfo();
@@ -319,6 +319,7 @@
 			$('#layer_area').show();
 			
 			setStatus();
+			mapChange();
 		}
 		/* else if(flag == 'menu_userList') {
 			
@@ -329,7 +330,6 @@
 			search_list("/include/user_approval_list");	
 		}
 		else if(flag == 'menu_evnetList'){
-			
 			changeWidth("full");
 			search_list("/include/event_list");
 		}
@@ -366,7 +366,7 @@
 	
 	/* 영상표출 부분을 감추고, flag 값에 따라 우측 레이어나 좌측 리스트 표출 부분을 조정하는 Method */
 	function changeWidth(flag) {
-		try{document.AthenaStream.DAS_DisconnectVideoStream();}catch(e){}
+		//try{document.AthenaStream.DAS_DisconnectVideoStream();}catch(e){}
 		
 		
 		
@@ -766,11 +766,11 @@
 		info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_name\">" + name + "</div></td></tr>";
 		info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일(나이)</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_age\">" + birthAge + "</div></td></tr>";
-	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">번호</div></td>";
+	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">연락처</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_phoneNumber\">" + phoneNumber + "</div></td></tr>";
 	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_address\">" + address + "</div></td></tr>";
-	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 번호</div></td>";
+	    info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 연락처</div></td>";
 	    info += "<td><div class=\"event_popup_col\" id=\"event_popup_event_sPhoneNumber\">" + sPhoneNumber + "</div></td></tr>";
 	    info += "</table></div>";
 	    if (emergency == 1) {
@@ -778,7 +778,9 @@
 	    } else {
 			info += "<div class=\"popup_btn_area\" id=\"popup_btn_area\" style=\"display: none;\">";
 	    }
+	    if(rank <= 2){
 		info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd()\">응급상황 종료</a>"
+	    }
 		info += "</div>";
 	    info += "</div>";
 		
@@ -1150,9 +1152,15 @@
 							<li><a id="topmenu_hwStatus" href="javascript:menuDisplay('menu_hwStatus')">센서 상태 체크</a></li>
 							<li><a id="topmenu_alarmList" href="javascript:menuDisplay('menu_alarmList')">서비스 이력</a></li>
 							<li><a id="topmenu_smsLogList" href="javascript:menuDisplay('menu_smsLogList')">SMS 이력</a></li>
+							<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정 (메뉴 순서 변경 및 게시판을 공지사항으로 변경)-->
+							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">공지사항</a></li>
 							<li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
+
 							<!-- <li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li> -->
-							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li>
+
+							<!-- <li><a id="topmenu_pushLogList" href="javascript:menuDisplay('menu_pushLogList')">PUSH 이력</a></li>
+							<li><a id="topmenu_stats" href="javascript:menuDisplay('menu_stats')">통계자료</a></li>
+							<li><a id="topmenu_board" href="javascript:menuDisplay('menu_board')">게시판</a></li> -->
 							<!-- <li><a id="topmenu_system" href="javascript:menuDisplay('menu_system')">시스템설정</a></li> -->
 					    </ul>
 					</nav>
@@ -1172,7 +1180,9 @@
 				<ul>
 					<li><a href="javascript:settingMenuChange('menu_adminSetting')" class="selected" id="setting_1">계정 관리</a></li>
 					<li><a href="javascript:settingMenuChange('menu_webSetting')">WEB 설정</a></li>
-					<li><a href="javascript:settingMenuChange('menu_accessLog')">접속이력조회</a></li>
+					<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정(접속이력조회를 로그이력조회로 변경) -->
+					<li><a href="javascript:settingMenuChange('menu_accessLog')">로그이력조회</a>
+					<!-- <li><a href="javascript:settingMenuChange('menu_accessLog')">로그이력조회</a></li> -->
 				</ul>
 			</nav>
 		</div>
@@ -1220,7 +1230,7 @@
 			</ul>
 		</div>
 		
-		<div id="layer_area">
+	 <div id="layer_area">
 			<div class="layer">
 				<div class="layer_top">
 					<span class="layer_logo"></span>
@@ -1245,7 +1255,7 @@
 		</div>
 	</div>
 	
-	<object id="AthenaMgr" classid="CLSID:DC8A5A7E-AA71-4BA9-B899-DE76960ACA24" CODEBASE="./activex/AthenaMgr.cab#version=1,0,0,6" width="0" height="0"></object>
+	<!-- <object id="AthenaMgr" classid="CLSID:DC8A5A7E-AA71-4BA9-B899-DE76960ACA24" CODEBASE="./activex/AthenaMgr.cab#version=1,0,0,6" width="0" height="0"></object> -->
 	
 	<!-- 푸터 -->
 	<div class="footer">

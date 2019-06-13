@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <script type="text/javascript" src="./js/ckeditor/ckeditor.js"></script>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="cont_area" id="detail_area">
 	<div id="board_list" class="cont_inner cont_container" title="">
 		<ul class="list_ty_full">
@@ -39,6 +40,20 @@
 			</li>
 			<li class="list2">
 				<div class="list_cont3">
+					<em>ID</em>
+				</div>
+				<div class="list_cont3">
+					<span id="board_detail_admin_id"></span>
+				</div>
+				<div class="list_cont3">
+					<em>작성자</em>
+				</div>
+				<div class="list_cont3">
+					<span id="board_detail_admin_name"></span>
+				</div>
+			</li>
+			<li class="list2">
+				<div class="list_cont3">
 					<em>등록일</em>
 				</div>
 				<div class="list_cont3">
@@ -52,11 +67,22 @@
 				</div>
 			</li>
 			<li class="btn_list">
+				<c:if test="${admin.rank eq '1'}">
+					<div class="list_cont">
+						<a href="#" id="pPush_button" class="eventR_button_list" onclick="pPushBoard(${no})">강제푸시</a>
+					</div>
+					<div class="list_cont">
+						<a href="#" id="push_button" class="eventR_button_list" onclick="pushBoard(${no})">푸시</a>
+					</div>
+				</c:if>
 				<div class="list_cont">
 					<a href="#" id="save_button" class="eventR_button_list" onclick="changeView(0)">수정</a>
 				</div>
 				<div class="list_cont">
 					<a href="#" id="cancel_button" class="eventR_button_list" onclick="closePopup()">취소</a>
+				</div>
+				<div class="list_cont">
+					<a href="#" id="delete_button" class="delete_button" onclick="deleteBoard()">삭제</a>
 				</div>
 			</li>
 		</ul>
@@ -126,6 +152,9 @@ function updatePosts() {
 	jsonObj.title = $("#update_board_title").val();
 	jsonObj.content = CKEDITOR.instances['editor2'].getData();
 	jsonObj.no = no;
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	
 	$.ajax({
 		type : "POST"
 		, url : url
@@ -150,6 +179,8 @@ function setBoardValues(data) {
 	$("#board_detail_push").text(data.pushYN);
 	$("#board_detail_insert_date").text(data.insertDate);
 	$("#board_detail_update_date").text(data.updateDate);
+	$("#board_detail_admin_id").text(data.adminId);
+	$("#board_detail_admin_name").text(data.adminName);
 	
 	$("#update_board_title").val(data.title);
 	
@@ -179,5 +210,36 @@ function reload_detail(){
 			alert(e.responseText);
 		}
 	});
+}
+
+
+function deleteBoard() {
+	const jsonObj = {};
+	jsonObj.no = "${no}";
+
+    $.ajax(
+        {
+            type       : "POST",
+            url        : "/ajax/delete/girlSafe.deleteBoard/action.do",
+            dataType   : "json",
+            data : {"param" : JSON.stringify(jsonObj)},
+            async      : false,
+            beforeSend : function(xhr) {
+                // 전송 전 Code
+            }
+        }).done(function (result) {
+        if (result == "SUCCESS") {
+        	alert("삭제되었습니다.");
+        	common.closeDialogPop("board_detail");
+			$('#boardList_table').datagrid('reload');
+        }
+        else {
+            alert("삭제 실패");
+        }
+    }).fail(function (xhr) {
+        alert("삭제 실패");
+    }).always(function() {
+
+    });
 }
 </script>
