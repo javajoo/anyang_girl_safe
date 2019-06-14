@@ -179,8 +179,10 @@ function pushBoard(no) {
 				, success:function(data)
 				{
 					alert('발송되었습니다.');
+					if($('#board_detail').length > 0 ){
+						common.closeDialogPop("board_detail");
+					}
 					reload();
-					reload_detail();
 				}
 				, error:function(e){
 					alert(e.responseText);
@@ -225,8 +227,10 @@ function pPushBoard(no) {
 				, success:function(data)
 				{
 					alert('발송되었습니다.');
+					if($('#board_detail').length > 0 ){
+						common.closeDialogPop("board_detail");
+					}
 					reload();
-					reload_detail();
 				}
 				, error:function(e){
 					alert(e.responseText);
