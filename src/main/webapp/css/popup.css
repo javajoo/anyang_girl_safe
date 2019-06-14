@@ -461,6 +461,14 @@
 	padding: 0 13px;
 }
 
+.popup_list_condi .list_area {
+	margin: 10px 0 0 0;
+	float: left;
+	width: 95%;
+	height: 95px;
+	padding: 0 13px;
+}
+
 .popup_list_condi_sms .list {
 	margin: 10px 0 0 0;
 	float: left;
@@ -477,7 +485,16 @@
 	line-height: 30px;
 }
 
-.popup_list_title {
+.popup_list_title_area, .popup_list_title_full_area {
+	background-color: #555555;
+	text-align: center;
+	height: 92px;
+	color: #ffffff;
+	float: left;
+	line-height: 30px;
+}
+
+.popup_list_title,.popup_list_title_area {
 	width: 80px;
 }
 

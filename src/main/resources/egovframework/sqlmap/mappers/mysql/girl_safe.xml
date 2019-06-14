@@ -122,9 +122,11 @@
 				<when test="searchType == 'age'">
 					AND YEAR(NOW())-LEFT(a.BIRTH,4)+1 = #{totSearch}
 				</when>
-				<when test="searchType == 'adres'">
-					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch},
-					'%')
+				<when test="searchType == 'jibunAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.JIBUN_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'roadAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'phon'">
 					AND a.PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
@@ -217,9 +219,11 @@
 				<when test="searchType == 'age'">
 					AND YEAR(NOW())-LEFT(a.BIRTH,4)+1 = #{totSearch}
 				</when>
-				<when test="searchType == 'adres'">
-					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch},
-					'%')
+				<when test="searchType == 'jibunAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.JIBUN_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'roadAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'phon'">
 					AND a.PHONE_NUMBER LIKE CONCAT('%', #{totSearch},
@@ -558,7 +562,7 @@
 				CAST(AES_DECRYPT(UNHEX(JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
 				CAST(AES_DECRYPT(UNHEX(ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
 				CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
-				CONCAT(REPLACE(ROAD_ADDR,'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
+				CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
 				<![CDATA[
 				SMART_ID as smartId,
 				SENSOR_ID as sensorId,
@@ -571,6 +575,8 @@
 				END as endYN,
 				POINT_X as pointX,
 				POINT_Y as pointY,
+				ADMIN_NAME as adminName,
+				ADMIN_ID as adminId,
 				date_format(START_TIME,'%Y-%m-%d %H:%i:%s') as startTime,
 				date_format(END_TIME,'%Y-%m-%d %H:%i:%s') as endTime,
 				date_format(INSERT_DATE,'%Y-%m-%d %H:%i:%s') as insertDate
@@ -602,14 +608,26 @@
 				<when test="searchType == 'phon'">
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'adres'">
-					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
+				<when test="searchType == 'jibunAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(JIBUN_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'roadAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'smart'">
 					AND SMART_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'remark'">
+				AND REMARK LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'adminName'">
+				AND ADMIN_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'adminId'">
+				AND ADMIN_ID LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 			</choose>
 		</if>
@@ -650,11 +668,23 @@
 				<when test="searchType == 'phon'">
 					AND PHONE_NUMBER LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
-				<when test="searchType == 'adres'">
-					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
+				<when test="searchType == 'jibunAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(JIBUN_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
+				</when> 
+				<when test="searchType == 'roadAddress'">
+					AND CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 				<when test="searchType == 'sensor'">
 					AND SENSOR_ID LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'remark'">
+				AND REMARK LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'adminName'">
+				AND ADMIN_NAME LIKE CONCAT('%', #{totSearch}, '%')
+				</when>
+				<when test="searchType == 'adminId'">
+				AND ADMIN_ID LIKE CONCAT('%', #{totSearch}, '%')
 				</when>
 			</choose>
 		</if>

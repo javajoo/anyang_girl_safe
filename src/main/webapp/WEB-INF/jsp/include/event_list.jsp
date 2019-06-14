@@ -81,8 +81,12 @@ function searchInit() {
 	    	value: 'phon'
 	    },
 	    {
-	    	label: '주소',
-	    	value: 'adres'
+	    	label: '지번주소',
+	    	value: 'jibunAddress'
+	    },
+	    {
+	    	label: '도로명주소',
+	    	value: 'roadAddress'
 	    },
 	    {
 	    	label: '센서번호',
@@ -91,8 +95,19 @@ function searchInit() {
 	    {
 	    	label: '스테이션번호',
 	    	value: 'smart'
-	    }
-	    ]
+	    },
+    	{
+	    	label: '종료사유',
+	    	value: 'remark'
+	    },
+	    {
+	    	label: '관리자ID',
+	    	value: 'adminId'
+	    },
+	    {
+	    	label: '관리자 이름',
+	    	value: 'adminName'
+	    }]
 	});
 	
 	$("#end_yn_box").combobox({
@@ -164,13 +179,15 @@ function reload(){
 			{field:'name',title:'이름',width:'5%',align:'center'},
 			{field:'birthAge',title:'생년월일(나이)',width:'10%',align:'center'},
 			{field:'phoneNumber',title:'연락처',width:'10%',align:'center'},
-			{field:'address',title:'주소',width:'25%',align:'center'},
+			{field:'address',title:'주소',width:'15%',align:'center'},
 			{field:'startTime',title:'발생일',width:'10%',align:'center'},
 			{field:'endTime',title:'종료일',width:'10%',align:'center'},
 			{field:'endYN',title:'종료여부',width:'5%',align:'center'},
 			{field:'remark',title:'종료사유',width:'10%',align:'center'},
 			{field:'sensorId',title:'센서번호',width:'5%',align:'center'},
 			{field:'smartId',title:'스테이션번호',width:'5%',align:'center'},
+			{field:'adminId',title:'관리자ID',width:'5%',align:'center'},
+			{field:'adminName',title:'관리자 이름',width:'5%',align:'center'},
 			{field:'reason',title:'추가정보',hidden:true}
 	    ]],
 	    onDblClickRow:function(index, row) {

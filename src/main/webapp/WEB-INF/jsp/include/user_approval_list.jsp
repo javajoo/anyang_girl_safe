@@ -60,8 +60,12 @@ function searchInit() {
 	    	value: 'age'
 	    },
 	    {
-	    	label: '주소',
-	    	value: 'adres'
+	    	label: '지번주소',
+	    	value: 'jibunAddress'
+	    },
+	    {
+	    	label: '도로명주소',
+	    	value: 'roadAddress'
 	    },
 	    {
 	    	label: '연락처',

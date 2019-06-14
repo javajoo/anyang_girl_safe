@@ -58,19 +58,21 @@
 					<input type="text" id="user_remark_box" disabled/>
 				</div>
 			</li>
-			<li class="list">
-				<div class="popup_list_title" style="height: 100px">
-					<em style="line-height: 100px">추가정보</em>
+			<li class="list_area">
+				<div class="popup_list_title_area">
+					<em>추가정보</em>
 				</div>
 				<div class="popup_list_cont">
-					<input type="text" id="user_reason_box" style="height: 100px" disabled/>
+					<!-- <input type="text" id="user_reason_box" style="height: 100px" disabled/> -->
+					<textarea id="user_reason_box" cols="38" rows="6" disabled>
+					</textarea>
 				</div>
 			</li>
 		</ul>
 		<ul class="popup_list_ty_full">
 			<li class="btn_list">
 				<div class="list_cont">
-					<a href="#" id="user_cancel_btn" class="eventR_button_list" onclick="closePopup()" style="margin-top: 70px">취소</a>
+					<a href="#" id="user_cancel_btn" class="eventR_button_list" onclick="closePopup()">취소</a>
 				</div>
 			</li>
 		</ul>
