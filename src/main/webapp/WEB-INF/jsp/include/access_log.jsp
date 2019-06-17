@@ -46,10 +46,10 @@ $(document).ready(function(){
 		requeired:true
 	});
 	
-	//$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
-	//$('.datebox').removeClass("datebox").addClass("datebox-black");
-	//$('.datebox-calendar-inner').parent().addClass("datebox-calendar-div");
-	//$('.datebox-calendar-inner').parent().parent().addClass("datebox-calendar-panel");
+	$('.datebox-black .combo-arrow').removeClass("combo-arrow").addClass("combo-arrow_sel");
+	$('.datebox').removeClass("datebox").addClass("datebox-black");
+	$('.datebox-calendar-inner').parent().addClass("datebox-calendar-div");
+	$('.datebox-calendar-inner').parent().parent().addClass("datebox-calendar-panel");
 	
 	reload();
 });
