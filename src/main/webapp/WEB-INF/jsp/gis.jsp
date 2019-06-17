@@ -292,8 +292,6 @@
 		
 		//select 이벤트
 		$(".gnb_next li a").removeClass("selected");
-		$(".gnb_left li a").removeClass("selected");
-		$(".gnb_left li a:eq(0)").addClass("selected");
 		$('#'+flag+"_cont1_tit").addClass("selected");
 		
 	/* 	$('.gnb_next').hide();	//전체 소메뉴 hide
@@ -301,9 +299,12 @@
 		
 		//선택 import jsp show
 		
-		if(flag == 'menu_setting') changeWidth('admin');
-		else changeWidth();
-
+		if(flag == 'menu_setting'){ 
+			changeWidth('admin');
+			$(".gnb_left li a").removeClass("selected");
+			$(".gnb_left li a:eq(0)").addClass("selected");
+			$(".gnb .gnb_ul li a").removeClass("selected");
+		}else changeWidth();
 		
 		layerClean(eventLayer);
 		layerClean(facilityLayer);
