@@ -1675,7 +1675,12 @@
 				a.PHONE_NO as phoneNumber,
 				a.EMAIL as email,
 				a.ADDRESS as address,
-				a.RANK as rank,
+				CASE a.RANK
+					WHEN '1' THEN '최고 관리자'
+					WHEN '2' THEN '관리 담당자'
+					WHEN '3' THEN '운영자'
+					WHEN '4' THEN '게스트'
+				END as rank,
 				date_format(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s')as insertDate,
 				date_format(a.UPD_DATE,'%Y-%m-%d %H:%i:%s') as updateDate 
 			FROM admin a
@@ -2187,7 +2192,12 @@
 	       				  ,l.session_id as sessionId
 	       				  ,MAX(l.accessS) as accessS
 	       				  ,MAX(l.accessE) as accessE
-	       				  ,a.rank as rank
+	       				  ,CASE a.RANK
+							WHEN '1' THEN '최고 관리자'
+							WHEN '2' THEN '관리 담당자'
+							WHEN '3' THEN '운영자'
+							WHEN '4' THEN '게스트'
+							END as rank
 	       			FROM (
 	       					SELECT *
 	       						  ,IF(l.log_type = 'LOGIN', l.create_date, '') as accessS
