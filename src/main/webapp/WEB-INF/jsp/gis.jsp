@@ -292,6 +292,8 @@
 		
 		//select 이벤트
 		$(".gnb_next li a").removeClass("selected");
+		$(".gnb_left li a").removeClass("selected");
+		$(".gnb_left li a:eq(0)").addClass("selected");
 		$('#'+flag+"_cont1_tit").addClass("selected");
 		
 	/* 	$('.gnb_next').hide();	//전체 소메뉴 hide
