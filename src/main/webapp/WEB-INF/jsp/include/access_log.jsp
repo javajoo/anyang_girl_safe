@@ -16,7 +16,7 @@
 		</ul>
 		<ul class="list_ty_full" style="width:100%;height:200px;">
 			<li class="table_title">
-				<em>접속 리스트</em>
+				<em>로그이력 리스트</em>
 			</li>
 			<li>
 				<table id="accessLogList_table" title="" style="width:100%;height:calc(100%-129px);">
