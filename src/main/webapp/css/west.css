@@ -276,6 +276,11 @@
 	height: 180px;
 } 
 
+.list2 .list_cont6 > div{
+	height: 180px;
+    overflow: auto;
+}
+
 .list2 .list_cont7 {
 	width: 100%;
 	height: 290px;
