@@ -80,7 +80,10 @@
 					WHEN 11 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,4),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),8,4))
 					WHEN 10 THEN CONCAT(SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),1,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),4,3),'-',SUBSTR(CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR),7,4))
 					ELSE CAST(AES_DECRYPT(UNHEX(c.S_PHONE_NUMBER), 'aycctv!1808')AS CHAR)
-				END sPhoneNumber
+				END sPhoneNumber,
+				a.SIGUNGU as sigungu,
+				a.DONG as dong,
+				a.HDONG as hdong
 			FROM girl_safe_user a
 	        JOIN girl_safe_hw b
 	        ON a.PHONE_NUMBER = b.PHONE_NUMBER
@@ -374,7 +377,10 @@
 		APPROVAL,
 		TOKEN_ID,
 		INSERT_DATE,
-		UPDATE_DATE
+		UPDATE_DATE,
+		SIGUNGU, 
+		DONG,
+		HDONG
 		) VALUES (
 		#{phoneNumber},
 		#{birth},
@@ -385,7 +391,10 @@
 		'N',
 		'',
 		NOW(),
-		NOW()
+		NOW(),
+		#{sigungu},
+		#{dong},
+		#{hdong}
 		)
 		ON DUPLICATE KEY UPDATE
 		PHONE_NUMBER = #{phoneNumber},
@@ -394,6 +403,9 @@
 		JIBUN_ADDR = HEX(AES_ENCRYPT(#{jibunAddr},'aycctv!1808')),
 		ROAD_ADDR = HEX(AES_ENCRYPT(#{roadAddr},'aycctv!1808')),
 		DETAIL_ADDR = HEX(AES_ENCRYPT(#{detailAddr},'aycctv!1808')),
+		SIGUNGU = #{sigungu},
+		DONG = #{dong},
+		HDONG = #{hdong},
 		UPDATE_DATE = NOW()
 	</insert>
 	
@@ -2245,7 +2257,10 @@
                   	USER_INSERT_DATE,
                   	REASON_NUMBER,
                   	REASON,
-                  	INSERT_DATE
+                  	INSERT_DATE,
+                  	SIGUNGU,
+                  	DONG,
+                  	HDONG
                   )
            SELECT 
 				BIRTH,
@@ -2253,7 +2268,10 @@
 				INSERT_DATE,
                 0,
                 '기타',
-                now()
+                now(),
+                SIGUNGU,
+                DONG,
+                HDONG
            FROM girl_safe_user
            WHERE 1=1
            AND PHONE_NUMBER = #{phoneNumber}

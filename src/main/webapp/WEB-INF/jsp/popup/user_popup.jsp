@@ -59,6 +59,15 @@
 				<div class="popup_list_cont">
 					<input type="text" id="add_user_detail_box" class="easyui-textbox" placeholder="내용을 입력해 주세요."/>
 				</div>
+				<div class="popup_list_cont" style="display:none;">
+					<input type="text" id="sigungu" class="easyui-textbox"/>
+				</div>
+				<div class="popup_list_cont" style="display:none;">
+					<input type="text" id="dong" class="easyui-textbox"/>
+				</div>
+				<div class="popup_list_cont" style="display:none;">
+					<input type="text" id="hdong" class="easyui-textbox"/>
+				</div>
 			</li>
 			<!-- <li class="list">
 				<div class="popup_list_title">
@@ -129,7 +138,13 @@ function post_address() {
             //document.getElementById('add_user_post_box').value = data.zonecode; //5자리 새우편번호 사용
             document.getElementById('add_user_road_box').value = roadAddr;
             document.getElementById('add_user_jibun_box').value = jibunAddr;
-
+            document.getElementById('sigungu').value = data.sigungu;
+            document.getElementById('dong').value = data.bname;
+            if(data.hname != null && data.hname !='undefined' && data.hname != ''){
+	            document.getElementById('hdong').value = data.hname;
+            }else{
+            	document.getElementById('hdong').value = data.bname;            	
+            }
             // 커서를 상세주소 필드로 이동한다.
             document.getElementById('add_user_detail_box').focus();
         }
@@ -154,6 +169,7 @@ function onUserUpdatePopup() {
 	
 	$('#user_update_btn').css('display', 'none');
 	$('#user_save_btn').css('display', 'inline-block');
+	
 }
 
 function setUserDetailData(data) {
@@ -187,6 +203,11 @@ function setUserDetailData(data) {
 	$('#user_phone_box').val(row.phoneNumber);
 	$('#user_update_btn').css('display', 'inline-block');
 	$('#user_save_btn').css('display', 'none');
+	$('#sigungu').val(data.sigungu);
+	$('#dong').val(data.dong);
+	$('#hdong').val(data.hdong);
+	
+	
 }
 
 
@@ -379,6 +400,9 @@ function modifyUser() {
 	var roadAddr = $('#add_user_road_box').val();
 	var detailAddr = $('#add_user_detail_box').val();
 	var phoneNumber = $('#user_phone_box').val();
+	var sigungu = $('#sigungu').val();
+	var dong = $('#dong').val();
+	var hdong = $('#hdong').val();
 	
 	if (!checkSmartId()) {
 		return;
@@ -443,6 +467,10 @@ function modifyUser() {
 	jsonObj.userName = name;
 	jsonObj.saveLog = "Y";
     
+	//통계를 위한 파라미터 값 sigugn 와 dong
+	jsonObj.sigungu = sigungu;
+	jsonObj.dong = dong;
+	jsonObj.hdong = hdong;
     
     
 
