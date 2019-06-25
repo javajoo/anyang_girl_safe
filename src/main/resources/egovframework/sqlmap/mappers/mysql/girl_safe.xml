@@ -1778,7 +1778,7 @@
 	    	AND a.CREATE_DATE <= #{userTimeE}
 	    ]]>
 		</if>
-			ORDER BY a.SEQ_NO DESC) ac
+			ORDER BY a.CREATE_DATE DESC) ac
 		<if test='recordCountPerPage != -1'>
 			LIMIT #{firstIndex}, #{recordCountPerPage}
 		</if>
