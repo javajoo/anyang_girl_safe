@@ -173,6 +173,13 @@ function updateAdmin() {
 	jsonObj.email = $('#admin_email_box').val();
 	jsonObj.address = $('#admin_address_box').val();
 	jsonObj.rank = $('#admin_rank_box').val();
+	
+	jsonObj.rowStatus = "U";
+	jsonObj.logPath = "관리자계정관리";
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	jsonObj.userKey = $('#admin_id_box').val();
+	jsonObj.userName = $('#admin_name_box').val();
 
     $.ajax(
         {
@@ -181,6 +188,17 @@ function updateAdmin() {
             dataType   : "json",
             data : {"param" : JSON.stringify(jsonObj)},
             async      : false,
+            success:function(){
+            	$.ajax({
+                  	type       : "POST",
+                  	url        : "/ajax/insert/girlSafe.insert_user_log/action.do",
+                  	dataType   : "json",
+                  	data       : {"param" : JSON.stringify(jsonObj)},
+                  	async	   : false,
+                  	beforeSend : function(xhr){
+                  	}
+                  })
+            },
             beforeSend : function(xhr) {
                 // 전송 전 Code
             }
@@ -208,12 +226,30 @@ function deleteAdmin() {
 	jsonObj.singleDeleteSid = "girlSafe.deleteAdmin";
 	jsonObj.seqNo = $('#admin_seq_no').val();
 	
+	jsonObj.rowStatus = "D";
+	jsonObj.logPath = "관리자계정관리";
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	jsonObj.userKey = $('#admin_id_box').val();
+	jsonObj.userName = $('#admin_name_box').val();
+	
     $.ajax({
             type       : "POST",
             url        : "/multiAjax/action.do",
             dataType   : "json",
             data : {"param" : JSON.stringify(jsonObj)},
             async      : false,
+            success:function(){
+            	$.ajax({
+                  	type       : "POST",
+                  	url        : "/ajax/insert/girlSafe.insert_user_log/action.do",
+                  	dataType   : "json",
+                  	data       : {"param" : JSON.stringify(jsonObj)},
+                  	async	   : false,
+                  	beforeSend : function(xhr){
+                  	}
+                  })
+            },
             beforeSend : function(xhr) {
                 // 전송 전 Code
             }
@@ -305,6 +341,15 @@ function saveAdmin() {
 	jsonObj.email = $('#admin_email_box').val();
 	jsonObj.address = $('#admin_address_box').val();
 	jsonObj.rank = $('#admin_rank_box').val();
+	
+	
+	//insert into user_action_log 하기 위해 필요한 파라미터들
+	jsonObj.rowStatus = "C";
+	jsonObj.logPath = "관리자계정관리";
+	jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	jsonObj.userKey = $('#admin_id_box').val();
+	jsonObj.userName = $('#admin_name_box').val();
 
     $.ajax(
         {
@@ -313,6 +358,17 @@ function saveAdmin() {
             dataType   : "json",
             data : {"param" : JSON.stringify(jsonObj)},
             async      : false,
+            success:function(){
+            	$.ajax({
+                  	type       : "POST",
+                  	url        : "/ajax/insert/girlSafe.insert_user_log/action.do",
+                  	dataType   : "json",
+                  	data       : {"param" : JSON.stringify(jsonObj)},
+                  	async	   : false,
+                  	beforeSend : function(xhr){
+                  	}
+                  })
+            },
             beforeSend : function(xhr) {
                 // 전송 전 Code
             }

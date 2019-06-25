@@ -1186,6 +1186,7 @@
 					<!-- 2019.05.13 KMH 여성안심서비스 미비사항 수정(접속이력조회를 로그이력조회로 변경) -->
 					<li><a href="javascript:settingMenuChange('menu_accessLog')">로그이력조회</a>
 					<!-- <li><a href="javascript:settingMenuChange('menu_accessLog')">로그이력조회</a></li> -->
+					<li><a href="javascript:settingMenuChange('menu_userActionLog')">사용이력조회</a></li>
 				</ul>
 			</nav>
 		</div>

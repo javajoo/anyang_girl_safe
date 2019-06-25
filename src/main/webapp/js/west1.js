@@ -432,6 +432,9 @@ function settingMenuChange(flag) {
 	else if(flag == 'menu_accessLog') {
 		changeSettingPage("/include/access_log");
 	}
+	else if(flag == 'menu_userActionLog'){
+		changeSettingPage("/include/user_action_log");
+	}
 }
 function changeSettingPage(page){
 	$("#path").val(page);

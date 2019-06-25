@@ -417,8 +417,12 @@ function modifyUser() {
 	
 	const jsonObj = {};
 
-	debugger;
-    jsonObj.rowStatus = "C";
+	if (typeof(selectedData) != 'undefined' && selectedData != '') {
+		jsonObj.rowStatus = "U";
+	}else{
+		jsonObj.rowStatus = "C";
+	}
+	
 	jsonObj.sensorId = sensorId;
 	jsonObj.smartId = smartId;
 	jsonObj.name = name;
@@ -431,6 +435,16 @@ function modifyUser() {
     
     jsonArray1[0] = jsonObj;
     jsonArray2[0] = jsonObj;
+	//insert into user_action_log 하기 위해 필요한 파라미터들
+	jsonObj.logPath = "가입자 관리";
+    jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	jsonObj.userKey = phoneNumber.replace(/-/g, "");;
+	jsonObj.userName = name;
+	jsonObj.saveLog = "Y";
+    
+    
+    
 
     $.ajax(
         {

@@ -248,6 +248,17 @@ function deleteUser() {
     jsonObj.rowStatus = "D";
     jsonObj.phoneNumber = row.phoneNumber.replace(/-/g,'');
     
+    
+  //insert into user_action_log 하기 위해 필요한 파라미터들
+	jsonObj.logPath = "가입자 관리";
+    jsonObj.adminId = "${admin.id}";
+	jsonObj.adminName = "${admin.name}";
+	jsonObj.userKey = row.phoneNumber.replace(/-/g, "");;
+	jsonObj.userName = row.name;
+	jsonObj.saveLog = "Y";
+    
+    
+    
     jsonArray1[0] = jsonObj;
     jsonArray2[0] = jsonObj;
     jsonArray3[0] = jsonObj;

@@ -378,18 +378,33 @@ public class BaseServiceImpl implements BaseService
             Map<String, Object> param1 = JsonUtil.JsonToMap(jsonObject1.toString());
 
             String rowStatus = param1.get("rowStatus").toString();
+            String saveLog = "N";
+            if(param1.containsKey("saveLog")){
+            	saveLog = param1.get("saveLog").toString();
+            }else{
+            	saveLog = "N";
+            }
             
 			if (rowStatus.equals("C") == true) // Insert
             {
                 baseDao.baseInsert(sqlid1, param1);
+                if(saveLog.equals("Y") == true){
+					baseDao.baseInsert("girlSafe.insert_user_log", param1);
+                }
             }
             else if (rowStatus.equals("U") == true) // Update
             {
                 baseDao.baseUpdate(sqlid1, param1);
+                if(saveLog.equals("Y") == true){
+					baseDao.baseInsert("girlSafe.insert_user_log", param1);
+                }
             }
             else if (rowStatus.equals("D") == true) // Delete
             {
                 baseDao.baseDelete(sqlid1, param1);
+                if(saveLog.equals("Y") == true){
+					baseDao.baseInsert("girlSafe.insert_user_log", param1);
+                }
             }
 
             iResult++;
