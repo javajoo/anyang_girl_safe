@@ -35,7 +35,7 @@
 				</div>
 				<div class="list_cont">
 					<em>검색 조건 : </em>
-					<select id="search_type_box" class="easyui-combobox" style="width: 80px; height: 27px;"></select>
+					<select id="search_type_box" class="easyui-combobox" style="width: 110px; height: 27px;"></select>
 					<input type="text" id="search_eventR_tot" class="easyui-textbox" style="width:200px;" onkeypress="if(event.keyCode==13){reload();}"/>
 					<a href="#" id="search_eventR" class="eventR_button_list" onclick="reload()">조회</a>
 					<a href="#" class="eventR_button_list" onclick="searchInit()">초기화</a>
@@ -103,8 +103,12 @@ function searchInit() {
 	    	value: 'phon'
 	    },
 	    {
-	    	label: '주소',
-	    	value: 'address'
+	    	label: '지번주소',
+	    	value: 'jibunAddress'
+	    },
+	    {
+	    	label: '도로명주소',
+	    	value: 'roadAddress'
 	    }]
 	});
 	
