@@ -425,10 +425,6 @@ function settingMenuChange(flag) {
 		changeWidth("west_full");
 		changeSettingPage("/include/admin_setting");	
 	}
-	else if(flag == 'menu_webSetting') {
-		changeWidth("west_full");
-		changeSettingPage("/include/web_setting");	
-	}
 	else if(flag == 'menu_accessLog') {
 		changeSettingPage("/include/access_log");
 	}
