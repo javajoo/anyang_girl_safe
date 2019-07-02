@@ -46,6 +46,7 @@
 <script type="text/javascript" src="./js/Chart.js"></script>
 <script type="text/javascript" src="./js/custom/main.js"></script>
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=674f28727ad8bf7f447ccbc6b1233801&libraries=services"></script>
 <!-- <script type="text/javascript" src="./js/datagrid-bufferview.js"></script> -->
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
@@ -144,6 +145,25 @@
 </script> -->
 
 <script type="text/javascript">
+	function addr_search(){
+		new daum.Postcode({
+	    	showMoreHName: true,
+	        oncomplete: function(data) {
+	            var geocoder = new daum.maps.services.Geocoder();
+	            geocoder.addressSearch(data.address, function(results, status) {
+	                // 정상적으로 검색이 완료됐으면
+	                if (status === daum.maps.services.Status.OK) {
+	                    var result = results[0]; //첫번째 결과의 값을 활용
+	                    // 해당 주소에 대한 좌표를 받아서
+	            		map.setCenter(new OpenLayers.LonLat(result.x,result.y).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+	                }
+	            });
+	        }
+	    }).open({
+	    	autoClose :false
+	    });
+	}
+
 	var rank = ${admin.rank};
 	$(function() {
 		var period = ${admin.period};
@@ -1221,6 +1241,12 @@
 				    <a href="#" id="map_base" class="easyui-linkbutton btn_ty" data-options="iconCls:'icon-normal',toggle:true">일반</a>
 				    <a href="#" id="map_air" class="easyui-linkbutton" data-options="iconCls:'icon-satellite',toggle:true">위성</a>
 				</li>
+				<li>
+					<div class="map_search_box">
+						<label>검색</label>
+						<a href="#" id="map_addr_search_btn" onclick="addr_search()" class="easyui-linkbutton" data-options="iconCls:'icon-search',toggle:false">주소검색</a>
+					</div>
+				</li>
 				<!-- <li>
 					<div class="map_search_box">
 						<label>검색</label>
@@ -1231,7 +1257,7 @@
 			</ul>
 		</div>
 		
-	 <div id="layer_area">
+	 <div id="layer_area" style='width : 0px'>
 			<div class="layer">
 				<div class="layer_top">
 					<span class="layer_logo"></span>
