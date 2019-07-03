@@ -46,7 +46,7 @@
 <script type="text/javascript" src="./js/Chart.js"></script>
 <script type="text/javascript" src="./js/custom/main.js"></script>
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=674f28727ad8bf7f447ccbc6b1233801&libraries=services"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f51fb456778a82b692a61930e5dc1df7&libraries=services"></script>
 <!-- <script type="text/javascript" src="./js/datagrid-bufferview.js"></script> -->
 
 <!-- 관리서버에 접속 후, Response 받는 곳 -->
