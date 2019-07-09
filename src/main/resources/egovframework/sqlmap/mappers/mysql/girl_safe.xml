@@ -792,12 +792,12 @@
 				END phoneNumber,
 				NO as no,
 				]]>
+				<![CDATA[
 				CAST(AES_DECRYPT(UNHEX(ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
 				CAST(AES_DECRYPT(UNHEX(JIBUN_ADDR), 'aycctv!1808')AS CHAR) as jibunAddr,
 				CAST(AES_DECRYPT(UNHEX(ROAD_ADDR), 'aycctv!1808')AS CHAR) as roadAddr,
 				CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR), 'aycctv!1808')AS CHAR) as detailAddr,
-				CONCAT(REPLACE(ROAD_ADDR,'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)) as address,
-				<![CDATA[
+				REPLACE(REPLACE(CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)),'&#40;', '('), '&#41;', ')') as address,
 				date_format(BIRTH,'%Y-%m-%d') as birth,
 				SMART_ID as smartId,
 				SENSOR_ID as sensorId,
