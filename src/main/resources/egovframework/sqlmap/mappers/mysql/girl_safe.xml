@@ -1659,7 +1659,7 @@
 	<select id="getEvent" parameterType="map" resultType="HashMap">
 		SELECT
 		CAST(AES_DECRYPT(UNHEX(a.ENCRYPT_NAME), 'aycctv!1808')AS CHAR) as name,
-		CONCAT(REPLACE(a.ROAD_ADDR,'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(a.DETAIL_ADDR),'aycctv!1808')AS CHAR)) as adres,
+		REPLACE(REPLACE(CONCAT(REPLACE(CAST(AES_DECRYPT(UNHEX(ROAD_ADDR),'aycctv!1808')AS CHAR),'\r\n',''),' ',CAST(AES_DECRYPT(UNHEX(DETAIL_ADDR),'aycctv!1808')AS CHAR)),'&#40;', '('), '&#41;', ')') as adres,
 		a.PHONE_NUMBER as phoneNumber,
 		a.BIRTH as birth,
 		a.PICTURE as picture,
