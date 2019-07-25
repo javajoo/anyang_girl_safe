@@ -4,7 +4,7 @@
 	<div id="event_list" class="cont_inner" title="" style="height:99%; width: 97%;">
 		<ul class="list_condi_full">
 			<li class="list">
-				<em>가입일 : </em>
+				<em>발송일 : </em>
 				<input id="search_eventR_timeS" data-options="formatter:myformatter,parser:myparser,prompt:'시작일 입력'">
 				&nbsp;~ 
 				<input id="search_eventR_timeE" data-options="formatter:myformatter,parser:myparser,prompt:'종료일 입력'">
