@@ -312,11 +312,6 @@ function reload(){
 					closeWindow();
 				}
 			}
-			if(data && data.total > 0) {			
-				
-				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
-				//$(this).datagrid('selectRow',0);
-			}
 		}
 	});	
 }

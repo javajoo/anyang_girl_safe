@@ -1,5 +1,5 @@
 /* 초기 화면  */
-function search_home(id){	
+function search_home(id){
 	var url = "/select/girlSafe.getUserList/action.do";
 	const jsonObj = {};
 	var selectState = [];
@@ -17,11 +17,9 @@ function search_home(id){
 		, data : {"param" : JSON.stringify(jsonObj)}
 		, success:function(data)
 		{
-			layerClean(eventLayer);
-			popupClear();
 			for(var i=0; i<data.length; i++){
 				var result = data[i];
-				createFeature(result);
+				createMarker(result);
 			}
 	        reloadEmergencyList();
 		}
@@ -42,61 +40,24 @@ function search_list(page){
     });
 }
 
-/* 가입자 현황 -조회 */
-function search_userList(){
-	var page = '/include/user_list'; 
-	$("#path").val(page);
-	$(".gnb ul.gnb_ul").children("li").removeClass("active");
-	$(this).addClass("active");
-    $("#menu_cont").html("");
-    $("#menu_cont").load("/action/page.do", { path : page }, function() {
-    	
-    });
-}
-
-/* 이벤트 검색  화면  */
-function search_eventList(){
-	var page = '/include/event_list'; 
-	$("#path").val(page);
-	$(".gnb ul.gnb_ul").children("li").removeClass("active");
-	$(this).addClass("active");
-    $("#menu_cont").html("");
-    $("#menu_cont").load("/action/page.do", { path : page }, function() {
-    	
-    });
-}
-
-
-function search_hwStatus(){
-	var page = '/include/hw_status';
-	$("#path").val(page);
-	$(".gnb ul.gnb_ul").children("li").removeClass("active");
-	$(this).addClass("active");
-    $("#menu_cont").html("");
-    $("#menu_cont").load("/action/page.do", { path : page }, function() {
-    	
-    });
-}
-
-
-function createIcon(flag){
+/*function createIcon(flag){
 	//console.log('이벤트 아이콘 생성');
 	layerClean(eventLayer);
 	popupClear();
 	var rows = $('#'+flag+'_table').datagrid('getData').rows;
 	for(var i=0; i<rows.length; i++){
 		var data = rows[i];
-		createFeature(data);
+		createMarker(data);
 	}	
-}
+}*/
 /*이벤트 리스트 기준 지도 표출*/
-function createFeature(data){
+function createMarker(data){
 	var iconcls;
 	var pointX;
 	var pointY;
-	if(eventLayer == null){
+	/*if(eventLayer == null){
 		return;;
-	}
+	}*/
 	if(data.selectState == 'woman_nor_'){
 		pointX = data.pointX;
 		pointY = data.pointY;
@@ -123,49 +84,40 @@ function createFeature(data){
 		iconcls = 'images/icons/woman_stat_nor.png';
 	}
 	
-	/*
-	if(data.sensorConn > 0){
-		pointX = data.pointX;
-		pointY = data.pointY;
-		//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
-		if(data.emergency < 1){
-			iconcls = 'images/icons/woman_nor_.png';
-		}
-		else{
-			iconcls = 'images/icons/woman_emr_.png';
-			setEmergencyControl(data);
-		}
-	}
-	else{
-		pointX = data.mPointX;
-		pointY = data.mPointY;
-		
-		//if(data.chkStatus < 1 && data.chkBat < 2 && data.emergency < 1){
-		if(data.emergency < 1){
-			if(data.smartConn < 1){
-				iconcls = 'images/icons/woman_stat_dis.png';
-			}
-			else{
-				iconcls = 'images/icons/woman_stat_nor.png';
-			}
-		}
-		else{
-			iconcls = 'images/icons/woman_stat_emr.png';
-			setEmergencyControl(data);
-		}
-	}*/
-	
 	if(pointY > 0){
-		var feature = new OpenLayers.Feature.Vector(
-	            new OpenLayers.Geometry.Point(pointX,pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-	            {sensorId:data.sensorId, name:data.name, birthAge:data.birthAge, gpsX:pointX, gpsY:pointY, 
-	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
-	            	bat: data.bat, emergency: data.emergency
-	            } ,
-	            {externalGraphic: iconcls, graphicHeight: 30, graphicWidth: 30, graphicXOffset:-15, graphicYOffset:-15}
-	            );
-		eventLayer.addFeatures(feature);
-		//eventLayer.removeFeatures(feature);
+		var imageSrc = iconcls, // 마커이미지의 주소입니다    
+	    imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
+	    imageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+	      
+		// 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+		var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+		    markerPosition = new kakao.maps.LatLng(pointY, pointX); // 마커가 표시될 위치입니다
+	
+		// 마커를 생성합니다
+		var marker = new kakao.maps.Marker({
+		    position: markerPosition, 
+		    image: markerImage, // 마커이미지 설정
+		    title: data.phoneNumber
+		});
+		var dataMarker = {
+			marker : marker,
+			data : data
+		}
+		//마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+		kakao.maps.event.addListener(marker, 'click', function() {
+			closePopupOverlay();
+			map.relayout();
+			map.setLevel(5);
+			//마커 위에 커스텀오버레이를 표시합니다
+			//마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
+			openMarkerListPopup(marker, dataMarker);
+			var lng = markerPosition.getLng();
+			var	lat = markerPosition.getLat();
+			map.setCenter(new kakao.maps.LatLng(lat + 0.008, lng));
+		});
+		mapMarkers.push(dataMarker);
+		// 마커가 지도 위에 표시되도록 설정합니다
+		marker.setMap(map);
 	}
 }
 
@@ -173,7 +125,7 @@ function createFeature(data){
 function removeFeature(data){
 	layerClean(eventLayer);
 	if(eventLayer == null){
-		return;;
+		return;
 	}
 	if(data.pointY > 0){
 		var feature = new OpenLayers.Feature.Vector(
@@ -201,7 +153,6 @@ function popupClear() {
 function selectEeventMGIS(row, data){
 	var pointX;
 	var pointY;
-	layerClean(selectedImageLayer);
 	if(data.sensorConn > 0){
 		pointX = data.pointX;
 		pointY = data.pointY;
@@ -210,17 +161,14 @@ function selectEeventMGIS(row, data){
 		pointX = data.mPointX;
 		pointY = data.mPointY;
 	}
-	if(pointY > 0){
-		var feature = new OpenLayers.Feature.Vector(
-		        new OpenLayers.Geometry.Point(pointX,pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-		        {} ,
-		        {externalGraphic: 'images/icons/selected.png', graphicHeight: 32, graphicWidth: 32, graphicXOffset:-16, graphicYOffset:-16  }
-		    );
-		selectedImageLayer.addFeatures(feature);
-		
-		map.setCenter(new OpenLayers.LonLat(pointX,pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
-	}
-	//else $.messager.alert("경고", "좌표값이 없습니다.",'warning');
+	map.setLevel(5);
+	//마커 위에 커스텀오버레이를 표시합니다
+	//마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
+	map.relayout();
+	map.setCenter(new kakao.maps.LatLng(data.pointY + 0.008, data.pointX));
+	var marker = getMarker(data);
+	closePopupOverlay();
+	openMarkerListPopup(marker.marker, data);
 }
 
 function setEmergencyPopup(data) {
@@ -374,8 +322,9 @@ function updateEventEnd(sensorId) {
         {
             alert("상황종료 실패");
         }
-        search_home();
+        mapChange();
         reloadEmergencyList();
+        closePopupOverlay();
     }).fail(function (xhr) {
         alert("상황종료 실패");
     }).always(function() {

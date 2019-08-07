@@ -21,10 +21,10 @@
 		try 
 		{
 			//var socket = io.connect('http://121.140.40.52:10027');
-			//var socket = io.connect('http://172.20.20.107:10027');
+			var socket = io.connect('http://172.20.14.5:10027');
 			//var socket = io.connect('http://172.20.14.19:10027');
 			//var socket = io.connect('http://58.76.192.101:10027');
-			var socket = io.connect('https://home-safety.anyang.go.kr:10027',{secure:true});
+			//var socket = io.connect('https://home-safety.anyang.go.kr:10027',{secure:true});
 			socket.on('response', function(evt) {
 				console.log('[EVENT] Event Received : ' + JSON.stringify(evt));
 				var sensorId = evt.sensorId; 
@@ -52,7 +52,9 @@
 						pointY = evt.mPointY;
 					}
 					if (emergency > 0) {
-						map.setCenter(new OpenLayers.LonLat(pointX, pointY).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 18);					
+						map.relayout();
+						map.setLevel(2);
+						map.setCenter(new kakao.maps.LatLng(pointY, pointX));					
 					}
 			});
 		}

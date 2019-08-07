@@ -253,7 +253,7 @@ public class LoginController {
 		} else {
 			mav.addObject("admin", lgnVO);
 			mav.addObject("config", configVo);
-			mav.setViewName("gis");
+			mav.setViewName("New_gis");
 		}
 	    return mav;
 	}

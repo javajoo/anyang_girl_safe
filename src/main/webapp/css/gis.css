@@ -131,7 +131,7 @@
 	position: absolute;
 	height: calc(100% - 45px);
     right: 0;
-    z-index: 1;
+    z-index: 400;
     width: 265px;
 	top: 1px;
 }
@@ -257,7 +257,7 @@
     border-radius: 0 5px 5px 0;
 }
 #map_zoomout {
-    border-radius: 0;
+    border-radius: 0 5px 5px 0;
 }
 #map_move {
     border-radius: 0 5px 5px 0;
@@ -266,6 +266,22 @@
 	margin-bottom: 4px;
 }
 #map_addr_search_btn {
+	border-radius: 5px 5px 5px 5px;
+	margin-left: 5px;
+}
+#map_measure_area {
+    border-radius: 0;
+    font-weight: normal;
+}
+#map_measure_len {
+	font-weight: normal;
+}
+#map_clear {
+    border-radius: 0 5px 5px 0;
+    font-weight: normal;
+    margin-left: 0.1px;
+}
+#map_fullextent {
 	border-radius: 5px 5px 5px 5px;
 	margin-left: 5px;
 }

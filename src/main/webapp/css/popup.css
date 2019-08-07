@@ -356,6 +356,7 @@
 	width: 400px;
 	height: 220px;
 	cursor: default;
+	background-color: white;
 }
 
 .event_popup_title {
@@ -377,7 +378,7 @@
 }
 
 .event_popup_row td:nth-child(2) .event_popup_col {
-	width: 220px;
+	width: 300px;
 	word-break: normal;
 }
 
@@ -392,8 +393,7 @@
 
 
 .popup_left_area {
-	float: left;
-	height: 210px;
+	display: inline-block;
 }
 
 .popup_left_area .popup_list_area {
@@ -431,8 +431,9 @@
 }
 
 .popup_right_area {
-	float: left;
 	margin: 0 0 0 10px;
+	display: inline-block;
+	height: 180px;
 }
 
 .popup_bottom_area {
@@ -616,7 +617,6 @@
 
 .popup_btn_area {
 	padding: 10px 0 0 0;
-	display: inline-block;
 	width: 100%;
 }
 
