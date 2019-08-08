@@ -281,18 +281,22 @@ function openMarkerListPopup(marker, dataMarker) {
 
 function getNearMarker(marker, dataMarker) {
 	var mapMarkersList = [];
-	console.log(marker);
 	var markerLat = marker.getPosition().getLat();
 	var markerLon = marker.getPosition().getLng();
+	var markerName = marker.getTitle();
 	for (var i in mapMarkers) {
 		var lat = mapMarkers[i].marker.getPosition().getLat();
 		var lon = mapMarkers[i].marker.getPosition().getLng();
+		var name =  mapMarkers[i].marker.getTitle();
 		var emergency = mapMarkers[i].data.emergency;
 			if (markerLat == lat && markerLon == lon) {
 				mapMarkersList.push(mapMarkers[i]);
-			} 
+			}
 			else if(markerLat == lat && markerLon == lon && emergency == '1'){
 				mapMarkersList.push(mapMarkers[i]);
+			}
+			else if(markerName == name){
+				mapMarkersList.pop(mapMarkers[i]);
 			}
 	}
 	return mapMarkersList;

@@ -97,7 +97,7 @@ function createMarker(data){
 		var marker = new kakao.maps.Marker({
 		    position: markerPosition, 
 		    image: markerImage, // 마커이미지 설정
-		    title: data.phoneNumber
+		    Title: data.name
 		});
 		var dataMarker = {
 			marker : marker,
