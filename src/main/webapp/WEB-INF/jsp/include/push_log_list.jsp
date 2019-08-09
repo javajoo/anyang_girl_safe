@@ -163,12 +163,8 @@ function reload(){
 	    	
 	    	var rows = $('#pushLogList_table').datagrid('getRows');
 			if(data.rows=='sessionOut'){
-				sCnt++;
-				if(sCnt == 1){
-					alert('세션아웃 됐습니다.');
-					//location.href="/";
-					closeWindow();
-				}
+				alert('세션아웃 됐습니다.');
+				closeWindow();
 			} else {
 				
 			}
