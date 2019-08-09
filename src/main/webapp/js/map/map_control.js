@@ -138,7 +138,10 @@ function mapLateChange(){
 
 /*트리체크*/
 function mapChange(){
-	mapEventClear();
+	for (var i = 0; i < mapMarkers.length; i++) {
+		mapMarkers[i].marker.setMap(null);
+	}
+	mapMarkers = [];
 	var nodes = $('#layer_tree').tree('getChecked');
 	var s = '';
 	for(var i=0; i<nodes.length; i++){
