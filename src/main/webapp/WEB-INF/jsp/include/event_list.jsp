@@ -1,4 +1,4 @@
-<!-- 시설물현황조회 -->
+<!-- 이벤트 검색 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <div class="cont_area">
 	<div id="event_list" class="cont_inner" title="" style="height:99%; width: 97%;">
@@ -207,10 +207,6 @@ function reload(){
 		    } else {
 				setStationId(rows);
 			}
-			/* if(data && data.total > 0) {				
-				selectEeventMGIS(0, data.rows[0]);	// 발생된 이벤트 선택 및 지도 표출.
-				$(this).datagrid('selectRow',0);
-			} */
 		}
 	});	
 }

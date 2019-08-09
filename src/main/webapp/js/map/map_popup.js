@@ -4,7 +4,7 @@ function openPopup(overlay) {
 }
 
 function closePopupOverlay() {
-	if (popupOverlay) {
+	if(popupOverlay) {
 		popupOverlay.setMap(null);
 	}
 }

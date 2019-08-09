@@ -40,16 +40,6 @@ function search_list(page){
     });
 }
 
-/*function createIcon(flag){
-	//console.log('이벤트 아이콘 생성');
-	layerClean(eventLayer);
-	popupClear();
-	var rows = $('#'+flag+'_table').datagrid('getData').rows;
-	for(var i=0; i<rows.length; i++){
-		var data = rows[i];
-		createMarker(data);
-	}	
-}*/
 /*이벤트 리스트 기준 지도 표출*/
 function createMarker(data){
 	var iconcls;
@@ -121,27 +111,6 @@ function createMarker(data){
 	}
 }
 
-/*이벤트 리스트 기준 지도 삭제*/
-function removeFeature(data){
-	layerClean(eventLayer);
-	if(eventLayer == null){
-		return;
-	}
-	if(data.pointY > 0){
-		var feature = new OpenLayers.Feature.Vector(
-	            new OpenLayers.Geometry.Point(data.pointX,data.pointY).transform(projectionGroup["grs80"], projectionGroup["google"]),
-	            {hwSerial:data.hwSerial, name:data.name, birth:data.birth, gpsX:data.pointX, gpsY:data.pointY, 
-	            	phoneNumber: data.phoneNumber, sPhoneNumber: data.sPhoneNumber, address: data.address, status: data.status,
-	            	bat: data.bat, emergency: data.emergency
-	            } ,
-	            {externalGraphic: 'images/icons/EVENT_TYPE_6_L.png', graphicHeight: 70, graphicWidth: 40, graphicXOffset:-13, graphicYOffset:-13}
-	            );
-		eventLayer.removeFeatures(feature);
-		//eventLayer.removeFeatures(feature);
-		
-	}
-}
-
 function popupClear() {
     //alert('number of popups '+map.popups.length);
     while( map.popups.length ) {
@@ -151,6 +120,8 @@ function popupClear() {
 
 /*리스트 클릭 시-= 지도아이콘 표출*/
 function selectEeventMGIS(row, data){
+	if(selectedMarker) selectedMarker.setMap(null);
+	
 	var pointX;
 	var pointY;
 	if(data.sensorConn > 0){
@@ -162,86 +133,23 @@ function selectEeventMGIS(row, data){
 		pointY = data.mPointY;
 	}
 	map.setLevel(5);
-	//마커 위에 커스텀오버레이를 표시합니다
-	//마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
-	map.relayout();
+	
+	if(data.pointX == null) return;
+	
 	map.setCenter(new kakao.maps.LatLng(data.pointY + 0.008, data.pointX));
-	var marker = getMarker(data);
-	closePopupOverlay();
-	openMarkerListPopup(marker.marker, data);
+	
+	var imageSrc  = 'images/icons/selected.png';
+	var imageSize = new kakao.maps.Size(30, 30);
+	var imageOption = {};
+	var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+	selectedMarker = new kakao.maps.Marker({
+	    position: map.getCenter(), 
+	    image: markerImage
+	});
+	
+	selectedMarker.setMap(map);
 }
 
-function setEmergencyPopup(data) {
-	
-	var name = data.name;
-	var birthAge = data.birthAge;
-	var phoneNumber = data.phoneNumber;
-	var address = data.address;
-	var sPhoneNumber = data.sPhoneNumber;
-	var sensorId = data.sensorId;
-				
-	var info = ""; 
-	
-	info += "<div class='event_popup'>";
-	info += "<div id=\"popup_right_area\" class=\"popup_right_area\">";
-	info += "<table class=\"event_popup_table\">";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">이름</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + name + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">생년월일(나이)</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + birthAge + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">연락처</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + phoneNumber + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">주소</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + address + "</div></td></tr>";
-	info += "<tr class=\"event_popup_row\"><td><div class=\"event_popup_col\">보호자 연락처</div></td>";
-	info += "<td><div class=\"event_popup_col\">" + sPhoneNumber + "</div></td></tr>";
-	info += "</table></div>";
-	info += "<div class=\"popup_btn_area\">";
-	if(rank <= 2){
-	info += "<a href=\"#\" class=\"eventR_button_list\" onclick=\"updateEventEnd('" + sensorId + "')\">응급상황 종료</a>"
-	}
-	info += "</div>";
-	info += "</div>";
-
-	return info;
-}
-
-
-function setEmergencyControl(data) {
-		
-	
-	if(data.sensorConn > 0){
-		pointX = data.pointX;
-		pointY = data.pointY;
-		
-	}
-	else{
-		pointX = data.mPointX;
-		pointY = data.mPointY;
-						
-	}
-	
-		
-	// 벡터 아이콘 선택시, 선택된 feature를 인자로 받음
-		var centerLonlat = new OpenLayers.LonLat(pointX, pointY);
-		centerLonlat.transform(new OpenLayers.Projection("EPSG:4326"),
-		new OpenLayers.Projection("EPSG:900913"));
-    	console.log(data);
-        divId = 'eventPopup'+Math.floor(Math.random() * 100000);
-        // 팝업생성
-        eventPopup = new OpenLayers.Popup.FramedCloud("chicken", 
-        		centerLonlat,
-            new OpenLayers.Size(405,330), setEmergencyPopup(data),
-            null, true);
-        eventPopup.autoSize=true;
-        // 맵에 팝업 추가
-        map.addPopup(eventPopup);
-        map.setCenter(centerLonlat);
-        
-        return true;
-
- 
-};
 
 function reloadEmergencyList() {
 	var menu = $('#topmenu_home');
@@ -260,7 +168,6 @@ function updateEventEnd(sensorId) {
 	}
 	
 	const jsonObj = {};
-	
 	jsonObj.sensorId = sensorId;
 	
 	$.ajax({
@@ -278,7 +185,6 @@ function updateEventEnd(sensorId) {
 		}
 	});
 	
-
 	const jsonArray1 = [];
 	const jsonArray2 = [];
 	const jsonArray3 = [];

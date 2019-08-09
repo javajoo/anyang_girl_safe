@@ -237,7 +237,7 @@ header h1 a {display:block;width:180px;height:62px;background:url(../images/layo
 }
 .map_btn_area li {
 	display: inline-block;
-    margin: 0 35px;
+    margin: 0 5px;
     font-size: 0;
 }
 .map_btn_area a {

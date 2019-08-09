@@ -1,4 +1,4 @@
-<!-- 시설물현황조회 -->
+<!-- 센서 상태 체크 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <div class="cont_area">
 	<div id="hwStatus_list" class="cont_inner" title="" style="height:99%; width: 97%;">
@@ -223,9 +223,17 @@ $(document).ready(function(){
 	reload();
 });
 
-function moveMap(){
-	rankDisplay(rank);
-	$('#west-panel').hide();
+function moveMap() {
+	var data = $('#hwStatus_table').datagrid('getSelected');
+	if(data == null) alert('선택 된 센서가 없습니다.');
+	else if(data.mPointX == null) alert('좌표값이 없습니다.');
+	else {
+		rankDisplay(rank);
+		$('#map').show();
+		
+		map.relayout();
+	    map.panTo(selectedMarker.getPosition());
+	}
 }
 
 function setBatIcons() {
@@ -279,12 +287,8 @@ function reload(){
 	    onLoadSuccess:function(data){
 	    	var rows = $('#hwStatus_table').datagrid('getRows');
 			if(data.rows=='sessionOut'){
-				sCnt++;
-				if(sCnt == 1){
-					alert('세션아웃 됐습니다.');
-					//location.href="/";
-					closeWindow();
-				}
+				alert('세션아웃 됐습니다.');
+				closeWindow();
 			}
 		 	else {
 				setStationId(rows);

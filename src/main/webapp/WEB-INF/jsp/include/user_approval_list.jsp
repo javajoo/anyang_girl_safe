@@ -1,4 +1,4 @@
-<!-- 시설물현황조회 -->
+<!-- 가입자 관리 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <div class="cont_area">
 	<div id="event_list" class="cont_inner" title="" style="height:99%; width: 97%;">

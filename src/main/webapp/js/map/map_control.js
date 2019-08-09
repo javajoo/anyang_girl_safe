@@ -1,4 +1,9 @@
 var drawType = '';
+
+var mapMarkers = [];
+var selectedMarker;
+
+//지도 거리측정, 면적측정, 지우개
 function changeEventListener(type) {
 	clearEventListener();
 	drawType = type;
@@ -50,65 +55,6 @@ function clearDrawSelect() {
 	});
 }
 
-var tilesloadedHandler;
-var centerChangedHandler;
-var dragendHandler;
-var presetClickHandler;
-function mapCctvDrawEvent(flag) {
-	if(flag == "add") {
-		tilesloadedHandler = function(e) {
-			setCctvDraw();
-		};
-		centerChangedHandler= function(e) {
-			$('#loading').show();
-		};
-		dragendHandler= function(e) {
-			$('#loading').hide();
-		};
-		kakao.maps.event.addListener(map, 'tilesloaded', tilesloadedHandler);
-		kakao.maps.event.addListener(map, 'center_changed', centerChangedHandler);
-		kakao.maps.event.addListener(map, 'dragend', dragendHandler); 
-	}
-	else if(flag == "preset") {
-		presetClickHandler = function(e) {
-			if (popupOverlay) {
-				popupOverlay.setMap(null);
-			}
-			popupOverlay =  new kakao.maps.CustomOverlay({
-				content: getPresetNoPopupContent(e.latLng),
-				map: map,
-				position: e.latLng,
-				zIndex: 2
-			});
-			
-			kakao.maps.event.removeListener(map, 'click', presetClickHandler);
-		}
-		kakao.maps.event.addListener(map, 'click', presetClickHandler);
-	}
-	else {
-		kakao.maps.event.removeListener(map, 'tilesloaded', tilesloadedHandler);
-		kakao.maps.event.removeListener(map, 'center_changed', centerChangedHandler);
-		kakao.maps.event.removeListener(map, 'dragend', dragendHandler);
-		kakao.maps.event.removeListener(map, 'click', presetClickHandler);
-	}
-	
-}
-
-var eventCoordHandler = function(event) {
-	var latLng = event.latLng;
-	$('#popup_latitude').val(latLng.getLat());
-	$('#popup_longitude').val(latLng.getLng());
-
-	$('#gis_popup_area').dialog('open');
-	kakao.maps.event.removeListener(map, 'click', eventCoordHandler);
-}
-
-function clearEventCoordHandler() {
-	if (eventCoordHandler) {
-		kakao.maps.event.removeListener(map, 'click', eventCoordHandler);
-	}
-}
-
 /*트리로딩필터*/
 function convertTreeData(rows){
 	function exists(rows, parentId){
@@ -140,24 +86,6 @@ function convertTreeData(rows){
 					iconCls:'icon-tree-folder'
 				});
 			}
-			/*else if(row.id == 1){
-				nodes.push({
-					id:row.id,
-					text:row.name,
-					state:row.state,
-					checked:$.parseJSON(row.checked),
-					iconCls:'icon-tree-folder'
-				});
-			}
-			else if(row.id == 2){
-				nodes.push({
-					id:row.id,
-					text:row.name,
-					state:row.state,
-					checked:$.parseJSON(row.checked),
-					iconCls:'icon-tree-cctv'
-				});
-			}*/
 		}
 	}
 	var toDo = [];
@@ -291,12 +219,6 @@ function getNearMarker(marker, dataMarker) {
 		var emergency = mapMarkers[i].data.emergency;
 			if (markerLat == lat && markerLon == lon) {
 				mapMarkersList.push(mapMarkers[i]);
-			}
-			else if(markerLat == lat && markerLon == lon && emergency == '1'){
-				mapMarkersList.push(mapMarkers[i]);
-			}
-			else if(markerName == name){
-				mapMarkersList.pop(mapMarkers[i]);
 			}
 	}
 	return mapMarkersList;

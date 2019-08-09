@@ -82,7 +82,6 @@ $(function() {
 		var c = confirm("비밀번호 변경기간이 3개월이 지났습니다. 변경하시겠습니까?");
 		if(c == true) {
 			var modal = document.getElementById('passwordModal');
-			//$('#passwordModal').modal();
 			window.open("/updatePassword.do", "팝업", "left=20, top=20, width=500, height=180");
 		}
     }
@@ -95,17 +94,13 @@ function init() {
 
 /* 대메뉴선택 */
 function menuDisplay(flag){
+	if(selectedMarker) selectedMarker.setMap(null);
 	
 	$('.combo-p').remove();
 	
 	//select 이벤트
 	$(".gnb_next li a").removeClass("selected");
 	$('#'+flag+"_cont1_tit").addClass("selected");
-	
-/* 	$('.gnb_next').hide();	//전체 소메뉴 hide
-	$('#'+flag).show();		//선택 소메뉴 show */
-	
-	//선택 import jsp show
 	
 	if(flag == 'menu_setting'){ 
 		changeWidth('admin');
@@ -118,6 +113,7 @@ function menuDisplay(flag){
 	$('#left-panel').hide();
 	$('#layer_area').hide();
 	$('#map').hide();
+	
 	if(flag == 'menu_home'){
 		changeWidth();
 		$('#map').show();
@@ -147,17 +143,13 @@ function menuDisplay(flag){
 		changeWidth("full");
 		search_list("/include/sms_log_list");
 	}
-	else if(flag == 'menu_pushLogList'){
-		changeWidth("full");
-		search_list("/include/push_log_list");
-	}
 	else if(flag == 'menu_board'){
 		changeWidth("full");
 		search_list("/include/board_list");
 	}
-	else if(flag == 'menu_stats'){
+	else if(flag == 'menu_pushLogList'){
 		changeWidth("full");
-		search_list("/include/stats_list");
+		search_list("/include/push_log_list");
 	}
 	else if(flag == 'menu_setting'){
 		$('#left-panel').show();
@@ -268,57 +260,25 @@ function changeWidth(flag) {
 }
 /* 다음맵 거리, 면적, 지우개 */
 $(function() {
-		$('#map_measure_len').click(function() {
-			changeEventListener('distance');
-		});
-		
-		$('#map_measure_area').click(function() {
-			changeEventListener('area');
-		});
-		
-		$('#map_clear').click(function() {
-			changeEventListener('clear');
-		});
+	$('#map_measure_len').click(function() {
+		changeEventListener('distance');
+	});
+	
+	$('#map_measure_area').click(function() {
+		changeEventListener('area');
+	});
+	
+	$('#map_clear').click(function() {
+		changeEventListener('clear');
+	});
 })
 /*다음맵 전체영역*/
 function mapFullExtent(){
-		var moveLatLon = new kakao.maps.LatLng(37.38951588413914, 126.98812045295553);
-	    
-	    // 지도 중심을 부드럽게 이동시킵니다
-	    // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
-	    map.relayout();
-	    map.setLevel(6);
-	    map.panTo(moveLatLon); 
-	}
-function customFormat(date, formatString) {
-	var YYYY, YY, MMMM, MMM, MM, M, DDDD, DDD, DD, D, hhhh, hhh, hh, h, mm, m, ss, s, ampm, AMPM, dMod, th;
-	YY = ((YYYY = date.getFullYear()) + "").slice(-2);
-	MM = (M = date.getMonth() + 1) < 10 ? ('0' + M) : M;
-	MMM = (MMMM = [ "January", "February", "March", "April", "May", "June",
-			"July", "August", "September", "October", "November",
-			"December" ][M - 1]).substring(0, 3);
-	DD = (D = date.getDate()) < 10 ? ('0' + D) : D;
-	DDD = (DDDD = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-			"Friday", "Saturday" ][date.getDay()]).substring(0, 3);
-	th = (D >= 10 && D <= 20) ? 'th' : ((dMod = D % 10) == 1) ? 'st'
-			: (dMod == 2) ? 'nd' : (dMod == 3) ? 'rd' : 'th';
-	formatString = formatString.replace("#YYYY#", YYYY).replace("#YY#", YY)
-			.replace("#MMMM#", MMMM).replace("#MMM#", MMM).replace("#MM#",
-					MM).replace("#M#", M).replace("#DDDD#", DDDD).replace(
-					"#DDD#", DDD).replace("#DD#", DD).replace("#D#", D)
-			.replace("#th#", th);
-	h = (hhh = date.getHours());
-	if (h == 0) h = 24;
-	if (h > 12) h -= 12;
-	hh = h < 10 ? ('0' + h) : h;
-	hhhh = hhh < 10 ? ('0' + hhh) : hhh;
-	AMPM = (ampm = hhh < 12 ? 'am' : 'pm').toUpperCase();
-	mm = (m = date.getMinutes()) < 10 ? ('0' + m) : m;
-	ss = (s = date.getSeconds()) < 10 ? ('0' + s) : s;
-	return formatString.replace("#hhhh#", hhhh).replace("#hhh#", hhh)
-			.replace("#hh#", hh).replace("#h#", h).replace("#mm#", mm)
-			.replace("#m#", m).replace("#ss#", ss).replace("#s#", s)
-			.replace("#ampm#", ampm).replace("#AMPM#", AMPM);
+	var moveLatLon = new kakao.maps.LatLng(37.38951588413914, 126.98812045295553);
+    
+    map.relayout();
+    map.setLevel(6);
+    map.panTo(moveLatLon); 
 }
 
 /* 로그아웃 함수 */
@@ -343,19 +303,6 @@ function closeWindow() {
 	} else {
 		window.location.reload();
 	}
-}
-
-function play_audio(task) {
-	var audio = new Audio();
-	audio.src='/sound/siren.mp3';
-	audio.valume=1.0;
-    if(task == 'play'){
-         audio.play()
-    }
-    if(task == 'stop'){
-         audio.pause();
-         audio.currentTime=0;
-    }
 }
 </script>
 </head>
@@ -412,8 +359,7 @@ function play_audio(task) {
 			</div>
 		</div>
 		
-		<div id="map"> 
-
+		<div id="map">
 			<ul class="map_btn_area">
 				<li>
 				    <a href="#" id="map_zoomin" onclick="zoomIn();" class="easyui-linkbutton" data-options="iconCls:'icon-zoomin',toggle:true">확대</a>
@@ -439,10 +385,6 @@ function play_audio(task) {
 					</div>
 				</li>
 			</ul>
-			
-			
-			<div id="index_map"></div>
-			<input type="button" id="addIndexBtn" value="-"/>
 		</div>
 		
 		<div id="layer_area" style='width : 0px'>
@@ -534,9 +476,6 @@ function play_audio(task) {
 				return new Date();
 			}
 		}
-		
-		/* 인덱스맵호출 */
-		//indexMap();
     </script>
 	
     <!-- <div id="printdlg" class="easyui-dialog" title="출력"
@@ -551,17 +490,9 @@ function play_audio(task) {
 		<span id="logout" class="logout"><a href="javascript:logout()">Logout</a></span>
 	</div>
 	
-	<div id="popup_area" style="display:none;overflow: hidden;">
-	</div>
-	
-	
-	
+	<div id="popup_area" style="display:none;overflow: hidden;"></div>
 
-	<!-- 팝업 div -->
-	
 	<jsp:include page="include/socket.jsp" />
-	
-	
 
 	<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f51fb456778a82b692a61930e5dc1df7&libraries=services,clusterer,drawing"></script>
 	<script type="text/javascript" src="./js/map/map_control.js"></script>
@@ -569,7 +500,7 @@ function play_audio(task) {
 	<script type="text/javascript" src="./js/map/map_circle_draw.js"></script>
 	<script type="text/javascript" src="./js/map/map_init.js"></script>
 	<script type="text/javascript" src="./js/map/map_line_draw.js"></script>
-	<script type="text/javascript" src="./js/map/map_marker.js"></script>
+	<!-- <script type="text/javascript" src="./js/map/map_marker.js"></script> -->
 	<script type="text/javascript" src="./js/map/map_popup.js"></script>
 </body>
 </html>
