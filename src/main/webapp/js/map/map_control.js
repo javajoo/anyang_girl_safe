@@ -138,6 +138,7 @@ function mapLateChange(){
 
 /*트리체크*/
 function mapChange(){
+	closePopupOverlay();
 	for (var i = 0; i < mapMarkers.length; i++) {
 		mapMarkers[i].marker.setMap(null);
 	}
