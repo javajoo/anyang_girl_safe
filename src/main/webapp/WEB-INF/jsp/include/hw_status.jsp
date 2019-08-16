@@ -230,7 +230,7 @@ function moveMap() {
 	else {
 		rankDisplay(rank);
 		$('#map').show();
-		
+		$('#west-panel').hide();
 		map.relayout();
 	    map.panTo(selectedMarker.getPosition());
 	}

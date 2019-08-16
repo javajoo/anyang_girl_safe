@@ -410,12 +410,8 @@ function setStatsDatagrid(urlType, year, title) {
 	    ]],
 	    onLoadSuccess: function(data){
 			if(data.rows == 'sessionOut'){
-				sCnt++;
-				if(sCnt == 1){
-					alert('세션아웃 됐습니다.');
-					//location.href="/";
-					closeWindow();
-				}
+				alert('세션아웃 됐습니다.');
+				closeWindow();
 			}
 			if(data && data.total > 0) {
 				config.data.datasets = [];

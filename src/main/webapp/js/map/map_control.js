@@ -1,8 +1,5 @@
 var drawType = '';
 
-var mapMarkers = [];
-var selectedMarker;
-
 //지도 거리측정, 면적측정, 지우개
 function changeEventListener(type) {
 	clearEventListener();
@@ -138,11 +135,8 @@ function mapLateChange(){
 
 /*트리체크*/
 function mapChange(){
-	closePopupOverlay();
-	for (var i = 0; i < mapMarkers.length; i++) {
-		mapMarkers[i].marker.setMap(null);
-	}
-	mapMarkers = [];
+	mapEventClear();
+	
 	var nodes = $('#layer_tree').tree('getChecked');
 	var s = '';
 	for(var i=0; i<nodes.length; i++){

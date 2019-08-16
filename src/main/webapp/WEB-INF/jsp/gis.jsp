@@ -263,8 +263,6 @@
 
 	var mousePointerStyle = 'default';
 	
-	var sCnt = 0;	//세션 카운트
-	
 	var MOUSE_POINTER_STYLES = {
 	    'OpenLayers.Control.DragPan': 'move',
 	    'OpenLayers.Control.ZoomBox': 'crosshair',

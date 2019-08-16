@@ -500,7 +500,7 @@ function closeWindow() {
 	<script type="text/javascript" src="./js/map/map_circle_draw.js"></script>
 	<script type="text/javascript" src="./js/map/map_init.js"></script>
 	<script type="text/javascript" src="./js/map/map_line_draw.js"></script>
-	<!-- <script type="text/javascript" src="./js/map/map_marker.js"></script> -->
+	<script type="text/javascript" src="./js/map/map_marker.js"></script>
 	<script type="text/javascript" src="./js/map/map_popup.js"></script>
 </body>
 </html>

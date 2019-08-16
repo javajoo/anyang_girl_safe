@@ -1,3 +1,18 @@
+jQuery.download = function(url, data, method) {
+    if (url && data) {
+    	data = typeof data == 'string' ? data : jQuery.param(data);
+        var inputs = '';
+        jQuery.each(data.split('&'), function() {
+            var pair = this.split('=');
+            inputs += '<input type="hidden" name="' + pair[0] +
+                '" value="' + pair[1] + '" />';
+        });
+        jQuery('<form action="' + url +
+                '" method="' + (method || 'post') + '">' + inputs + '</form>')
+            .appendTo('body').submit().remove();
+    };
+};
+
 /* 초기 화면  */
 function search_home(id){
 	var url = "/select/girlSafe.getUserList/action.do";
@@ -77,7 +92,7 @@ function createMarker(data){
 	if(pointY > 0){
 		var imageSrc = iconcls, // 마커이미지의 주소입니다    
 	    imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
-	    imageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+	    imageOption = {}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
 	      
 		// 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
 		var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
@@ -136,7 +151,7 @@ function selectEeventMGIS(row, data){
 	
 	if(data.pointX == null) return;
 	
-	map.setCenter(new kakao.maps.LatLng(data.pointY + 0.008, data.pointX));
+	map.setCenter(new kakao.maps.LatLng(data.pointY, data.pointX));
 	
 	var imageSrc  = 'images/icons/selected.png';
 	var imageSize = new kakao.maps.Size(30, 30);

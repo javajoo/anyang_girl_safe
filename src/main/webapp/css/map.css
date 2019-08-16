@@ -116,8 +116,8 @@
 /* 팝업 overlay */
 .popup_wrap {
     position: absolute;
-    left: -179px;
-    bottom: 80px;
+	left: -168px;
+    bottom: 40px;
     /* width: 322px; */
     margin-left: -104px;
     text-align: left;
